@@ -39,7 +39,8 @@ if st.session_state.get('logged_in'):
     st.subheader("AI_EGD_Dx_training")
     with st.expander(" 순서대로 해야 정상 작동합니다. 반드시 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 항상 새로운 case instruction을 업로드하기 전에 '이전 대화기록 삭제버튼'을 눌러 이전 기록을 삭제하세요.")
-        st.write("- 그런 다음 그 위에 있는 drop down 메뉴들에서 증례 EGD png 파일과 case instruction 파일을 골라 upload 하세요. 각 단계마다 열일 중 스핀이 멈출 때까지 기다리세요. 미리 움직이면 탈납니다.")
+        st.write("------ EGD 사진은 삭제버튼 누르기 전에 업로드 해 놓는 것이 좋습니다.")
+        st.write("- 그런 다음 그 위에 있는 case instruction 파일을 upload 하세요. 각 단계마다 열일 중 스핀이 멈출 때까지 기다리세요. 미리 움직이면 탈납니다.")
         st.write("- impression을 입력하고 잠시 기다리면 정답과 비교를 해서 점수를 산출해 주고, 선생님에게 질문을 2개 정도 합니다. 그에 대해 답을 하면 권장 답안과 비교해 줍니다.")
         st.write("- 질문에 대한 대답이 정확해야 합니다. '이것이 필요한가요?' 물으면 '그것은 필요합니다.'라고 대답해야지 '그걸 하는 것이 적당하다고 판단합니다.' 이렇게 돌려 말하면 잘 못알아 먹습니다.^^;")
         st.write("- 선생님의 message가 너무 짧으면 엉뚱한 대답할 수 있습니다. 맥락에 대한 정보가 충분하게 들어가도록 message를 작성하세요.")
@@ -189,7 +190,7 @@ if st.session_state.get('logged_in'):
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
     # Clear button in the sidebar
-    st.sidebar.write('증례 올리기전 먼저 누르세요.')
+    st.sidebar.write('instruction 파일 올리기전 먼저 누르세요.')
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
         # Reset the prompt, create a new thread, and clear the docx_file and messages
         prompt = []
