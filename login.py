@@ -33,15 +33,13 @@ if login_button:
         st.success("로그인에 성공하셨습니다. 이제 왼편의 각 프로그램을 사용하실 수 있습니다.")
         st.session_state['logged_in'] = True
 
-st.divider()
-
-# 로그 아웃 버튼
-if "logged_in" in st.session_state and st.session_state['logged_in']:
-    if st.button("Logout"):
-        st.session_state['logged_in'] = False
-        st.success("로그아웃 되었습니다.")
-        # 필요시 추가적인 세션 상태 초기화 코드
-        # 예: del st.session_state['logged_in']
+        # 로그 아웃 버튼
+        if "logged_in" in st.session_state and st.session_state['logged_in']:
+            if st.button("Logout"):
+                st.session_state['logged_in'] = False
+                st.success("로그아웃 되었습니다.")
+                # 필요시 추가적인 세션 상태 초기화 코드
+                # 예: del st.session_state['logged_in']
 
     else:
         st.error("로그인 정보가 정확하지 않습니다.")
