@@ -33,6 +33,8 @@ if login_button:
         st.success("로그인에 성공하셨습니다. 이제 왼편의 각 프로그램을 사용하실 수 있습니다.")
         st.session_state['logged_in'] = True
 
+st.divider()
+
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
     if st.button("Logout"):
