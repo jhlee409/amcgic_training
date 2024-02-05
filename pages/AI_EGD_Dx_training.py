@@ -76,12 +76,12 @@ if st.session_state.get('logged_in'):
         return file_names
     
     # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F1/Images/"  # Note: Removed the leading './'
+    directory = "AI_EGD_Dx_training/F1/images/"  # Note: Removed the leading './'
     file_list = png_list_files('amcgi-bulletin.appspot.com', directory)
     selected_file = st.sidebar.selectbox("F1용: EGD png 사진을 선택하세요.", file_list)
 
     # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F2/Images/"  # Note: Removed the leading './'
+    directory = "AI_EGD_Dx_training/F2/images/"  # Note: Removed the leading './'
     file_list = png_list_files('amcgi-bulletin.appspot.com', directory)
     selected_file = st.sidebar.selectbox("F2용: EGD png 사진을 선택하세요.", file_list)
     
@@ -128,12 +128,12 @@ if st.session_state.get('logged_in'):
         return '\n'.join(full_text)
     
     # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F1/Instructions/"  # Note: Removed the leading './'
+    directory = "AI_EGD_Dx_training/F1/instructions/"  # Note: Removed the leading './'
     file_list = list_files('amcgi-bulletin.appspot.com', directory)
     selected_file = st.sidebar.selectbox("F1용: case instruction 파일을 선택하세요.", file_list)
 
     # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F2/Instructions/"  # Note: Removed the leading './'
+    directory = "AI_EGD_Dx_training/F2/instructions/"  # Note: Removed the leading './'
     file_list = list_files('amcgi-bulletin.appspot.com', directory)
     selected_file = st.sidebar.selectbox("F2용: case instruction 파일을 선택하세요.", file_list)
 
