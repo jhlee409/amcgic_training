@@ -75,22 +75,25 @@ if st.session_state.get('logged_in'):
                 file_names.append(file_name)
         return file_names
     
-    # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F1/images/"  # Note: Removed the leading './'
-    file_list = png_list_files('amcgi-bulletin.appspot.com', directory)
-    selected_file = st.sidebar.selectbox("F1용: EGD png 사진을 선택하세요.", file_list)
+    # F1 or F2 selection
+    folder_selection = st.sidebar.radio("Select Folder", ["F1", "F2"])
 
-    # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F2/images/"  # Note: Removed the leading './'
-    file_list = png_list_files('amcgi-bulletin.appspot.com', directory)
-    selected_file = st.sidebar.selectbox("F2용: EGD png 사진을 선택하세요.", file_list)
-    
-    # 선택된 파일에 대한 전체 경로 생성
-    selected_file_path = directory + selected_file
-    image = download_and_open_image('amcgi-bulletin.appspot.com', selected_file_path)
+    if folder_selection == "F1":
+        directory_images = "AI_EGD_Dx_training/F1/images/"
+        directory_instructions = "AI_EGD_Dx_training/F1/instructions/"
+    else:
+        directory_images = "AI_EGD_Dx_training/F2/images/"
+        directory_instructions = "AI_EGD_Dx_training/F2/instructions/"
 
-    # 이미지 표시
-    st.image(image, width=500)
+    # List and select PNG files
+    file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
+    selected_image_file = st.sidebar.selectbox(f"{folder_selection}용: EGD png 사진을 선택하세요.", file_list_images)
+
+    # Display the selected image
+    if selected_image_file:
+        selected_image_path = directory_images + selected_image_file
+        image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
+        st.image(image, width=500)
     
     # with st.expander("Full-size Image"):
     #             st.image(image, use_column_width=True)
@@ -127,22 +130,16 @@ if st.session_state.get('logged_in'):
         # Join the text into a single string
         return '\n'.join(full_text)
     
-    # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F1/instructions/"  # Note: Removed the leading './'
-    file_list = list_files('amcgi-bulletin.appspot.com', directory)
-    selected_file = st.sidebar.selectbox("F1용: case instruction 파일을 선택하세요.", file_list)
+    # List and select DOCX files
+    file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
+    selected_instruction_file = st.sidebar.selectbox(f"{folder_selection}용: case instruction 파일을 선택하세요.", file_list_instructions)
 
-    # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_EGD_Dx_training/F2/instructions/"  # Note: Removed the leading './'
-    file_list = list_files('amcgi-bulletin.appspot.com', directory)
-    selected_file = st.sidebar.selectbox("F2용: case instruction 파일을 선택하세요.", file_list)
-
-    # Read content of the selected file and store in prompt variable
-    if selected_file:
-    # Include the directory in the path when reading the file
-        full_path = directory + selected_file
+    # Read and display the content of the selected DOCX file
+    if selected_instruction_file:
+        full_path = directory_instructions + selected_instruction_file
         prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
         st.session_state['prompt'] = prompt
+        st.text(prompt)  # Display the content of the docx file as text
         
     st.sidebar.divider()
 
