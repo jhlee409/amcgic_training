@@ -203,7 +203,7 @@ if st.session_state.get('logged_in'):
         for msg in thread_messages.data:
             msg.content[0].text.value=""
 
-    st.divider()
+    st.sidebar.divider()
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
