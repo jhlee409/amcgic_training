@@ -43,9 +43,10 @@ else:
     # 로그인 성공 시 화면
     st.success("로그인에 성공하셨습니다. 이제 왼편의 각 프로그램을 사용하실 수 있습니다.")
     st.divider()
-    st.write("마지막 수정 날짜 및 수정사항: 2024년 2월 5일; 증례 선택을 F1용과 F2용으로 분리")
     
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+
+    st.write("마지막 수정 날짜 및 수정사항: 2024년 2월 5일; 증례 선택을 F1용과 F2용으로 분리")
