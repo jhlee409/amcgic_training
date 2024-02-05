@@ -49,4 +49,4 @@ else:
         st.session_state.logged_in = False
         st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
 
-    st.write("마지막 수정 날짜 및 수정사항: 2024년 2월 5일; 증례 선택을 F1용과 F2용으로 분리")
+    st.write("마지막 수정 날짜 및 수정사항: 2024년 2월 5일; EGD 사진 진단 훈련 프로그램의 증례 선택을 F1용과 F2용으로 분리")
