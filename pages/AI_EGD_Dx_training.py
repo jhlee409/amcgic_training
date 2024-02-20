@@ -208,8 +208,11 @@ if st.session_state.get('logged_in'):
         st.session_state.thread_id = thread.id
         docx_file = None
         st.session_state['messages'] = []
+        # Instead of directly modifying msg.content[0].text.value, which can cause an IndexError,
+        # You should check if 'content' and 'text' exist before trying to modify them.
         for msg in thread_messages.data:
-            msg.content[0].text.value=""
+            if msg.content and len(msg.content) > 0 and 'text' in msg.content[0]:
+                msg.content[0].text.value = ""
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
