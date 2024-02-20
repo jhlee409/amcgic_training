@@ -33,13 +33,7 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-        # Initialize OpenAI client
-        st.session_state.client = OpenAI()
-
-        # Mark initialization as done
-        st.session_state.init_done = True
-
-    client = st.session_state.client
+    client = OpenAI()
 
     # Display Form Title
     st.subheader("AI_EGD_Dx_training")
@@ -205,23 +199,23 @@ if st.session_state.get('logged_in'):
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    # Function to effectively reset the conversation
-    def reset_conversation():
-        # Create a new thread for a fresh conversation
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-
     # Clear button in the sidebar
     st.sidebar.write('instruction 파일 올리기전 먼저 누르세요.')
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
-        reset_conversation()  # Reset the conversation
+        # Reset the prompt, create a new thread, and clear the docx_file and messages
+        prompt = []
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        docx_file = None
+        st.session_state['messages'] = []
+        for msg in thread_messages.data:
+            msg.content[0].text.value=""
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
-        st.session_state.clear()  # Clear the session state on logout
-        st.experimental_rerun()  # Refresh the page to show the login screen
+        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
 
     for msg in thread_messages.data:
         # 메시지 내용 확인 및 필터링 조건 추가
