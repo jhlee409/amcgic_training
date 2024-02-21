@@ -199,23 +199,23 @@ if st.session_state.get('logged_in'):
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-# Clear button in the sidebar
-st.sidebar.write('instruction 파일 올리기전 먼저 누르세요.')
-if st.sidebar.button('이전 대화기록 삭제 버튼'):
-    # Reset the prompt, create a new thread, and clear the messages
-    st.session_state.prompt = ""
-    # 기존 스레드 ID를 사용하여 메시지를 삭제하는 로직 추가 (옵션)
-    # 예: client.beta.threads.delete(thread_id=st.session_state.thread_id)
-    # 새로운 스레드 생성 로직을 여기로 이동
-    thread = client.beta.threads.create()
-    st.session_state.thread_id = thread.id
-    # 메시지 목록을 초기화
-    st.session_state['messages'] = []
-    # 스트림릿 UI를 즉시 업데이트하여 변경 사항을 반영
-    st.experimental_rerun()
-    for msg in thread_messages.data:
-        if msg.content and len(msg.content) > 0 and 'text' in msg.content[0]:
-            msg.content[0].text.value = ""
+    # Clear button in the sidebar
+    st.sidebar.write('instruction 파일 올리기전 먼저 누르세요.')
+    if st.sidebar.button('이전 대화기록 삭제 버튼'):
+        # Reset the prompt, create a new thread, and clear the messages
+        st.session_state.prompt = ""
+        # 기존 스레드 ID를 사용하여 메시지를 삭제하는 로직 추가 (옵션)
+        # 예: client.beta.threads.delete(thread_id=st.session_state.thread_id)
+        # 새로운 스레드 생성 로직을 여기로 이동
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        # 메시지 목록을 초기화
+        st.session_state['messages'] = []
+        # 스트림릿 UI를 즉시 업데이트하여 변경 사항을 반영
+        st.experimental_rerun()
+        for msg in thread_messages.data:
+            if msg.content and len(msg.content) > 0 and 'text' in msg.content[0]:
+                msg.content[0].text.value = ""
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
