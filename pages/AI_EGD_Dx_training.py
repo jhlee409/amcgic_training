@@ -213,9 +213,6 @@ if st.session_state.get('logged_in'):
         st.session_state['messages'] = []
         # 스트림릿 UI를 즉시 업데이트하여 변경 사항을 반영
         st.experimental_rerun()
-        for msg in thread_messages.data:
-            if msg.content and len(msg.content) > 0 and 'text' in msg.content[0]:
-                msg.content[0].text.value = ""
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
