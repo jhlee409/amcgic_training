@@ -94,7 +94,7 @@ if st.session_state.get('logged_in'):
     if selected_image_file:
         selected_image_path = directory_images + selected_image_file
         image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
-        st.image(image, width=500)
+        st.image(image, width=600)
     
     # with st.expander("Full-size Image"):
     #             st.image(image, use_column_width=True)
