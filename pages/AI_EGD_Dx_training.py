@@ -90,19 +90,19 @@ if st.session_state.get('logged_in'):
     file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
     selected_image_file = st.sidebar.selectbox(f"{folder_selection}용: EGD png 사진을 선택하세요.", file_list_images)
 
-    # Display the selected image
     if selected_image_file:
         selected_image_path = directory_images + selected_image_file
         image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
-    
-    # Open the image to check its dimensions
-    with Image.open(selected_image_path) as img:
-        width, height = img.size
-    
-    # Determine the display width based on the width-height ratio
-    display_width = 1200 if width >= 1.6 * height else 600
-    
-    st.image(image, width=display_width)
+        
+        # Open the image to check its dimensions
+        # The 'image' variable already contains a PIL Image object, so you don't need to open it again
+        width, height = image.size
+        
+        # Determine the display width based on the width-height ratio
+        display_width = 1200 if width >= 1.6 * height else 600
+        
+        st.image(image, width=display_width)
+        
     st.sidebar.divider()
 
     # Function to list files in a specific directory in Firebase Storage
