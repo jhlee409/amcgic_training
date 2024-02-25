@@ -94,11 +94,15 @@ if st.session_state.get('logged_in'):
     if selected_image_file:
         selected_image_path = directory_images + selected_image_file
         image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
-        st.image(image, width=1200)
     
-    # with st.expander("Full-size Image"):
-    #             st.image(image, use_column_width=True)
-            
+    # Open the image to check its dimensions
+    with Image.open(selected_image_path) as img:
+        width, height = img.size
+    
+    # Determine the display width based on the width-height ratio
+    display_width = 1200 if width >= 1.6 * height else 600
+    
+    st.image(image, width=display_width)
     st.sidebar.divider()
 
     # Function to list files in a specific directory in Firebase Storage
