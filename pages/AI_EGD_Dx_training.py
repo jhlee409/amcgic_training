@@ -77,9 +77,9 @@ if st.session_state.get('logged_in'):
         return file_names
     
     # F1 or F2 selection
-    folder_selection = st.sidebar.radio("Select Folder", ["Default", "F1", "F2"])
+    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2"])
 
-    if folder_selection == "Default":
+    if folder_selection == "초기화":
         directory_images = "AI_EGD_Dx_training/Default/image/"
         directory_instructions = "AI_EGD_Dx_training/Default/instruction/"
         st.session_state.prompt = ""
@@ -99,7 +99,7 @@ if st.session_state.get('logged_in'):
 
     # List and select PNG files
     file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
-    selected_image_file = st.sidebar.selectbox(f"{folder_selection}용: EGD png 사진을 선택하세요.", file_list_images)
+    selected_image_file = st.sidebar.selectbox(f"{folder_selection}용: EGD 사진을 선택하세요.", file_list_images)
 
     if selected_image_file:
         selected_image_path = directory_images + selected_image_file
