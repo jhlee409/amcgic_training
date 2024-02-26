@@ -84,7 +84,7 @@ if st.session_state.get('logged_in'):
         directory_instructions = "AI_EGD_Dx_training/Default/instruction/"
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
-        #st.session_state.thread_id = thread.id
+        st.session_state.thread_id = thread.id
         st.session_state['messages'] = []
         #st.experimental_rerun()
     
