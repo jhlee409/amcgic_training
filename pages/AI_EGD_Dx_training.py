@@ -95,6 +95,8 @@ if st.session_state.get('logged_in'):
         directory_images = "AI_EGD_Dx_training/F2/images/"
         directory_instructions = "AI_EGD_Dx_training/F2/instructions/"
 
+    st.sidebar.divider()
+
     # List and select PNG files
     file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
     selected_image_file = st.sidebar.selectbox(f"{folder_selection}용: EGD png 사진을 선택하세요.", file_list_images)
