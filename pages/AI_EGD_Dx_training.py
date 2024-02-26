@@ -130,10 +130,12 @@ if st.session_state.get('logged_in'):
         # Join the text into a single string
         return '\n'.join(full_text)
     
-    # List and select DOCX files
-    file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
-    selected_instruction_file = st.sidebar.selectbox(f"{folder_selection}용: case instruction 파일을 선택하세요.", file_list_instructions)
-
+    # Initialize docx file list in session state
+    if 'file_list_instructions' not in st.session_state:
+        st.session_state.file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
+    
+    selected_instruction_file = st.sidebar.selectbox(f"{folder_selection}용: case instruction 파일을 선택하세요.", st.session_state.file_list_instructions)
+    
     # Read and display the content of the selected DOCX file
     if selected_instruction_file:
         full_path = directory_instructions + selected_instruction_file
