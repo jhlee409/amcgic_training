@@ -214,6 +214,7 @@ if st.session_state.get('logged_in'):
         st.session_state['messages'] = []
         # Reset docx file list to only include '000.docx'
         st.session_state.file_list_instructions = ['000.docx']
+        list_files('amcgi-bulletin.appspot.com', directory_instructions)
         # 스트림릿 UI를 즉시 업데이트하여 변경 사항을 반영
         st.experimental_rerun()
 
