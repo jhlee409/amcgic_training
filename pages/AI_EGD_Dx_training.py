@@ -99,7 +99,7 @@ if st.session_state.get('logged_in'):
 
     # List and select PNG files
     file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
-    selected_image_file = st.sidebar.selectbox(f"{folder_selection}용: EGD 사진을 선택하세요.", file_list_images)
+    selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
 
     if selected_image_file:
         selected_image_path = directory_images + selected_image_file
@@ -146,7 +146,7 @@ if st.session_state.get('logged_in'):
     
     # List and select DOCX files
     file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
-    selected_instruction_file = st.sidebar.selectbox(f"{folder_selection}용: case instruction 파일을 선택하세요.", file_list_instructions)
+    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions)
 
     # Read and display the content of the selected DOCX file
     if selected_instruction_file:
