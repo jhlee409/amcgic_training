@@ -113,8 +113,6 @@ if st.session_state.get('logged_in'):
         display_width = 1100 if width >= 1.6 * height else 550
         
         st.image(image, width=display_width)
-        
-    st.sidebar.divider()
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
