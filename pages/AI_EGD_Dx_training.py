@@ -77,9 +77,18 @@ if st.session_state.get('logged_in'):
         return file_names
     
     # F1 or F2 selection
-    folder_selection = st.sidebar.radio("Select Folder", ["F1", "F2"])
+    folder_selection = st.sidebar.radio("Select Folder", ["Default", "F1", "F2"])
 
-    if folder_selection == "F1":
+    if folder_selection == "Default":
+        directory_images = "AI_EGD_Dx_training/Default/image/"
+        directory_instructions = "AI_EGD_Dx_training/Default/instruction/"
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        #st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        st.experimental_rerun()
+    
+    elif folder_selection == "F1":
         directory_images = "AI_EGD_Dx_training/F1/images/"
         directory_instructions = "AI_EGD_Dx_training/F1/instructions/"
     else:
