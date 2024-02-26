@@ -86,7 +86,7 @@ if st.session_state.get('logged_in'):
         thread = client.beta.threads.create()
         #st.session_state.thread_id = thread.id
         st.session_state['messages'] = []
-        st.experimental_rerun()
+        #st.experimental_rerun()
     
     elif folder_selection == "F1":
         directory_images = "AI_EGD_Dx_training/F1/images/"
