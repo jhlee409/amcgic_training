@@ -58,11 +58,6 @@ if st.session_state.get('logged_in'):
         blob.download_to_file(image_stream)
         image_stream.seek(0)
         return Image.open(image_stream)
-
-    # # Function to display image in sidebar or main page
-    # def display_large_image(image):
-    #     with st.expander("Full-size Image"):
-    #         st.image(image, use_column_width=True)
         
         # Function to list files in a specific directory in Firebase Storage
     def png_list_files(bucket_name, directory):
@@ -215,7 +210,8 @@ if st.session_state.get('logged_in'):
         st.session_state.thread_id = thread.id
         # 메시지 목록을 초기화
         st.session_state['messages'] = []
-        file_names = []
+        # Reset docx file list to only include '000.docx'
+        st.session_state.file_list_instructions = ['000.docx']
         # 스트림릿 UI를 즉시 업데이트하여 변경 사항을 반영
         st.experimental_rerun()
 
