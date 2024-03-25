@@ -74,7 +74,7 @@ if st.session_state.get('logged_in'):
         return file_names
     
     # F1 or F2 selection
-    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2", "etc"])
+    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2"])
 
     if folder_selection == "초기화":
         directory_images = "AI_EGD_Dx_training/Default/image/"
@@ -88,12 +88,9 @@ if st.session_state.get('logged_in'):
     elif folder_selection == "F1":
         directory_images = "AI_EGD_Dx_training/F1/images/"
         directory_instructions = "AI_EGD_Dx_training/F1/instructions/"
-    elif folder_selection == "F2":
+    else:
         directory_images = "AI_EGD_Dx_training/F2/images/"
         directory_instructions = "AI_EGD_Dx_training/F2/instructions/"
-    else:
-        directory_images = "etc/"
-        directory_instructions = "etc/"
 
     st.sidebar.divider()
 
