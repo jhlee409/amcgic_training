@@ -8,7 +8,7 @@ import firebase_admin
 from firebase_admin import credentials, storage
 
 # Set page to wide mode
-st.set_page_config(page_title="AI_EGD_Dx", layout="wide")
+st.set_page_config(page_title="EGD_Dx", layout="wide")
 
 if st.session_state.get('logged_in'):
 
@@ -36,7 +36,7 @@ if st.session_state.get('logged_in'):
     client = OpenAI()
 
     # Display Form Title
-    st.subheader("AI_EGD_Dx_training")
+    st.subheader("EGD_Dx_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 왼쪽 sidebar에서 F1용인지 F2용인지를 선택합니다.")
         st.write("- 그 아래에서 EGD 사진과 case instruction 파일을 차례로 선택해서 업로드 하세요.")
