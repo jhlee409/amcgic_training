@@ -4,8 +4,6 @@ from PIL import Image
 import docx
 import io
 from openai import OpenAI
-import firebase_admin
-from firebase_admin import credentials, storage
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Variation", layout="wide")
@@ -14,27 +12,6 @@ if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
     prompt = ""      
-
-    # Check if Firebase app has already been initialized
-    if not firebase_admin._apps:
-        # Streamlit Secrets에서 Firebase 설정 정보 로드
-        cred = credentials.Certificate({
-            "type": "service_account",
-            "project_id": st.secrets["project_id"],
-            "private_key_id": st.secrets["private_key_id"],
-            "private_key": st.secrets["private_key"].replace('\\n', '\n'),
-            "client_email": st.secrets["client_email"],
-            "client_id": st.secrets["client_id"],
-            "auth_uri": st.secrets["auth_uri"],
-            "token_uri": st.secrets["token_uri"],
-            "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
-            "client_x509_cert_url": st.secrets["client_x509_cert_url"],
-            "universe_domain": st.secrets["universe_domain"]
-        })
-        firebase_admin.initialize_app(cred, {
-        'storageBucket': 'amcgi-bulletin.appspot.com'  # 스토리지 버킷 이름 지정
-    })
-
 
     client = OpenAI()
 
@@ -72,6 +49,14 @@ if st.session_state.get('logged_in'):
         '- 환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다'
     ]
 
+    # 각 항목에 해당하는 유튜브 링크 리스트
+    video_urls = [
+        'https://youtu.be/Rzbshcwe3ZE',
+        'https://www.youtube.com/watch?v=VIDEO_ID_2',
+        'https://www.youtube.com/watch?v=VIDEO_ID_3',
+        # ... 나머지 항목에 해당하는 유튜브 링크 추가
+    ]
+
     # Add custom CSS styles
     st.markdown("""
     <style>
@@ -86,20 +71,13 @@ if st.session_state.get('logged_in'):
     </style>
     """, unsafe_allow_html=True)
 
-    # Firebase Storage에서 '맨_처음_보세요.mp4' 파일 가져오기
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    blob = bucket.blob('EGD_variation/맨_처음_보세요.mp4')
-
-    # 파일 URL 생성
-    video_url = blob.generate_signed_url(expiration=86400)  # URL 만료 시간 설정 (초 단위)
-
     # 제목과 23개 항목 출력
     st.header('제목')
     for idx, item in enumerate(data):
         cols = st.columns([1, 2])  # 2개의 컬럼을 1:1 비율로 생성
         cols[0].write(item)
-        if idx == 0:
-            cols[1].markdown(f'<a href="{video_url}" target="_blank">Link 1</a>', unsafe_allow_html=True)
+        if idx < len(video_urls):
+            cols[1].markdown(f'<a href="{video_urls[idx]}" target="_blank">Link 1</a>', unsafe_allow_html=True)
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
