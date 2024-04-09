@@ -91,7 +91,7 @@ if st.session_state.get('logged_in'):
     blob = bucket.blob('EGD_variation/맨_처음_보세요.mp4')
 
     # 파일 URL 생성
-    video_url = blob.generate_signed_url(expiration=36000)  # URL 만료 시간 설정 (초 단위)
+    video_url = blob.generate_signed_url(expiration=86400)  # URL 만료 시간 설정 (초 단위)
 
     # 제목과 23개 항목 출력
     st.header('제목')
