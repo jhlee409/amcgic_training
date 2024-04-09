@@ -1,9 +1,4 @@
 import streamlit as st
-import time
-from PIL import Image
-import docx
-import io
-from openai import OpenAI
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Variation", layout="wide")
@@ -12,8 +7,6 @@ if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
     prompt = ""      
-
-    client = OpenAI()
 
     # Display Form Title
     st.subheader("EGD_Variation")
