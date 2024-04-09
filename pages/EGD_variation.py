@@ -57,9 +57,10 @@ if st.session_state.get('logged_in'):
         '-',
         '-',
         '-',
-        '<a href="https://youtu.be/ZG9QKEaaW64" target="_blank">Link 1</a>, <a href="https://youtu.be/lQyuE4bQA2M" target="_blank">Link 2</a>',
-        '<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>',
-        '<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>, <a href="https://www.youtube.com/watch?v=VIDEO_ID_3" target="_blank">Link 3</a>',
+        '<a href="https://youtu.be/ZG9QKEaaW64" target="_blank">Link 1</a>, <a href="https://youtu.be/lQyuE4bQA2M" target="_blank">Link 2</a>', #B
+        '<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>', #C
+        '<a href="https://youtu.be/SrETsnKCVfA" target="_blank">Link 1</a>, <a href="https://youtu.be/PGHM47c3EW4" target="_blank">Link 2</a>', #D
+        '<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 3</a>', #E
         # ... 나머지 항목에 해당하는 markdown 텍스트 추가
     ]
 
