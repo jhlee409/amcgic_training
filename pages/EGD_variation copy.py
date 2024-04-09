@@ -9,6 +9,7 @@ from firebase_admin import credentials, storage
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Variation")
+#, layout="wide"
 if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
@@ -89,15 +90,16 @@ if st.session_state.get('logged_in'):
         cols = st.columns([8, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
         cols[0].write(item)
         for i in range(1, 6):
-            link_key = f"{item}_link_{i}"
-            if link_key not in st.session_state:
-                st.session_state[link_key] = ""
-            link = cols[i].text_input(f"Link {i}", value=st.session_state[link_key], key=link_key)
-            st.session_state[link_key] = link
-            if link:
-                cols[i].markdown(f"[Link {i}]({link})", unsafe_allow_html=True)
+            if i == 1:
+                cols[i].markdown("[Link 1](https://example.com)", unsafe_allow_html=True)
+            elif i == 2:
+                cols[i].markdown("[Link 2](https://example.com)", unsafe_allow_html=True)
+            elif i == 3:
+                cols[i].markdown("[Link 3](https://example.com)", unsafe_allow_html=True)
+            elif i == 4:
+                cols[i].markdown("[Link 4](https://example.com)", unsafe_allow_html=True)
             else:
-                cols[i].write("")
+                cols[i].markdown("[Link 5](https://example.com)", unsafe_allow_html=True)
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
