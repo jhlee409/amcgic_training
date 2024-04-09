@@ -8,8 +8,8 @@ import firebase_admin
 from firebase_admin import credentials, storage
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD_Variation", layout="wide")
-
+st.set_page_config(page_title="EGD_Variation")
+#, layout="wide"
 if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
