@@ -60,12 +60,12 @@ if st.session_state.get('logged_in'):
         '<a href="https://youtu.be/ZG9QKEaaW64" target="_blank">Link 1</a>, <a href="https://youtu.be/lQyuE4bQA2M" target="_blank">Link 2</a>', #B
         '<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>', #C
         '<a href="https://youtu.be/SrETsnKCVfA" target="_blank">Link 1</a>, <a href="https://youtu.be/PGHM47c3EW4" target="_blank">Link 2</a>', #D
-        '<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 3</a>', #E
-        '<a href="https://youtu.be/Bra3SsDhA00" target="_blank">Link 1</a>, <a href="https://youtu.be/g0WppC-LnXM" target="_blank">Link 2</a>, <a href="https://youtu.be/U_PvOSuRWIw" target="_blank">Link 2</a>', #F
+        '<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 4</a>', #E
+        '<a href="https://youtu.be/Bra3SsDhA00" target="_blank">Link 1</a>, <a href="https://youtu.be/g0WppC-LnXM" target="_blank">Link 2</a>, <a href="https://youtu.be/U_PvOSuRWIw" target="_blank">Link 3</a>', #F
         '<a href="https://youtu.be/Rgqj5d1HCXs" target="_blank">Link 1</a>', #G
         '<a href="https://youtu.be/iHUXGo1lEcw" target="_blank">Link 1</a>, <a href="https://youtu.be/o9XbvVpv4I4" target="_blank">Link 2</a>', #H
         '<a href="https://youtu.be/3I0zq0FEKLU" target="_blank">Link 1</a>, <a href="https://youtu.be/KFRYOBTgHOE" target="_blank">Link 2</a>', #I
-        '<a href="https://youtu.be/5Hxo44wUQkQ" target="_blank">Link 1</a>, <a href="https://youtu.be/iUAbnLxuZcQ" target="_blank">Link 2</a>, <a href="https://youtu.be/YXOoFj5CFjs" target="_blank">Link 2</a>, <a href="https://youtu.be/GGtzY-5vBFM" target="_blank">Link 2</a>, <a href="https://youtu.be/J1jKzg3keHQ" target="_blank">Link 2</a>', #J
+        '<a href="https://youtu.be/5Hxo44wUQkQ" target="_blank">Link 1</a>, <a href="https://youtu.be/iUAbnLxuZcQ" target="_blank">Link 2</a>, <a href="https://youtu.be/YXOoFj5CFjs" target="_blank">Link 3</a>, <a href="https://youtu.be/GGtzY-5vBFM" target="_blank">Link 4</a>, <a href="https://youtu.be/J1jKzg3keHQ" target="_blank">Link 5</a>', #J
         '<a href="https://youtu.be/3I0zq0FEKLU" target="_blank">Link 1</a>, <a href="https://youtu.be/KFRYOBTgHOE" target="_blank">Link 2</a>', #I
         
         # ... 나머지 항목에 해당하는 markdown 텍스트 추가
