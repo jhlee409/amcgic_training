@@ -87,7 +87,7 @@ if st.session_state.get('logged_in'):
     # 제목과 23개 항목 출력
     st.header('제목')
     for item in data:
-        cols = st.columns([9, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
+        cols = st.columns([8, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
         cols[0].write(item)
         for i in range(1, 6):
             if i == 1:
