@@ -42,15 +42,103 @@ if st.session_state.get('logged_in'):
 
     blob_b1 = bucket.blob("EGD_variation/B1.mp4")
     video_url_b1 = blob_b1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
     blob_b2 = bucket.blob("EGD_variation/B2.mp4")
     video_url_b2 = blob_b2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
     blob_c1 = bucket.blob("EGD_variation/C1.mp4")
     video_url_c1 = blob_c1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
     blob_c2 = bucket.blob("EGD_variation/C2.mp4")
     video_url_c2 = blob_c2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_d1 = bucket.blob("EGD_variation/D1.mp4")
+    video_url_d1 = blob_d1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_d2 = bucket.blob("EGD_variation/D2.mp4")
+    video_url_d2 = blob_d2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_e1 = bucket.blob("EGD_variation/E1.mp4")
+    video_url_e1 = blob_e1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_e2 = bucket.blob("EGD_variation/E2.mp4")
+    video_url_e2 = blob_e2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_e3 = bucket.blob("EGD_variation/E3.mp4")
+    video_url_e3 = blob_e3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_e4 = bucket.blob("EGD_variation/E4.mp4")
+    video_url_e4 = blob_e4.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_f1 = bucket.blob("EGD_variation/F1.mp4")
+    video_url_f1 = blob_f1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_f2 = bucket.blob("EGD_variation/F2.mp4")
+    video_url_f2 = blob_f2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_f3 = bucket.blob("EGD_variation/F3.mp4")
+    video_url_f3 = blob_f3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_g1 = bucket.blob("EGD_variation/G1.mp4")
+    video_url_g1 = blob_g1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_h1 = bucket.blob("EGD_variation/H1.mp4")
+    video_url_h1 = blob_h1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_h2 = bucket.blob("EGD_variation/H2.mp4")
+    video_url_h2 = blob_h2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_i1 = bucket.blob("EGD_variation/I1.mp4")
+    video_url_i1 = blob_i1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_i2 = bucket.blob("EGD_variation/I2.mp4")
+    video_url_i2 = blob_i2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_j1 = bucket.blob("EGD_variation/J1.mp4")
+    video_url_j1 = blob_j1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_j2 = bucket.blob("EGD_variation/J2.mp4")
+    video_url_j2 = blob_j2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_j3 = bucket.blob("EGD_variation/J3.mp4")
+    video_url_j3 = blob_j3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_j4 = bucket.blob("EGD_variation/J4.mp4")
+    video_url_j4 = blob_j4.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_j5 = bucket.blob("EGD_variation/J5.mp4")
+    video_url_j5 = blob_j5.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_k1 = bucket.blob("EGD_variation/K1.mp4")
+    video_url_k1 = blob_k1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_l1 = bucket.blob("EGD_variation/L1.mp4")
+    video_url_l1 = blob_l1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_m1 = bucket.blob("EGD_variation/M1.mp4")
+    video_url_m1 = blob_m1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_n1 = bucket.blob("EGD_variation/N1.mp4")
+    video_url_n1 = blob_n1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_n2 = bucket.blob("EGD_variation/N2.mp4")
+    video_url_n2 = blob_n2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_n3 = bucket.blob("EGD_variation/N3.mp4")
+    video_url_n3 = blob_n3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_o1 = bucket.blob("EGD_variation/O1.mp4")
+    video_url_o1 = blob_o1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_o2 = bucket.blob("EGD_variation/O2.mp4")
+    video_url_o2 = blob_o2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_o3 = bucket.blob("EGD_variation/O3.mp4")
+    video_url_o3 = blob_o3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_p1 = bucket.blob("EGD_variation/P1.mp4")
+    video_url_p1 = blob_p1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_p2 = bucket.blob("EGD_variation/P2.mp4")
+    video_url_p2 = blob_p2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_q1 = bucket.blob("EGD_variation/Q1.mp4")
+    video_url_q1 = blob_q1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_q2 = bucket.blob("EGD_variation/Q2.mp4")
+    video_url_q2 = blob_q2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_q3 = bucket.blob("EGD_variation/Q3.mp4")
+    video_url_q3 = blob_q3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_r1 = bucket.blob("EGD_variation/R1.mp4")
+    video_url_r1 = blob_r1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_r2 = bucket.blob("EGD_variation/R2.mp4")
+    video_url_r2 = blob_r2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    blob_r3 = bucket.blob("EGD_variation/R3.mp4")
+    video_url_r3 = blob_r3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+
+
 
 
     # 23개 항목의 데이터
@@ -90,21 +178,21 @@ if st.session_state.get('logged_in'):
         '-',
         f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 1</a>', #B
         f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 1</a>', #C
-        f'<a href="https://youtu.be/SrETsnKCVfA" target="_blank">Link 1</a>, <a href="https://youtu.be/PGHM47c3EW4" target="_blank">Link 2</a>', #D
-        f'<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 4</a>', #E
-        f'<a href="https://youtu.be/Bra3SsDhA00" target="_blank">Link 1</a>, <a href="https://youtu.be/g0WppC-LnXM" target="_blank">Link 2</a>, <a href="https://youtu.be/U_PvOSuRWIw" target="_blank">Link 3</a>', #F
-        f'<a href="https://youtu.be/Rgqj5d1HCXs" target="_blank">Link 1</a>', #G
-        f'<a href="https://youtu.be/iHUXGo1lEcw" target="_blank">Link 1</a>, <a href="https://youtu.be/o9XbvVpv4I4" target="_blank">Link 2</a>', #H
-        f'<a href="https://youtu.be/3I0zq0FEKLU" target="_blank">Link 1</a>, <a href="https://youtu.be/KFRYOBTgHOE" target="_blank">Link 2</a>', #I
-        f'<a href="https://youtu.be/5Hxo44wUQkQ" target="_blank">Link 1</a>, <a href="https://youtu.be/iUAbnLxuZcQ" target="_blank">Link 2</a>, <a href="https://youtu.be/YXOoFj5CFjs" target="_blank">Link 3</a>, <a href="https://youtu.be/GGtzY-5vBFM" target="_blank">Link 4</a>, <a href="https://youtu.be/J1jKzg3keHQ" target="_blank">Link 5</a>', #J
-        f'<a href="https://youtu.be/-q9-hOskzmI" target="_blank">Link 1</a>', #K
-        f'<a href="https://youtu.be/0-SSID0IpbE" target="_blank">Link 1</a>', #L
-        f'<a href="https://youtu.be/ObS_-X4k_sg" target="_blank">Link 1</a>', #M
-        f'<a href="https://youtu.be/UDCvHPHOwvI" target="_blank">Link 1</a>, <a href="https://youtu.be/AQC18nM8A-0" target="_blank">Link 2</a>, <a href="https://youtu.be/gji_qCaA0cU" target="_blank">Link 3</a>', #N
-        f'<a href="https://youtu.be/Xe5J-YygMNo" target="_blank">Link 1</a>, <a href="https://youtu.be/gOMYH1e0sZc" target="_blank">Link 2</a>, <a href="https://youtu.be/ogkpilkuFjs" target="_blank">Link 3</a>', #O
-        f'<a href="https://youtu.be/DObihllXWVs" target="_blank">Link 1</a>, <a href="https://youtu.be/5v8zYWOG764" target="_blank">Link 2</a>', #P
-        f'<a href="https://youtu.be/RtHnrNNkFlE" target="_blank">Link 1</a>, <a href="https://youtu.be/57-LppXcyKU" target="_blank">Link 2</a>, <a href="https://youtu.be/0UuR4NK_f9Y" target="_blank">Link 3</a>', #Q
-        f'<a href="https://youtu.be/PKBsWQdVydg" target="_blank">Link 1</a>, <a href="https://youtu.be/MeFMTwUceWI" target="_blank">Link 2</a>, <a href="https://youtu.be/hDVBCz6hiaY" target="_blank">Link 3</a>', #R
+        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
+        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 1</a>, <a href="{video_url_e3}" target="_blank">Link 1</a>, <a href="{video_url_e4}" target="_blank">Link 1</a>', #E
+        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 1</a>, <a href="{video_url_f3}" target="_blank">Link 1</a>', #F
+        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
+        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 1</a>', #H
+        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 1</a>', #I
+        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 1</a>, <a href="{video_url_j3}" target="_blank">Link 1</a>, <a href="{video_url_j4}" target="_blank">Link 1</a>, <a href="{video_url_j5}" target="_blank">Link 1</a>', #J
+        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
+        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
+        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
+        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 1</a>, <a href="{video_url_n3}" target="_blank">Link 1</a>', #N
+        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 1</a>, <a href="{video_url_o3}" target="_blank">Link 1</a>', #O
+        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 1</a>', #P
+        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 1</a>, <a href="{video_url_q3}" target="_blank">Link 1</a>', #Q
+        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 1</a>, <a href="{video_url_r3}" target="_blank">Link 1</a>', #R
     ]
 
     # Add custom CSS styles
