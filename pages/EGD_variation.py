@@ -32,6 +32,10 @@ if st.session_state.get('logged_in'):
             "universe_domain": st.secrets["universe_domain"]
         })
         firebase_admin.initialize_app(cred)
+        firebase_admin.initialize_app(cred, {
+        'storageBucket': 'amcgi-bulletin.appspot.com'  # 스토리지 버킷 이름 지정
+    })
+
 
     client = OpenAI()
 
