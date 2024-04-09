@@ -46,6 +46,12 @@ if st.session_state.get('logged_in'):
     blob_b2 = bucket.blob("EGD_variation/B2.mp4")
     video_url_b2 = blob_b2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
+    blob_c1 = bucket.blob("EGD_variation/C1.mp4")
+    video_url_c1 = blob_c1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_c2 = bucket.blob("EGD_variation/C2.mp4")
+    video_url_c2 = blob_c2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
 
     # 23개 항목의 데이터
     data = [
@@ -83,7 +89,7 @@ if st.session_state.get('logged_in'):
         '-',
         '-',
         f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 1</a>', #B
-        f'<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>', #C
+        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 1</a>', #C
         f'<a href="https://youtu.be/SrETsnKCVfA" target="_blank">Link 1</a>, <a href="https://youtu.be/PGHM47c3EW4" target="_blank">Link 2</a>', #D
         f'<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 4</a>', #E
         f'<a href="https://youtu.be/Bra3SsDhA00" target="_blank">Link 1</a>, <a href="https://youtu.be/g0WppC-LnXM" target="_blank">Link 2</a>, <a href="https://youtu.be/U_PvOSuRWIw" target="_blank">Link 3</a>', #F
