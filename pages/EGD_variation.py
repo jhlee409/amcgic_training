@@ -41,33 +41,41 @@ if st.session_state.get('logged_in'):
         st.write("- 먼저 컬럼에서 '가장 먼저 보세요' 링크를 통해 동영상을 시청합니다..")
         st.write("- 다음 보고 싶은 특정 상황에서의 대처법에 해당하는 동영상 링크를 통해 동영상을 시청합니다.")
 
-
     # 23개 항목의 데이터
     data = [
         '가장 먼저 보세요', 
-        '내시경에서 대장암 진단: 용종의 색상이 붉은 색일때',
-        '분화형 선종: 선구조(pit pattern) 관찰이 명확하지 않을때',
-        '평탄 융기형 병변(flat elevated lesion)이 관찰될 때',
-        '용종 표면에 백태(whitish patch) 관찰될때',
-        '직장에서 병변이 관찰될때: 직장암과 선종의 감별',
-        '대장암으로 진단되는 소견',
-        '대장암 치료 후 추적 관찰시 문합부(anastomosis site)관찰',
-        '대장 게실 관찰시',
-        '육안 소견상 정상 점막(normal mucosa)처럼 보일때',
-        '흑색종(melanosis) 관찰될 때',
-        '방사선 직장염(radiation proctitis) 관찰될 때',
-        '대장 점막 투명캡(transparent cap)으로 관찰시',
-        '장정결제 잔여물 확인시',
-        '대장 점막하 종양(submucosal tumor) 관찰될 때',
-        '대장 용종 snare polypectomy중 시술시',
-        '대장 용종에서 출혈(bleeding) 관찰시',
-        '내시경적 점막 절제술(Endoscopic Mucosal Resection) 후 절제면 관찰시',
-        '대장 용종 snare polypectomy중 남은 용종이 있을때',
-        '대장암에서 동시성 병변 관찰시',
-        '대장의 점막하층 박리술(Endoscopic submucosal dissection) 시술 관찰시',
-        '대장 내시경 삽입시 힘들때: 내시경 삽입이 잘 안될때',
-        '내시경 세척(washing) 관찰시'
+        '이상하게 사진이 흔들려서 찍힌다',
+        '환자가 retching을 과도하게 한다',
+        '환자가 진정 내시경 도중 너무 irritable 해서 검사를 더 이상 진행할 수 없을 정도이다',
+        '좌우가 바뀌어 있다(situs inversus)',
+        '위안에 음식물이 남아있다',
+        '정상 위에서 검사 전과정',
+        'distal gastrectomy with Bilroth II reconstruction state애서 검사 전과정',
+        'distal gastrectomy with Bilroth I reconstruction state에서 검사 전과정',
+        '후두부 접근 시 구역이 심해 후두를 관찰할 수 없다',
+        'epiglotis가 닫혀 있어 후부두 전체가 보이는 사진을 찍을 수가 없다',
+        '식도가 너무 tortuous 해서 화면 중앙에 놓고 전진하기 힘든다',
+        '식도쪽에서 보면 stomach 쪽으로 들어가 있어 z line이 보이지 않는다',
+        '궁륭부와 HB 경계부위가 심하게 꺽어져 있어 scope를 밀어도 antrum 쪽으로 접근이 안된다',
+        'pyloric ring이 계속 닫혀있고 움직여서 내시경 통과가 어렵다',
+        '십이지장 벽에 막히기만 하고 SDA의 위치를 찾지 못하겠다',
+        'SDA가 사진 상 우측이 아니라 좌측에 있다.',
+        '제2부에서 scope를 당기면 전진하지 않고 그냥 빠지는 양상이다',
+        '분명 2nd portion인데 ampulla는 보이지 않는데 아무래도 prox 쪽에 있는 것 같다',
+        'minor papilla를 AOP로 착각하지 않으려면',
+        'antrum GC에 transverse fold가 있어 fold 바로 distal part 부분이 가려져 있다',
+        '노브를 up을 했을 때  내시경 선단이 angle에서 떨어지지 않고 붙어서 angle을 관찰할 수 없다',
+        '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않은 상태이다'
     ]
+
+    # CSS 스타일 적용
+    st.markdown("""
+    <style>
+    div.stButton > button:first-child {
+        width: 100%;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
     # 제목과 23개 항목 출력
     st.header('제목')
@@ -84,4 +92,4 @@ if st.session_state.get('logged_in'):
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.") 
+    st.error("로그인이 필요합니다.")
