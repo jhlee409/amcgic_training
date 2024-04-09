@@ -49,12 +49,12 @@ if st.session_state.get('logged_in'):
         '- 환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다'
     ]
 
-    # 각 항목에 해당하는 유튜브 링크 리스트
-    video_urls = [
-        'https://youtu.be/Rzbshcwe3ZE',
-        'https://www.youtube.com/watch?v=VIDEO_ID_2',
-        'https://www.youtube.com/watch?v=VIDEO_ID_3',
-        # ... 나머지 항목에 해당하는 유튜브 링크 추가
+    # 각 항목에 해당하는 markdown 텍스트 리스트
+    markdown_texts = [
+        '<a href="https://youtu.be/Rzbshcwe3ZE" target="_blank">Link 1</a>',
+        '<a href="https://www.youtube.com/watch?v=VIDEO_ID_2" target="_blank">Link 1</a>, <a href="https://www.youtube.com/watch?v=VIDEO_ID_2" target="_blank">Link 2</a>',
+        '<a href="https://www.youtube.com/watch?v=VIDEO_ID_3" target="_blank">Link 1</a>, <a href="https://www.youtube.com/watch?v=VIDEO_ID_3" target="_blank">Link 2</a>, <a href="https://www.youtube.com/watch?v=VIDEO_ID_3" target="_blank">Link 3</a>',
+        # ... 나머지 항목에 해당하는 markdown 텍스트 추가
     ]
 
     # Add custom CSS styles
@@ -76,8 +76,8 @@ if st.session_state.get('logged_in'):
     for idx, item in enumerate(data):
         cols = st.columns([1, 2])  # 2개의 컬럼을 1:1 비율로 생성
         cols[0].write(item)
-        if idx < len(video_urls):
-            cols[1].markdown(f'<a href="{video_urls[idx]}" target="_blank">Link 1</a>', unsafe_allow_html=True)
+        if idx < len(markdown_texts):
+            cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
