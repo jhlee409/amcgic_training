@@ -35,9 +35,49 @@ if st.session_state.get('logged_in'):
         firebase_admin.initialize_app(cred)
 
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
-bucket = storage.bucket('amcgi-bulletin.appspot.com')
-blob = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
-video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    bucket = storage.bucket('amcgi-bulletin.appspot.com')
+    blob = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
+    video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
-# Streamlit에서 동영상을 표시합니다.
-st.video(video_url)
+    # 23개 항목의 데이터
+    data = [
+        '가장 먼저 보세요: 전체 과정 해설', 
+    ]
+
+    # 각 항목에 해당하는 markdown 텍스트 리스트
+    markdown_texts = [
+        f'<a href="{video_url}" target="_blank">Link 1</a>',
+    ]
+
+    # Add custom CSS styles
+    st.markdown("""
+    <style>
+        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"] > div {
+            border: none;
+            padding: 5px;
+            height: 100%;
+        }
+        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"]:first-child > div {
+            height: auto;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # 제목과 23개 항목 출력
+    st.header('제목')
+    for idx, item in enumerate(data):
+        cols = st.columns([1, 2])  # 2개의 컬럼을 1:1 비율로 생성
+        cols[0].write(item)
+        if idx < len(markdown_texts):
+            cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
+        else:
+            cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
+
+    # 로그아웃 버튼 생성
+    if st.sidebar.button('로그아웃'):
+        st.session_state.logged_in = False
+        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+
+else:
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
+    st.error("로그인이 필요합니다.")
