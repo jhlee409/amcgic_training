@@ -69,16 +69,6 @@ if st.session_state.get('logged_in'):
         '- 환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다'
     ]
 
-    # Firebase Storage에서 MP4 파일 가져오기
-    bucket = storage.bucket()
-    blob = bucket.blob('https://console.firebase.google.com/project/amcgi-bulletin/storage/amcgi-bulletin.appspot.com/files/~2FEGD_variation?hl=ko')
-
-    # 파일 URL 생성
-    video_url = blob.generate_signed_url(expiration=3600)  # URL 만료 시간 설정 (초 단위)
-
-    # Streamlit에서 비디오 재생
-    st.video(video_url)
-
     # Add custom CSS styles
     st.markdown("""
     <style>
