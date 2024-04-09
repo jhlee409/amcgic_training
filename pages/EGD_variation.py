@@ -41,6 +41,7 @@ if st.session_state.get('logged_in'):
         st.write("- 먼저 컬럼에서 '가장 먼저 보세요' 링크를 통해 동영상을 시청합니다..")
         st.write("- 다음 보고 싶은 특정 상황에서의 대처법에 해당하는 동영상 링크를 통해 동영상을 시청합니다.")
 
+
     # 23개 항목의 데이터
     data = [
         '가장 먼저 보세요', 
@@ -68,19 +69,10 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않은 상태이다'
     ]
 
-    # CSS 스타일 적용
-    st.markdown("""
-    <style>
-    div.stButton > button:first-child {
-        width: 100%;
-    }
-    </style>
-    """, unsafe_allow_html=True)
-
     # 제목과 23개 항목 출력
     st.header('제목')
     for item in data:
-        cols = st.columns(6)
+        cols = st.columns([5, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
         cols[0].write(item)
         for i in range(1, 6):
             cols[i].write('')  # 빈 셀 추가
