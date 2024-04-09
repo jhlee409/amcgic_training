@@ -72,7 +72,7 @@ if st.session_state.get('logged_in'):
     # 제목과 23개 항목 출력
     st.header('제목')
     for item in data:
-        cols = st.columns([5, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
+        cols = st.columns([4, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
         cols[0].write(item)
         for i in range(1, 6):
             cols[i].write('')  # 빈 셀 추가
@@ -81,8 +81,12 @@ if st.session_state.get('logged_in'):
     st.markdown("""
     <style>
         div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"] > div {
-            border: 1px solid black;
+            border: 1px solid white;
             padding: 5px;
+            height: 100%;
+        }
+        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"]:first-child > div {
+            height: auto;
         }
     </style>
     """, unsafe_allow_html=True)
