@@ -68,7 +68,7 @@ if st.session_state.get('logged_in'):
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
+        '<a href="{video_url_a1}" target="_blank">Link 1</a>',
         '-',
         '-',
         '-',
