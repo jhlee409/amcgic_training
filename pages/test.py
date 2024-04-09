@@ -34,7 +34,7 @@ if st.session_state.get('logged_in'):
         firebase_admin.initialize_app(cred, {'storageBucket': 'amcgi-bulletin.appspot.com'})
 
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
-bucket = storage.bucket()
+bucket = storage.bucket('amcgi-bulletin.appspot.com')
 blob = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
 video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
