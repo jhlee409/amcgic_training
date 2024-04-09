@@ -83,12 +83,22 @@ if st.session_state.get('logged_in'):
     </style>
     """, unsafe_allow_html=True)
 
+    # Firebase Storage에서 '맨_처음_보세요.mp4' 파일 가져오기
+    bucket = storage.bucket()
+    blob = bucket.blob('EGD_variation/맨_처음_보세요.mp4')
+
+    # 파일 URL 생성
+    video_url = blob.generate_signed_url(expiration=3600)  # URL 만료 시간 설정 (초 단위)
+
     # 제목과 23개 항목 출력
     st.header('제목')
-    for item in data:
+    for idx, item in enumerate(data):
         cols = st.columns([1, 2])  # 2개의 컬럼을 1:1 비율로 생성
         cols[0].write(item)
-        cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
+        if idx == 0:
+            cols[1].markdown(f'<a href="{video_url}" target="_blank">Link 1</a>', unsafe_allow_html=True)
+        else:
+            cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
 
     # 로그아웃 버튼 생성
