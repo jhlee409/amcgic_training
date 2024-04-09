@@ -77,6 +77,16 @@ if st.session_state.get('logged_in'):
         for i in range(1, 6):
             cols[i].write('')  # 빈 셀 추가
         
+    # Add custom CSS styles
+    st.markdown("""
+    <style>
+        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"] > div {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
