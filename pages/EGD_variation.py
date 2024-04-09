@@ -45,28 +45,28 @@ if st.session_state.get('logged_in'):
     # 23개 항목의 데이터
     data = [
         '가장 먼저 보세요', 
-        '이상하게 사진이 흔들려서 찍힌다',
-        '환자가 retching을 과도하게 한다',
-        '환자가 진정 내시경 도중 너무 irritable 해서 검사를 더 이상 진행할 수 없을 정도이다',
+        '사진이 흔들려서 찍힘',
+        '과도한 retching',
+        '진정 시 너무 irritable하다',
         '좌우가 바뀌어 있다(situs inversus)',
         '위안에 음식물이 남아있다',
         '정상 위에서 검사 전과정',
-        'distal gastrectomy with Bilroth II reconstruction state애서 검사 전과정',
-        'distal gastrectomy with Bilroth I reconstruction state에서 검사 전과정',
+        'STG with Bilroth II reconstruction state애서 검사 전과정',
+        'STG with Bilroth I reconstruction state에서 검사 전과정',
         '후두부 접근 시 구역이 심해 후두를 관찰할 수 없다',
         'epiglotis가 닫혀 있어 후부두 전체가 보이는 사진을 찍을 수가 없다',
         '식도가 너무 tortuous 해서 화면 중앙에 놓고 전진하기 힘든다',
-        '식도쪽에서 보면 stomach 쪽으로 들어가 있어 z line이 보이지 않는다',
-        '궁륭부와 HB 경계부위가 심하게 꺽어져 있어 scope를 밀어도 antrum 쪽으로 접근이 안된다',
+        '식도쪽에서 보면 stomach 쪽으로 내려가 있어 z line이 보이지 않는다',
+        '궁륭부와 HB 경계부위가 심하게 꺽어져 있어 scope를 밀어도 antrum 쪽으로 진입이 안된다',
         'pyloric ring이 계속 닫혀있고 움직여서 내시경 통과가 어렵다',
-        '십이지장 벽에 막히기만 하고 SDA의 위치를 찾지 못하겠다',
+        '십이지장 벽에 닿기만 하고, SDA의 위치를 찾지 못하겠다',
         'SDA가 사진 상 우측이 아니라 좌측에 있다.',
         '제2부에서 scope를 당기면 전진하지 않고 그냥 빠지는 양상이다',
-        '분명 2nd portion인데 ampulla는 보이지 않는데 아무래도 prox 쪽에 있는 것 같다',
+        '십이지장 2nd portion인데, ampulla는 보이지 않는데 아무래도 prox 쪽에 있는 것 같다',
         'minor papilla를 AOP로 착각하지 않으려면',
         'antrum GC에 transverse fold가 있어 fold 바로 distal part 부분이 가려져 있다',
-        '노브를 up을 했을 때  내시경 선단이 angle에서 떨어지지 않고 붙어서 angle을 관찰할 수 없다',
-        '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않은 상태이다'
+        '전정부에서 노브를 up을 했는데도, angle을 관찰할 수 없다',
+        '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다'
     ]
 
     # 제목과 23개 항목 출력
