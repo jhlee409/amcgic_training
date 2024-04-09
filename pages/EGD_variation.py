@@ -212,7 +212,7 @@ if st.session_state.get('logged_in'):
     # 제목과 23개 항목 출력
     st.header('제목')
     for idx, item in enumerate(data):
-        cols = st.columns([3, 5])
+        cols = st.columns([2, 3])
         cols[0].write(item)
         if idx < len(markdown_texts):
             cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
