@@ -40,7 +40,7 @@ if st.session_state.get('logged_in'):
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
     video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
-    blob_b1 = bucket.blob("B1.mp4")
+    blob_b1 = bucket.blob("EGD_variation/B1.mp4")
     video_url_b1 = blob_b1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
 
