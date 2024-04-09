@@ -69,7 +69,8 @@ if st.session_state.get('logged_in'):
         '<a href="https://youtu.be/-q9-hOskzmI" target="_blank">Link 1</a>', #K
         '<a href="https://youtu.be/0-SSID0IpbE" target="_blank">Link 1</a>', #L
         '<a href="https://youtu.be/ObS_-X4k_sg" target="_blank">Link 1</a>', #M
-        '<a href="https://youtu.be/ObS_-X4k_sg" target="_blank">Link 1</a>, <a href="https://youtu.be/KFRYOBTgHOE" target="_blank">Link 2</a>', #I
+        '<a href="https://youtu.be/UDCvHPHOwvI" target="_blank">Link 1</a>, <a href="https://youtu.be/AQC18nM8A-0" target="_blank">Link 2</a>, <a href="https://youtu.be/gji_qCaA0cU" target="_blank">Link 2</a>', #N
+        '<a href="https://youtu.be/UDCvHPHOwvI" target="_blank">Link 1</a>, <a href="https://youtu.be/AQC18nM8A-0" target="_blank">Link 2</a>, <a href="https://youtu.be/gji_qCaA0cU" target="_blank">Link 2</a>', #N
         # ... 나머지 항목에 해당하는 markdown 텍스트 추가
     ]
 
