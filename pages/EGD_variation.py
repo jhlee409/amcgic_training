@@ -70,36 +70,53 @@ if st.session_state.get('logged_in'):
     ]
 
 
-    # Add custom CSS styles
+   # CSS 스타일 추가
     st.markdown("""
     <style>
-        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"] > div {
-            border: 1px solid white;
-            padding: 5px;
-            height: 100%;
+        table {
+            width: 100%;
+            border-collapse: collapse;
         }
-        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"]:first-child > div {
-            height: auto;
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd; /* 밑줄 추가 */
+        }
+        th {
+            background-color: #f0f0f0;
         }
     </style>
     """, unsafe_allow_html=True)
-
-    # 제목과 23개 항목 출력
-    st.header('제목')
+    
+    # 테이블 헤더
+    table_html = """
+    <table>
+        <tr>
+            <th>항목</th>
+            <th>Link 1</th>
+            <th>Link 2</th>
+            <th>Link 3</th>
+            <th>Link 4</th>
+            <th>Link 5</th>
+        </tr>
+    """
+    
+    # 테이블 내용 채우기
     for item in data:
-        cols = st.columns([3, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
-        cols[0].write(item)
-        for i in range(1, 6):
-            if i == 1:
-                cols[i].markdown("[Link 1](https://example.com)", unsafe_allow_html=True)
-            elif i == 2:
-                cols[i].markdown("[Link 2](https://example.com)", unsafe_allow_html=True)
-            elif i == 3:
-                cols[i].markdown("[Link 3](https://example.com)", unsafe_allow_html=True)
-            elif i == 4:
-                cols[i].markdown("[Link 4](https://example.com)", unsafe_allow_html=True)
-            else:
-                cols[i].markdown("[Link 5](https://example.com)", unsafe_allow_html=True)
+        table_html += f"""
+            <tr>
+                <td>{item}</td>
+                <td><a href="https://example.com">Link 1</a></td>
+                <td><a href="https://example.com">Link 2</a></td>
+                <td><a href="https://example.com">Link 3</a></td>
+                <td><a href="https://example.com">Link 4</a></td>
+                <td><a href="https://example.com">Link 5</a></td>
+            </tr>
+        """
+    table_html += "</table>"
+    
+    # 테이블 렌더링
+    st.markdown(table_html, unsafe_allow_html=True)
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
