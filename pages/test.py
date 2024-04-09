@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+from datetime import datetime, timedelta
 from PIL import Image
 import docx
 import io
@@ -31,7 +32,7 @@ if st.session_state.get('logged_in'):
             "client_x509_cert_url": st.secrets["client_x509_cert_url"],
             "universe_domain": st.secrets["universe_domain"]
         })
-        firebase_admin.initialize_app(cred, {'storageBucket': 'amcgi-bulletin.appspot.com'})
+        firebase_admin.initialize_app(cred)
 
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
 bucket = storage.bucket('amcgi-bulletin.appspot.com')
