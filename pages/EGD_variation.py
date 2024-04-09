@@ -70,57 +70,39 @@ if st.session_state.get('logged_in'):
     ]
 
 
-   # Add custom CSS styles
-    st.markdown("""
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid white;
-            padding: 5px;
-            text-align: left;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-    if st.session_state.get('logged_in'):
-        # (생략)
-
-        # 제목과 23개 항목 출력
-        st.header('제목')
-        table_html = """
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50%;">항목</th>
-                    <th style="width: 10%;">Link 1</th>
-                    <th style="width: 10%;">Link 2</th>
-                    <th style="width: 10%;">Link 3</th>
-                    <th style="width: 10%;">Link 4</th>
-                    <th style="width: 10%;">Link 5</th>
-                </tr>
-            </thead>
-            <tbody>
+    # 제목과 23개 항목 출력
+    st.header('제목') 
+    table_html = """
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 50%;">항목</th>
+                <th style="width: 5%;">Link 1</th>
+                <th style="width: 5%;">Link 2</th>
+                <th style="width: 5%;">Link 3</th>
+                <th style="width: 5%;">Link 4</th>
+                <th style="width: 10%;">Link 5</th>
+            </tr>
+        </thead>
+        <tbody>
+    """
+    for item in data:
+        table_html += f"""
+            <tr>
+                <td>{item}</td>
+                <td><a href="https://example.com">Link 1</a></td>
+                <td><a href="https://example.com">Link 2</a></td>
+                <td><a href="https://example.com">Link 3</a></td>
+                <td><a href="https://example.com">Link 4</a></td>
+                <td><a href="https://example.com">Link 5</a></td>
+            </tr>
         """
-        for item in data:
-            table_html += f"""
-                <tr>
-                    <td>{item}</td>
-                    <td><a href="https://example.com">Link 1</a></td>
-                    <td><a href="https://example.com">Link 2</a></td>
-                    <td><a href="https://example.com">Link 3</a></td>
-                    <td><a href="https://example.com">Link 4</a></td>
-                    <td><a href="https://example.com">Link 5</a></td>
-                </tr>
-            """
-        table_html += """
-            </tbody>
-        </table>
-        """
-        
+    table_html += """
+        </tbody>
+    </table>
+    """
     st.markdown(table_html, unsafe_allow_html=True)
+    
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
