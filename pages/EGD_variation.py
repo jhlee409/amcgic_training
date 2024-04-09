@@ -69,14 +69,7 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다'
     ]
 
-    # 제목과 23개 항목 출력
-    st.header('제목')
-    for item in data:
-        cols = st.columns([4, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
-        cols[0].write(item)
-        for i in range(1, 6):
-            cols[i].write('')  # 빈 셀 추가
-        
+
     # Add custom CSS styles
     st.markdown("""
     <style>
@@ -90,6 +83,23 @@ if st.session_state.get('logged_in'):
         }
     </style>
     """, unsafe_allow_html=True)
+
+    # 제목과 23개 항목 출력
+    st.header('제목')
+    for item in data:
+        cols = st.columns([3, 1, 1, 1, 1, 1])  # 첫 번째 컬럼의 가로 길이를 3으로, 나머지 컬럼은 1로 설정
+        cols[0].write(item)
+        for i in range(1, 6):
+            if i == 1:
+                cols[i].markdown("[Link 1](https://example.com)", unsafe_allow_html=True)
+            elif i == 2:
+                cols[i].markdown("[Link 2](https://example.com)", unsafe_allow_html=True)
+            elif i == 3:
+                cols[i].markdown("[Link 3](https://example.com)", unsafe_allow_html=True)
+            elif i == 4:
+                cols[i].markdown("[Link 4](https://example.com)", unsafe_allow_html=True)
+            else:
+                cols[i].markdown("[Link 5](https://example.com)", unsafe_allow_html=True)
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
