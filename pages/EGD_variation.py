@@ -31,7 +31,6 @@ if st.session_state.get('logged_in'):
             "client_x509_cert_url": st.secrets["client_x509_cert_url"],
             "universe_domain": st.secrets["universe_domain"]
         })
-        firebase_admin.initialize_app(cred)
         firebase_admin.initialize_app(cred, {
         'storageBucket': 'amcgi-bulletin.appspot.com'  # 스토리지 버킷 이름 지정
     })
@@ -88,7 +87,7 @@ if st.session_state.get('logged_in'):
     """, unsafe_allow_html=True)
 
     # Firebase Storage에서 '맨_처음_보세요.mp4' 파일 가져오기
-    bucket = storage.bucket()
+    bucket = storage.bucket('amcgi-bulletin.appspot.com')
     blob = bucket.blob('EGD_variation/맨_처음_보세요.mp4')
 
     # 파일 URL 생성
