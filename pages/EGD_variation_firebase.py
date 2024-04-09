@@ -36,8 +36,13 @@ if st.session_state.get('logged_in'):
 
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
+
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
     video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
+    blob_b1 = bucket.blob("B1.mp4")
+    video_url_b1 = blob_b1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+
 
     # 23개 항목의 데이터
     data = [
@@ -74,23 +79,23 @@ if st.session_state.get('logged_in'):
         '-',
         '-',
         '-',
-        '<a href="https://youtu.be/ZG9QKEaaW64" target="_blank">Link 1</a>, <a href="https://youtu.be/lQyuE4bQA2M" target="_blank">Link 2</a>', #B
-        '<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>', #C
-        '<a href="https://youtu.be/SrETsnKCVfA" target="_blank">Link 1</a>, <a href="https://youtu.be/PGHM47c3EW4" target="_blank">Link 2</a>', #D
-        '<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 4</a>', #E
-        '<a href="https://youtu.be/Bra3SsDhA00" target="_blank">Link 1</a>, <a href="https://youtu.be/g0WppC-LnXM" target="_blank">Link 2</a>, <a href="https://youtu.be/U_PvOSuRWIw" target="_blank">Link 3</a>', #F
-        '<a href="https://youtu.be/Rgqj5d1HCXs" target="_blank">Link 1</a>', #G
-        '<a href="https://youtu.be/iHUXGo1lEcw" target="_blank">Link 1</a>, <a href="https://youtu.be/o9XbvVpv4I4" target="_blank">Link 2</a>', #H
-        '<a href="https://youtu.be/3I0zq0FEKLU" target="_blank">Link 1</a>, <a href="https://youtu.be/KFRYOBTgHOE" target="_blank">Link 2</a>', #I
-        '<a href="https://youtu.be/5Hxo44wUQkQ" target="_blank">Link 1</a>, <a href="https://youtu.be/iUAbnLxuZcQ" target="_blank">Link 2</a>, <a href="https://youtu.be/YXOoFj5CFjs" target="_blank">Link 3</a>, <a href="https://youtu.be/GGtzY-5vBFM" target="_blank">Link 4</a>, <a href="https://youtu.be/J1jKzg3keHQ" target="_blank">Link 5</a>', #J
-        '<a href="https://youtu.be/-q9-hOskzmI" target="_blank">Link 1</a>', #K
-        '<a href="https://youtu.be/0-SSID0IpbE" target="_blank">Link 1</a>', #L
-        '<a href="https://youtu.be/ObS_-X4k_sg" target="_blank">Link 1</a>', #M
-        '<a href="https://youtu.be/UDCvHPHOwvI" target="_blank">Link 1</a>, <a href="https://youtu.be/AQC18nM8A-0" target="_blank">Link 2</a>, <a href="https://youtu.be/gji_qCaA0cU" target="_blank">Link 3</a>', #N
-        '<a href="https://youtu.be/Xe5J-YygMNo" target="_blank">Link 1</a>, <a href="https://youtu.be/gOMYH1e0sZc" target="_blank">Link 2</a>, <a href="https://youtu.be/ogkpilkuFjs" target="_blank">Link 3</a>', #O
-        '<a href="https://youtu.be/DObihllXWVs" target="_blank">Link 1</a>, <a href="https://youtu.be/5v8zYWOG764" target="_blank">Link 2</a>', #P
-        '<a href="https://youtu.be/RtHnrNNkFlE" target="_blank">Link 1</a>, <a href="https://youtu.be/57-LppXcyKU" target="_blank">Link 2</a>, <a href="https://youtu.be/0UuR4NK_f9Y" target="_blank">Link 3</a>', #Q
-        '<a href="https://youtu.be/PKBsWQdVydg" target="_blank">Link 1</a>, <a href="https://youtu.be/MeFMTwUceWI" target="_blank">Link 2</a>, <a href="https://youtu.be/hDVBCz6hiaY" target="_blank">Link 3</a>', #R
+        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="https://youtu.be/lQyuE4bQA2M" target="_blank">Link 2</a>', #B
+        f'<a href="https://youtu.be/DSiOujh20_4" target="_blank">Link 1</a>, <a href="https://youtu.be/zZYvkOhxY-Y" target="_blank">Link 2</a>', #C
+        f'<a href="https://youtu.be/SrETsnKCVfA" target="_blank">Link 1</a>, <a href="https://youtu.be/PGHM47c3EW4" target="_blank">Link 2</a>', #D
+        f'<a href="https://youtu.be/VG2zdExpSzQ" target="_blank">Link 1</a>, <a href="https://youtu.be/Li3BDCeXjZI" target="_blank">Link 2</a>, <a href="https://youtu.be/pSUMTz0cNbk" target="_blank">Link 3</a>, <a href="https://youtu.be/6vLfB_B7mpE" target="_blank">Link 4</a>', #E
+        f'<a href="https://youtu.be/Bra3SsDhA00" target="_blank">Link 1</a>, <a href="https://youtu.be/g0WppC-LnXM" target="_blank">Link 2</a>, <a href="https://youtu.be/U_PvOSuRWIw" target="_blank">Link 3</a>', #F
+        f'<a href="https://youtu.be/Rgqj5d1HCXs" target="_blank">Link 1</a>', #G
+        f'<a href="https://youtu.be/iHUXGo1lEcw" target="_blank">Link 1</a>, <a href="https://youtu.be/o9XbvVpv4I4" target="_blank">Link 2</a>', #H
+        f'<a href="https://youtu.be/3I0zq0FEKLU" target="_blank">Link 1</a>, <a href="https://youtu.be/KFRYOBTgHOE" target="_blank">Link 2</a>', #I
+        f'<a href="https://youtu.be/5Hxo44wUQkQ" target="_blank">Link 1</a>, <a href="https://youtu.be/iUAbnLxuZcQ" target="_blank">Link 2</a>, <a href="https://youtu.be/YXOoFj5CFjs" target="_blank">Link 3</a>, <a href="https://youtu.be/GGtzY-5vBFM" target="_blank">Link 4</a>, <a href="https://youtu.be/J1jKzg3keHQ" target="_blank">Link 5</a>', #J
+        f'<a href="https://youtu.be/-q9-hOskzmI" target="_blank">Link 1</a>', #K
+        f'<a href="https://youtu.be/0-SSID0IpbE" target="_blank">Link 1</a>', #L
+        f'<a href="https://youtu.be/ObS_-X4k_sg" target="_blank">Link 1</a>', #M
+        f'<a href="https://youtu.be/UDCvHPHOwvI" target="_blank">Link 1</a>, <a href="https://youtu.be/AQC18nM8A-0" target="_blank">Link 2</a>, <a href="https://youtu.be/gji_qCaA0cU" target="_blank">Link 3</a>', #N
+        f'<a href="https://youtu.be/Xe5J-YygMNo" target="_blank">Link 1</a>, <a href="https://youtu.be/gOMYH1e0sZc" target="_blank">Link 2</a>, <a href="https://youtu.be/ogkpilkuFjs" target="_blank">Link 3</a>', #O
+        f'<a href="https://youtu.be/DObihllXWVs" target="_blank">Link 1</a>, <a href="https://youtu.be/5v8zYWOG764" target="_blank">Link 2</a>', #P
+        f'<a href="https://youtu.be/RtHnrNNkFlE" target="_blank">Link 1</a>, <a href="https://youtu.be/57-LppXcyKU" target="_blank">Link 2</a>, <a href="https://youtu.be/0UuR4NK_f9Y" target="_blank">Link 3</a>', #Q
+        f'<a href="https://youtu.be/PKBsWQdVydg" target="_blank">Link 1</a>, <a href="https://youtu.be/MeFMTwUceWI" target="_blank">Link 2</a>, <a href="https://youtu.be/hDVBCz6hiaY" target="_blank">Link 3</a>', #R
     ]
 
     # Add custom CSS styles
