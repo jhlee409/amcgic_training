@@ -11,17 +11,17 @@ st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout=
 if st.session_state.get('logged_in'):
 
     # Initialize session state variables
-    # if 'messages' not in st.session_state:
-    #     st.session_state['messages'] = []
+    if 'messages' not in st.session_state:
+        st.session_state['messages'] = []
 
     # Initialize prompt variable
     prompt = ""
 
     client = OpenAI()
 
-    # # 세션 상태 초기화
-    # if 'messages' not in st.session_state:
-    #     st.session_state.messages = []
+    # 세션 상태 초기화
+    if 'messages' not in st.session_state:
+        st.session_state.messages = []
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -190,16 +190,16 @@ if st.session_state.get('logged_in'):
 
     st.sidebar.divider()
 
-    # # Clear button in the sidebar
-    # if st.sidebar.button('이전 대화기록 삭제 버튼'):
-    #     # Reset the prompt, create a new thread, and clear the docx_file and messages
-    #     prompt = []
-    #     thread = client.beta.threads.create()
-    #     st.session_state.thread_id = thread.id
-    #     docx_file = None
-    #     st.session_state['messages'] = []
-    #     for msg in thread_messages.data:
-    #         msg.content[0].text.value=""
+    # Clear button in the sidebar
+    if st.sidebar.button('이전 대화기록 삭제 버튼'):
+        # Reset the prompt, create a new thread, and clear the docx_file and messages
+        prompt = []
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        docx_file = None
+        st.session_state['messages'] = []
+        for msg in thread_messages.data:
+            msg.content[0].text.value=""
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
