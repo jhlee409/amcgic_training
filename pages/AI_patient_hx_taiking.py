@@ -23,6 +23,18 @@ if st.session_state.get('logged_in'):
     # if 'messages' not in st.session_state:
     #     st.session_state.messages = []
 
+    # 초기화 버튼
+    folder_selection = st.sidebar.radio("Select Folder", ["초기화"])
+
+    if folder_selection == "초기화":
+        directory_images = "AI_patient_Hx_taking/case/"
+        directory_instructions = "AI_patient_Hx_taking/reference/"
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        #st.experimental_rerun()
+
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
         # Streamlit Secrets에서 Firebase 설정 정보 로드
@@ -187,8 +199,6 @@ if st.session_state.get('logged_in'):
 
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
-
-    st.sidebar.divider()
 
     # # Clear button in the sidebar
     # if st.sidebar.button('이전 대화기록 삭제 버튼'):
