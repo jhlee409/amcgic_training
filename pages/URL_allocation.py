@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
 import sys
+import PyQt6
 from PyQt6.QtWidgets import QApplication, QFileDialog
 
 # Set page to wide mode
