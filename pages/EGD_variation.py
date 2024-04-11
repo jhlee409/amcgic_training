@@ -9,7 +9,7 @@ import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD_Dx", layout="wide")
+st.set_page_config(page_title="EGD_Varation", layout="wide")
 
 if st.session_state.get('logged_in'):
 
@@ -210,7 +210,12 @@ if st.session_state.get('logged_in'):
     """, unsafe_allow_html=True)
 
     # 제목과 23개 항목 출력
-    st.header('제목')
+    st.header("EGD variation'; 이 웹 프로그램을 이용하면 출석확인이 안됩니다. Sim Class에서 학습하세요. 이 웹페이지는 백업용으로 만든 것입니다.")
+
+    with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
+        st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
+        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
+
     for idx, item in enumerate(data):
         cols = st.columns([2, 3])
         cols[0].write(item)
