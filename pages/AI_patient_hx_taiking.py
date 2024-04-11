@@ -11,29 +11,17 @@ st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout=
 if st.session_state.get('logged_in'):
 
     # Initialize session state variables
-    # if 'messages' not in st.session_state:
-    #     st.session_state['messages'] = []
+    if 'messages' not in st.session_state:
+        st.session_state['messages'] = []
 
     # Initialize prompt variable
     prompt = ""
 
     client = OpenAI()
 
-    # # 세션 상태 초기화
-    # if 'messages' not in st.session_state:
-    #     st.session_state.messages = []
-
-    # 초기화 버튼
-    folder_selection = st.sidebar.button("Select Folder", ["초기화"])
-
-    if folder_selection == "초기화":
-        directory_images = "AI_patient_Hx_taking/case/"
-        directory_instructions = "AI_patient_Hx_taking/reference/"
-        st.session_state.prompt = ""
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        st.session_state['messages'] = []
-        #st.experimental_rerun()
+    # 세션 상태 초기화
+    if 'messages' not in st.session_state:
+        st.session_state.messages = []
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -200,16 +188,18 @@ if st.session_state.get('logged_in'):
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    # # Clear button in the sidebar
-    # if st.sidebar.button('이전 대화기록 삭제 버튼'):
-    #     # Reset the prompt, create a new thread, and clear the docx_file and messages
-    #     prompt = []
-    #     thread = client.beta.threads.create()
-    #     st.session_state.thread_id = thread.id
-    #     docx_file = None
-    #     st.session_state['messages'] = []
-    #     for msg in thread_messages.data:
-    #         msg.content[0].text.value=""
+    st.sidebar.divider()
+
+    # Clear button in the sidebar
+    if st.sidebar.button('이전 대화기록 삭제 버튼'):
+        # Reset the prompt, create a new thread, and clear the docx_file and messages
+        prompt = []
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        docx_file = None
+        st.session_state['messages'] = []
+        for msg in thread_messages.data:
+            msg.content[0].text.value=""
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
