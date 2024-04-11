@@ -30,7 +30,7 @@ if not st.session_state.logged_in:
     # 로그인 버튼이 클릭되었을 때만 처리
     if login_button:
         # ID 및 비밀번호 확인
-        is_login = id == "amcgi" and password == "amcgi"
+        is_login = id == "amcgi" and password == "3986"
 
         if is_login:
             # 로그인 성공 시 처리
