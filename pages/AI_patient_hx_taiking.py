@@ -24,7 +24,7 @@ if st.session_state.get('logged_in'):
     #     st.session_state.messages = []
 
     # 초기화 버튼
-    folder_selection = st.sidebar.radio("Select Folder", ["초기화"])
+    folder_selection = st.sidebar.button("Select Folder", ["초기화"])
 
     if folder_selection == "초기화":
         directory_images = "AI_patient_Hx_taking/case/"
