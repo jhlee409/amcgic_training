@@ -195,8 +195,6 @@ if st.session_state.get('logged_in'):
         f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
     ]
 
-    print(video_url_b1)
-
     # Add custom CSS styles
     st.markdown("""
     <style>
