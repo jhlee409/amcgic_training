@@ -96,8 +96,8 @@ if st.session_state.get('logged_in'):
         directory_images = "AI_EGD_Dx_training/etc/images/"
         directory_instructions = "AI_EGD_Dx_training/etc/instructions/"
     else:
-        directory_images = "etc/"
-        directory_instructions = "etc/"
+        directory_images = "etc/images/"
+        directory_instructions = "etc/instructions/"
 
     st.sidebar.divider()
 
