@@ -94,7 +94,7 @@ if st.session_state.get('logged_in'):
         directory_instructions = "AI_EGD_Dx_training/F2/instructions/"
     elif folder_selection == "etc":
         directory_images = "AI_EGD_Dx_training/etc/images/"
-        directory_instructions = "AI_EGD_Dx_training/etc/instructions"
+        directory_instructions = "AI_EGD_Dx_training/etc/instructions/"
     else:
         directory_images = "AI_EGD_Dx_training/working/images/"
         directory_instructions = "AI_EGD_Dx_training/working/instructions/"
