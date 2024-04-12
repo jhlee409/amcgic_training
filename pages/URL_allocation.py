@@ -1,10 +1,8 @@
-import streamlit as st
-from datetime import datetime, timedelta
-import firebase_admin
-from firebase_admin import credentials, initialize_app, storage
 import sys
-import PyQt6
-from PyQt6.QtWidgets import QApplication, QFileDialog
+from PySide6.QtWidgets import QApplication, QFileDialog
+import firebase_admin
+from firebase_admin import credentials, storage
+import streamlit as st
 
 # Set page to wide mode
 st.set_page_config(page_title="URL_allocation", layout="wide")
@@ -33,7 +31,7 @@ if st.session_state.get('logged_in'):
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
     # 파일 선택 대화상자 표시
-    app = QApplication(sys.argv)
+    app = QApplication.instance() or QApplication(sys.argv)
     file_dialog = QFileDialog()
     file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
     selected_files = file_dialog.getOpenFileNames()[0]
