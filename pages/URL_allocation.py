@@ -15,7 +15,7 @@ if st.session_state.logged_in:
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
         # Firebase 설정 정보 로드
-        cred = credentials.Certificate('"C:\Users\admin\OneDrive - UOU\LLM\project_bulletin\code_bulletin_all_user_erase_registration\amcgi-bulletin-4f317f4638ed.json"')
+        cred = credentials.Certificate(r'"C:\Users\admin\OneDrive - UOU\LLM\project_bulletin\code_bulletin_all_user_erase_registration\amcgi-bulletin-4f317f4638ed.json"')
         firebase_admin.initialize_app(cred)
 
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
