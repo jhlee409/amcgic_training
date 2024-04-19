@@ -172,23 +172,13 @@ if st.session_state.get('logged_in'):
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
-        if user_input.strip():  # Check if user_input is not empty or whitespace
-            prompt = user_input
-        else:
-            print("Please enter a non-empty prompt.")
-            # Handle the case when user_input is empty or whitespace
-            # You can prompt the user to enter a valid input or take appropriate action
-    else:
-        print("No user input provided.")
-        # Handle the case when user_input is None or not provided
-        # You can prompt the user to enter a valid input or take appropriate action
+        prompt = user_input
 
-    if prompt:
-        message = client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=prompt
-        )
+    message = client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=prompt
+    )
 
     # # 입력한 메세지 UI에 표시
     # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
