@@ -52,9 +52,6 @@ if st.session_state.get('logged_in'):
         directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
         directory_thumbnails = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
         st.session_state.prompt = ""
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        st.session_state['messages'] = []
         #st.experimental_rerun()
     
     elif folder_selection == "esophagus":
