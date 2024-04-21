@@ -1,7 +1,7 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, storage
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
@@ -29,7 +29,8 @@ if st.session_state.get('logged_in'):
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
     blob_a1 = bucket.blob("조코딩_streaming구현.mp4")
-    video_url = blob_a1.generate_signed_url(expiration=timedelta(seconds=600), method='GET')
+    expiration_time = datetime.utcnow() + timedelta(seconds=600)
+    video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
     st.write(video_url)
     st.video(video_url)
 
