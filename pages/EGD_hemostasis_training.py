@@ -92,20 +92,22 @@ if st.session_state.get('logged_in'):
     selected_thumbnail_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_thumbnails, key="thumbnail_selectbox")
 
     if selected_thumbnail_file:
-        st.session_state.selected_thumbnail_file = selected_thumbnail_file
-        selected_thumbnail_path = directory_thumbnails + selected_thumbnail_file   
-        # Firebase Storage 참조 생성
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        if selected_thumbnail_file != st.session_state.selected_thumbnail_file:
+            st.session_state.selected_thumbnail_file = selected_thumbnail_file
+            selected_thumbnail_path = directory_thumbnails + selected_thumbnail_file   
+            # Firebase Storage 참조 생성
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
-        blob_a1 = bucket.blob(selected_thumbnail_path)
-        expiration_time = datetime.utcnow() + timedelta(seconds=600)
-        video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
-        st.write(video_url)
-        st.session_state.video_url = video_url
+            blob_a1 = bucket.blob(selected_thumbnail_path)
+            expiration_time = datetime.utcnow() + timedelta(seconds=600)
+            video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
+            st.write(video_url)
+            st.session_state.video_url = video_url
 
         # 동영상 플레이어 렌더링
-        video_html = f'<video width="600" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
-        st.markdown(video_html, unsafe_allow_html=True)
+        if 'video_url' in st.session_state:
+            video_html = f'<video width="600" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
+            st.markdown(video_html, unsafe_allow_html=True)
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
