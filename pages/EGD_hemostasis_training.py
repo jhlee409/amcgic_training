@@ -142,6 +142,9 @@ if st.session_state.get('logged_in'):
     # List and select DOCX files
     file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
     selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions, key="instruction_selectbox")
+    st.session_state.prompt = ""
+    thread = client.beta.threads.create()
+    st.session_state.thread_id = thread.id
     st.session_state['messages'] = []
 
     # Read and display the content of the selected DOCX file
