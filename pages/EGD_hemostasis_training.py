@@ -79,7 +79,7 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_images = "EGD_Hemostasis_training/Default/images/"
         directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
-        directory_videos = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
+        directory_thumnails = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
@@ -89,19 +89,19 @@ if st.session_state.get('logged_in'):
     elif folder_selection == "esophagus":
         directory_images = "EGD_Hemostasis_training/esophagus/images/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
-        directory_videos = "EGD_Hemostasis_training/esophagus/thumbnails/"  # 추가: esophagus 폴더의 비디오 디렉토리
+        directory_thumnails = "EGD_Hemostasis_training/esophagus/thumbnails/"  # 추가: esophagus 폴더의 비디오 디렉토리
     elif folder_selection == "stomach_1":
         directory_images = "EGD_Hemostasis_training/stomach_1/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
-        directory_videos = "EGD_Hemostasis_training/stomach_1/thumbnails/"  # 추가: stomach_1 폴더의 비디오 디렉토리
+        directory_thumnails = "EGD_Hemostasis_training/stomach_1/thumbnails/"  # 추가: stomach_1 폴더의 비디오 디렉토리
     elif folder_selection == "stomach_2":
         directory_images = "EGD_Hemostasis_training/stomach_2/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
-        directory_videos = "EGD_Hemostasis_training/stomach_2/thumbnails/"  # 추가: stomach_2 폴더의 비디오 디렉토리
+        directory_thumnails = "EGD_Hemostasis_training/stomach_2/thumbnails/"  # 추가: stomach_2 폴더의 비디오 디렉토리
     else:
         directory_images = "EGD_Hemostasis_training/duodenum/images/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
-        directory_videos = "EGD_Hemostasis_training/duodenum/thumbnails/"  # 추가: duodenum 폴더의 비디오 디렉토리
+        directory_thumnails = "EGD_Hemostasis_training/duodenum/thumbnails/"  # 추가: duodenum 폴더의 비디오 디렉토리
 
     st.sidebar.divider()
 
@@ -164,13 +164,13 @@ if st.session_state.get('logged_in'):
         #st.text(prompt)  # Display the content of the docx file as text
 
     # 추가: 동영상 파일 리스트 가져오기
-    video_list = list_files('amcgi-bulletin.appspot.com', directory_videos)
+    video_list = list_files('amcgi-bulletin.appspot.com', directory_thumnails)
 
     # 추가: 동영상 파일 선택 드롭다운 메뉴
     selected_video = st.sidebar.selectbox("동영상 선택", video_list)
     
     if selected_video:
-        video_path = directory_videos + selected_video
+        video_path = directory_thumnails + selected_video
         
         # Firebase Storage에서 동영상 파일 다운로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
