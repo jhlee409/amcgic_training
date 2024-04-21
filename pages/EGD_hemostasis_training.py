@@ -114,7 +114,7 @@ if st.session_state.get('logged_in'):
         width, height = image.size
         
         # Determine the display width based on the width-height ratio
-        display_width = 700 # if width >= 1.6 * height else 700
+        display_width = 500 # if width >= 1.6 * height else 700
         
         st.image(image, width=display_width)
 
