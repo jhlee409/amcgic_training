@@ -162,8 +162,6 @@ if st.session_state.get('logged_in'):
         prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
         st.session_state['prompt'] = prompt
         #st.text(prompt)  # Display the content of the docx file as text
-        
-    st.sidebar.divider()
 
     # 추가: 동영상 파일 리스트 가져오기
     video_list = list_files('amcgi-bulletin.appspot.com', directory_videos)
