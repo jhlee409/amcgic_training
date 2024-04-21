@@ -104,8 +104,6 @@ if st.session_state.get('logged_in'):
             st.write(video_url)
             st.session_state.video_url = video_url
 
-            st.experimental_rerun()
-
         # 동영상 플레이어 렌더링
         if 'video_url' in st.session_state:
             video_html = f'<video width="600" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
