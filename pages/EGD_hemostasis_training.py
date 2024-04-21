@@ -6,7 +6,6 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
-from google.cloud import storage
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
@@ -48,20 +47,6 @@ if st.session_state.get('logged_in'):
         st.write("- 각 단계마다 반드시 '열일 중' 스핀이 멈출 때까지 기다리세요. 스핀 돌고있는 도중에 다른 버튼 누르면 오류납니다.")
         st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
         
-    def get_file_list(bucket_name, directory_path, extensions):
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=directory_path)
-        file_list = [os.path.basename(blob.name) for blob in blobs if os.path.splitext(blob.name)[1].lower() in extensions]
-        return file_list
-
-    def download_file(bucket_name, file_path):
-        storage_client = storage.Client()
-        bucket = storage_client.get_bucket(bucket_name)
-        blob = bucket.blob(file_path)
-        file_bytes = blob.download_as_bytes()
-        return file_bytes
-    
     # Firebase에서 이미지를 다운로드하고 PIL 이미지 객체로 열기
     def download_and_open_image(bucket_name, file_path):
         bucket = storage.bucket(bucket_name)
@@ -116,22 +101,22 @@ if st.session_state.get('logged_in'):
 
     st.sidebar.divider()
 
-    # List and select files (PNG, MP4, AVI)
-    file_list = get_file_list('amcgi-bulletin.appspot.com', directory_images, extensions=['.png', '.mp4', '.avi'])
-    selected_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list)
+    # List and select PNG files
+    file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
+    selected_image_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_images)
 
-    if selected_file:
-        selected_file_path = directory_images + selected_file
-        file_extension = os.path.splitext(selected_file)[1].lower()
-
-        if file_extension == '.png':
-            image = download_and_open_image('amcgi-bulletin.appspot.com', selected_file_path)
-            width, height = image.size
-            display_width = 400 if width >= 1.6 * height else 700
-            st.image(image, width=display_width)
-        elif file_extension in ['.mp4', '.avi']:
-            video_bytes = download_file('amcgi-bulletin.appspot.com', selected_file_path)
-            st.video(video_bytes, format="video/mp4", start_time=0)
+    if selected_image_file:
+        selected_image_path = directory_images + selected_image_file
+        image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
+        
+        # Open the image to check its dimensions
+        # The 'image' variable already contains a PIL Image object, so you don't need to open it again
+        width, height = image.size
+        
+        # Determine the display width based on the width-height ratio
+        display_width = 400 # if width >= 1.6 * height else 700
+        
+        st.image(image, width=display_width)
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
