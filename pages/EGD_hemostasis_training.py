@@ -33,15 +33,7 @@ if st.session_state.get('logged_in'):
             "universe_domain": st.secrets["universe_domain"]
         })
         firebase_admin.initialize_app(cred)
-
-    # Display Form Title
-    st.subheader("EGD_Dx_training")
-    with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 각 단계마다 반드시 '열일 중' 스핀이 멈출 때까지 기다리세요. 스핀 돌고있는 도중에 다른 버튼 누르면 오류납니다.")
-        st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
         
-    
-    # F1 or F2 selection
     folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach_1", "stomach_2", "duodenum"])
 
     if folder_selection == "초기화":
