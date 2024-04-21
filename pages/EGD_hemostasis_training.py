@@ -1,12 +1,11 @@
 import streamlit as st
 import time
-from datetime import datetime, timedelta
 from PIL import Image
 import docx
 import io
 from openai import OpenAI
 import firebase_admin
-from firebase_admin import credentials, initialize_app, storage
+from firebase_admin import credentials, storage
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
@@ -34,202 +33,213 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
+    client = OpenAI()
 
-    blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
-    video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_b1 = bucket.blob("EGD_variation/B1.mp4")
-    video_url_b1 = blob_b1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_b2 = bucket.blob("EGD_variation/B2.mp4")
-    video_url_b2 = blob_b2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_c1 = bucket.blob("EGD_variation/C1.mp4")
-    video_url_c1 = blob_c1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_c2 = bucket.blob("EGD_variation/C2.mp4")
-    video_url_c2 = blob_c2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_d1 = bucket.blob("EGD_variation/D1.mp4")
-    video_url_d1 = blob_d1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_d2 = bucket.blob("EGD_variation/D2.mp4")
-    video_url_d2 = blob_d2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_e1 = bucket.blob("EGD_variation/E1.mp4")
-    video_url_e1 = blob_e1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_e2 = bucket.blob("EGD_variation/E2.mp4")
-    video_url_e2 = blob_e2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_e3 = bucket.blob("EGD_variation/E3.mp4")
-    video_url_e3 = blob_e3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_e4 = bucket.blob("EGD_variation/E4.mp4")
-    video_url_e4 = blob_e4.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_f1 = bucket.blob("EGD_variation/F1.mp4")
-    video_url_f1 = blob_f1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_f2 = bucket.blob("EGD_variation/F2.mp4")
-    video_url_f2 = blob_f2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_f3 = bucket.blob("EGD_variation/F3.mp4")
-    video_url_f3 = blob_f3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_g1 = bucket.blob("EGD_variation/G1.mp4")
-    video_url_g1 = blob_g1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_h1 = bucket.blob("EGD_variation/H1.mp4")
-    video_url_h1 = blob_h1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_h2 = bucket.blob("EGD_variation/H2.mp4")
-    video_url_h2 = blob_h2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_i1 = bucket.blob("EGD_variation/I1.mp4")
-    video_url_i1 = blob_i1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_i2 = bucket.blob("EGD_variation/I2.mp4")
-    video_url_i2 = blob_i2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_j1 = bucket.blob("EGD_variation/J1.mp4")
-    video_url_j1 = blob_j1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_j2 = bucket.blob("EGD_variation/J2.mp4")
-    video_url_j2 = blob_j2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_j3 = bucket.blob("EGD_variation/J3.mp4")
-    video_url_j3 = blob_j3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_j4 = bucket.blob("EGD_variation/J4.mp4")
-    video_url_j4 = blob_j4.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_j5 = bucket.blob("EGD_variation/J5.mp4")
-    video_url_j5 = blob_j5.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_k1 = bucket.blob("EGD_variation/K1.mp4")
-    video_url_k1 = blob_k1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_l1 = bucket.blob("EGD_variation/L1.mp4")
-    video_url_l1 = blob_l1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_m1 = bucket.blob("EGD_variation/M1.mp4")
-    video_url_m1 = blob_m1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_n1 = bucket.blob("EGD_variation/N1.mp4")
-    video_url_n1 = blob_n1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_n2 = bucket.blob("EGD_variation/N2.mp4")
-    video_url_n2 = blob_n2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_n3 = bucket.blob("EGD_variation/N3.mp4")
-    video_url_n3 = blob_n3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_o1 = bucket.blob("EGD_variation/O1.mp4")
-    video_url_o1 = blob_o1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_o2 = bucket.blob("EGD_variation/O2.mp4")
-    video_url_o2 = blob_o2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_o3 = bucket.blob("EGD_variation/O3.mp4")
-    video_url_o3 = blob_o3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_p1 = bucket.blob("EGD_variation/P1.mp4")
-    video_url_p1 = blob_p1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_p2 = bucket.blob("EGD_variation/P2.mp4")
-    video_url_p2 = blob_p2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_q1 = bucket.blob("EGD_variation/Q1.mp4")
-    video_url_q1 = blob_q1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_q2 = bucket.blob("EGD_variation/Q2.mp4")
-    video_url_q2 = blob_q2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_q3 = bucket.blob("EGD_variation/Q3.mp4")
-    video_url_q3 = blob_q3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-    blob_r1 = bucket.blob("EGD_variation/R1.mp4")
-    video_url_r1 = blob_r1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_r2 = bucket.blob("EGD_variation/R2.mp4")
-    video_url_r2 = blob_r2.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-    blob_r3 = bucket.blob("EGD_variation/R3.mp4")
-    video_url_r3 = blob_r3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-
-
-
-
-    # 23개 항목의 데이터
-    data = [
-        '가장 먼저 보세요: 전체 과정 해설 A',
-        '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
-        '- 환자가 과도한 retching을 해서 검사의 진행이 어려워요',
-        '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
-        '- 장기의 좌우가 바뀌어 있다(situs inversus)',
-        '- 위로 진입해 보니, 위안에 음식물이 남아있다',
-        '정상 위에서 Expert의 검사 전과정 B',
-        'STG with Bilroth II reconstruction state애서 검사 전과정 C',
-        'STG with Bilroth I reconstruction state에서 검사 전과정 D',
-        '후두부 접근 시 구역이 심해 후두를 관찰할 수 없다 E',
-        'epiglotis가 닫혀서 후부두 전체가 보이는 사진을 찍을 수가 없다 F',
-        '식도가 너무 tortuous 해서 화면 중앙에 놓고 전진하기 힘든다 G',
-        'z line이 stomach 쪽으로 내려가 있어 z line이 보이지 않는다 H',
-        'fundus, HB 경계부위가 심하게 꺽어져 있어, antrum 쪽으로 진입이 안된다 I',
-        'pyloric ring이 계속 닫혀있고 움직여서 scope의 통과가 어렵다 J',
-        '십이지장 벽에 닿기만 하고, SDA의 위치를 찾지 못하겠다 K',
-        'bulb에 들어가 보니, SDA가 사진 상 우측이 아니라 좌측에 있다 L',
-        '제2부에서 scope를 당기면 전진해야 하는데, 전진하지 않고 그냥 빠진다 M',
-        '십이지장 2nd portion인데, ampulla가 안보이는데 prox 쪽에 있는 것 같다 N',
-        'minor papilla를 AOP로 착각하지 않으려면 O',
-        'antrum GC에 transverse fold가 있어 그 distal part 부분이 가려져 있다 P',
-        '전정부에서 노브를 up을 했는데도, antrum에 붙어서, angle을 관찰할 수 없다 Q',
-        '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
-    ]
-
-    # 각 항목에 해당하는 markdown 텍스트 리스트
-    markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
-        '-',
-        '-',
-        '-',
-        '-',
-        '-',
-        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
-        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
-        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
-        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
-        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
-        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
-        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
-        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
-        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
-        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
-        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
-        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
-        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
-        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
-        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
-        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
-        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
-    ]
-
-    # Add custom CSS styles
-    st.markdown("""
-    <style>
-        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"] > div {
-            border: none;
-            padding: 5px;
-            height: 100%;
-        }
-        div[data-testid="stHorizontalBlock"] div[data-testid="stVerticalBlock"]:first-child > div {
-            height: auto;
-        }
-    </style>
-    """, unsafe_allow_html=True)
-
-    # 제목과 23개 항목 출력
-    st.header("EGD variation")
-    st.write("이 웹 프로그램을 이용하면 출석확인이 안됩니다. Sim Class에서 학습하세요. 이 웹페이지는 백업용으로 만든 것입니다.")
-
+    # Display Form Title
+    st.subheader("EGD_Dx_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
-        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
+        st.write("- 가장 먼저 왼쪽 sidebar에서 F1용인지 F2용인지를 선택합니다.")
+        st.write("- 그 아래에서 EGD 사진과 case instruction 파일을 차례로 선택해서 업로드 하세요. 동일한 이름의 png 파일과 docx 파일을 선택해야 합니다.")
+        st.write("- '준비가 되었으면 아무 키나 입력한 후 엔터를 눌러 주세요'라고 나오면, 아무 키나 누르고, 엔터를 누른 후 기다립니다.")
+        st.write("- 잠시 후에 문제에 따라 질문이나 질문 없는 설명이 나옵니다. 나오는 문장에 따라 진행하면됩니다.")
+        st.write("- 그 증례에 대한 학습의 마지막은 '이 증례의 최종진단은 000입니다.'로 종결됩니다.")
+        st.write("- 한 증례가 끝나고 다음 증례로 넘어가시려면, 먼저 왼쪽의 '초기화' 버튼을 선택하여 초기화 하고, 처음 과정부터 다시 시작하시면 됩니다.")
+        st.write("- 각 단계마다 반드시 '열일 중' 스핀이 멈출 때까지 기다리세요. 스핀 돌고있는 도중에 다른 버튼 누르면 오류납니다.")
+        st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
+        
+    # Firebase에서 이미지를 다운로드하고 PIL 이미지 객체로 열기
+    def download_and_open_image(bucket_name, file_path):
+        bucket = storage.bucket(bucket_name)
+        blob = bucket.blob(file_path)
+        # BytesIO 객체를 사용하여 메모리에서 이미지를 직접 열기
+        image_stream = io.BytesIO()
+        blob.download_to_file(image_stream)
+        image_stream.seek(0)
+        return Image.open(image_stream)
 
-    for idx, item in enumerate(data):
-        cols = st.columns([2, 3])
-        cols[0].write(item)
-        if idx < len(markdown_texts):
-            cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
+    # # Function to display image in sidebar or main page
+    # def display_large_image(image):
+    #     with st.expander("Full-size Image"):
+    #         st.image(image, use_column_width=True)
+        
+        # Function to list files in a specific directory in Firebase Storage
+    def png_list_files(bucket_name, directory):
+        bucket = storage.bucket(bucket_name)
+        blobs = bucket.list_blobs(prefix=directory)
+        file_names = []
+        for blob in blobs:
+            # Extracting file name from the path and adding to the list
+            file_name = blob.name[len(directory):]  # Remove directory path from file name
+            if file_name:  # Check to avoid adding empty strings (in case of directories)
+                file_names.append(file_name)
+        return file_names
+    
+    # F1 or F2 selection
+    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach_1", "stomach_2", "duodenum"])
+
+    if folder_selection == "초기화":
+        directory_images = "EGD_Hemostasis_training/Default/images/"
+        directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        #st.experimental_rerun()
+    
+    elif folder_selection == "esophagus":
+        directory_images = "EGD_Hemostasis_training/esophagus/images/"
+        directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
+    elif folder_selection == "stomach_1":
+        directory_images = "EGD_Hemostasis_training/stomach_1/images/"
+        directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
+    elif folder_selection == "stomach_2":
+        directory_images = "EGD_Hemostasis_training/stomach_2/images/"
+        directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
+    else:
+        directory_images = "EGD_Hemostasis_training/duodenum/images/"
+        directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
+
+    st.sidebar.divider()
+
+    # List and select PNG files
+    file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
+    selected_image_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_images)
+
+    if selected_image_file:
+        selected_image_path = directory_images + selected_image_file
+        image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
+        
+        # Open the image to check its dimensions
+        # The 'image' variable already contains a PIL Image object, so you don't need to open it again
+        width, height = image.size
+        
+        # Determine the display width based on the width-height ratio
+        display_width = 1400 if width >= 1.6 * height else 700
+        
+        st.image(image, width=display_width)
+
+    # Function to list files in a specific directory in Firebase Storage
+    def list_files(bucket_name, directory):
+        bucket = storage.bucket(bucket_name)
+        blobs = bucket.list_blobs(prefix=directory)
+        file_names = []
+        for blob in blobs:
+            # Extracting file name from the path and adding to the list
+            file_name = blob.name[len(directory):]  # Remove directory path from file name
+            if file_name:  # Check to avoid adding empty strings (in case of directories)
+                file_names.append(file_name)
+        return file_names
+
+    # Function to read file content from Firebase Storage
+    def read_docx_file(bucket_name, file_name):
+        bucket = storage.bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        
+        # Download the file to a temporary location
+        temp_file_path = "/tmp/tempfile.docx"
+        blob.download_to_filename(temp_file_path)
+        
+        # Read the content of the DOCX file
+        doc = docx.Document(temp_file_path)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        
+        # Join the text into a single string
+        return '\n'.join(full_text)
+    
+    # List and select DOCX files
+    file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
+    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions)
+
+    # Read and display the content of the selected DOCX file
+    if selected_instruction_file:
+        full_path = directory_instructions + selected_instruction_file
+        prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+        st.session_state['prompt'] = prompt
+        #st.text(prompt)  # Display the content of the docx file as text
+        
+    st.sidebar.divider()
+
+    # Manage thread id
+    if 'thread_id' not in st.session_state:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+
+    thread_id = st.session_state.thread_id
+
+    assistant_id = "asst_AyqS2LqfxPw2RwRV1sl1bGhd"
+
+    # Get user input from chat nput
+    user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+
+    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    if user_input:
+        if user_input.strip():  # Check if user_input is not empty or whitespace
+            prompt = user_input
         else:
-            cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
+            print("Please enter a non-empty prompt.")
+            # Handle the case when user_input is empty or whitespace
+            # You can prompt the user to enter a valid input or take appropriate action
+    else:
+        print("No user input provided.")
+        # Handle the case when user_input is None or not provided
+        # You can prompt the user to enter a valid input or take appropriate action
+
+    if prompt:
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=prompt
+        )
+
+    # # 입력한 메세지 UI에 표시
+    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+    #     with st.chat_message(message.role):
+    #         st.write(message.content[0].text.value)
+
+    #RUN을 돌리는 과정
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+    )
+
+    with st.spinner('열일 중...'):
+        #RUN이 completed 되었나 1초마다 체크
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run.id
+            )
+
+    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id
+    )
+
+    # # assistant 메세지 UI에 추가하기
+    # #if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+    # with st.chat_message(messages.data[0].role):
+    #     st.write(messages.data[0].content[0].text.value)
+
+    #메세지 모두 불러오기
+    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
 
+    for msg in thread_messages.data:
+        # 메시지 내용 확인 및 필터링 조건 추가
+        if msg.content and msg.content[0].text.value:
+            content = msg.content[0].text.value
+            # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
+            if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
+                with st.chat_message(msg.role):
+                    st.write(content)
+        
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.")
+    st.error("로그인이 필요합니다.") 
