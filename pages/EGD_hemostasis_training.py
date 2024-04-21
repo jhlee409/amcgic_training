@@ -71,15 +71,47 @@ if st.session_state.get('logged_in'):
     elif folder_selection == "esophagus":
         directory_thumbnails = "EGD_Hemostasis_training/esophagus/thumbnails/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
+        st.session_state.selected_thumbnail_file = None
+        video_url = None
+        st.session_state.video_url = video_url
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        #st.experimental_rerun()
     elif folder_selection == "stomach_1":
         directory_thumbnails = "EGD_Hemostasis_training/stomach_1/thumbnails/"
         directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
+        st.session_state.selected_thumbnail_file = None
+        video_url = None
+        st.session_state.video_url = video_url
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        #st.experimental_rerun()
     elif folder_selection == "stomach_2":
         directory_thumbnails = "EGD_Hemostasis_training/stomach_2/thumbnails/"
         directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
+        st.session_state.selected_thumbnail_file = None
+        video_url = None
+        st.session_state.video_url = video_url
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        #st.experimental_rerun()
     else:
         directory_thumbnails = "EGD_Hemostasis_training/duodenum/thumbnails/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
+        st.session_state.selected_thumbnail_file = None
+        video_url = None
+        st.session_state.video_url = video_url
+        st.session_state.prompt = ""
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        #st.experimental_rerun()
 
     st.sidebar.divider()
 
