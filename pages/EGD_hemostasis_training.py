@@ -48,10 +48,7 @@ if st.session_state.get('logged_in'):
     folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach_1", "stomach_2", "duodenum"])
 
     if folder_selection == "초기화":
-        directory_images = "EGD_Hemostasis_training/Default/images/"
-        directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
         directory_thumbnails = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
-        st.session_state.prompt = ""
         #st.experimental_rerun()
     
     elif folder_selection == "esophagus":
@@ -59,7 +56,7 @@ if st.session_state.get('logged_in'):
     elif folder_selection == "stomach_1":
         directory_thumbnails = "EGD_Hemostasis_training/stomach_1/thumbnails/"  # 추가: stomach_1 폴더의 비디오 디렉토리
     elif folder_selection == "stomach_2":
-        directory_thumnbails = "EGD_Hemostasis_training/stomach_2/thumbnails/"  # 추가: stomach_2 폴더의 비디오 디렉토리
+        directory_thumbnails = "EGD_Hemostasis_training/stomach_2/thumbnails/"  # 추가: stomach_2 폴더의 비디오 디렉토리
     else:
         directory_thumbnails = "EGD_Hemostasis_training/duodenum/thumbnails/"  # 추가: duodenum 폴더의 비디오 디렉토리
 
