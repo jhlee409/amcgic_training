@@ -6,7 +6,6 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
-from datetime import datetime, timedelta
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
@@ -39,10 +38,32 @@ if st.session_state.get('logged_in'):
     # Display Form Title
     st.subheader("EGD_Dx_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
+        st.write("- 가장 먼저 왼쪽 sidebar에서 F1용인지 F2용인지를 선택합니다.")
+        st.write("- 그 아래에서 EGD 사진과 case instruction 파일을 차례로 선택해서 업로드 하세요. 동일한 이름의 png 파일과 docx 파일을 선택해야 합니다.")
+        st.write("- '준비가 되었으면 아무 키나 입력한 후 엔터를 눌러 주세요'라고 나오면, 아무 키나 누르고, 엔터를 누른 후 기다립니다.")
+        st.write("- 잠시 후에 문제에 따라 질문이나 질문 없는 설명이 나옵니다. 나오는 문장에 따라 진행하면됩니다.")
+        st.write("- 그 증례에 대한 학습의 마지막은 '이 증례의 최종진단은 000입니다.'로 종결됩니다.")
+        st.write("- 한 증례가 끝나고 다음 증례로 넘어가시려면, 먼저 왼쪽의 '초기화' 버튼을 선택하여 초기화 하고, 처음 과정부터 다시 시작하시면 됩니다.")
+        st.write("- 각 단계마다 반드시 '열일 중' 스핀이 멈출 때까지 기다리세요. 스핀 돌고있는 도중에 다른 버튼 누르면 오류납니다.")
         st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
         
+    # Firebase에서 이미지를 다운로드하고 PIL 이미지 객체로 열기
+    def download_and_open_image(bucket_name, file_path):
+        bucket = storage.bucket(bucket_name)
+        blob = bucket.blob(file_path)
+        # BytesIO 객체를 사용하여 메모리에서 이미지를 직접 열기
+        image_stream = io.BytesIO()
+        blob.download_to_file(image_stream)
+        image_stream.seek(0)
+        return Image.open(image_stream)
+
+    # # Function to display image in sidebar or main page
+    # def display_large_image(image):
+    #     with st.expander("Full-size Image"):
+    #         st.image(image, use_column_width=True)
+        
         # Function to list files in a specific directory in Firebase Storage
-    def video_list_files(bucket_name, directory):
+    def png_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
         file_names = []
@@ -57,7 +78,7 @@ if st.session_state.get('logged_in'):
     folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach_1", "stomach_2", "duodenum"])
 
     if folder_selection == "초기화":
-        directory_thumbnails = "EGD_Hemostasis_training/Default/thumbnails/"
+        directory_images = "EGD_Hemostasis_training/Default/images/"
         directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
@@ -66,34 +87,36 @@ if st.session_state.get('logged_in'):
         #st.experimental_rerun()
     
     elif folder_selection == "esophagus":
-        directory_thumbnails = "EGD_Hemostasis_training/esophagus/thumbnails/"
+        directory_images = "EGD_Hemostasis_training/esophagus/images/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
     elif folder_selection == "stomach_1":
-        directory_thumbnails = "EGD_Hemostasis_training/stomach_1/thumbnails/"
+        directory_images = "EGD_Hemostasis_training/stomach_1/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
     elif folder_selection == "stomach_2":
-        directory_thumbnails = "EGD_Hemostasis_training/stomach_2/thumbnails/"
+        directory_images = "EGD_Hemostasis_training/stomach_2/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
     else:
-        directory_thumbnails = "EGD_Hemostasis_training/duodenum/thumbnails/"
+        directory_images = "EGD_Hemostasis_training/duodenum/images/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
 
     st.sidebar.divider()
 
     # List and select PNG files
-    file_list_thumbnails = video_list_files('amcgi-bulletin.appspot.com', directory_thumbnails)
-    selected_thumbnail_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_thumbnails)
+    file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
+    selected_image_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_images)
 
-    if selected_thumbnail_file:
-        selected_thumbnail_path = directory_thumbnails + selected_thumbnail_file   
-        # Firebase Storage 참조 생성
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
-
-        blob_a1 = bucket.blob(selected_thumbnail_path)
-        expiration_time = datetime.utcnow() + timedelta(seconds=600)
-        video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
-        st.video(video_url)
-
+    if selected_image_file:
+        selected_image_path = directory_images + selected_image_file
+        image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
+        
+        # Open the image to check its dimensions
+        # The 'image' variable already contains a PIL Image object, so you don't need to open it again
+        width, height = image.size
+        
+        # Determine the display width based on the width-height ratio
+        display_width = 400 # if width >= 1.6 * height else 700
+        
+        st.image(image, width=display_width)
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
