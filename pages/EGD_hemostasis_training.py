@@ -64,6 +64,7 @@ if st.session_state.get('logged_in'):
 
     if folder_selection == "초기화":
         directory_videos = "EGD_Hemostasis_training/Default/thumnails/"
+        directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
@@ -72,12 +73,16 @@ if st.session_state.get('logged_in'):
     
     elif folder_selection == "esophagus":
         directory_videos = "EGD_Hemostasis_training/esophagus/thumnails/"
+        directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
     elif folder_selection == "stomach_1":
         directory_videos = "EGD_Hemostasis_training/stomach_1/thumnails/"
+        directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
     elif folder_selection == "stomach_2":
         directory_videos = "EGD_Hemostasis_training/stomach_2/thumnails/"
+        directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
     else:
         directory_videos = "EGD_Hemostasis_training/duodenum/thumnails/"
+        directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
 
     st.sidebar.divider()
 
