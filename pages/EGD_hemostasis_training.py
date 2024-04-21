@@ -48,6 +48,7 @@ if st.session_state.get('logged_in'):
         st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
         
     # Function to list files in a specific directory in Firebase Storage
+    # Function to list files in a specific directory in Firebase Storage
     def avi_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -55,7 +56,7 @@ if st.session_state.get('logged_in'):
         for blob in blobs:
             # Extracting file name from the path and adding to the list
             file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
+            if file_name.endswith(".avi") or file_name.endswith(".mp4"):  # Check if the file has .avi or .mp4 extension
                 file_names.append(file_name)
         return file_names
     
