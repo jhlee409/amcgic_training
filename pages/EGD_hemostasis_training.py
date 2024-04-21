@@ -30,6 +30,7 @@ if st.session_state.get('logged_in'):
 
     blob_a1 = bucket.blob("조코딩_streaming구현.mp4")
     video_url = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    st.write(video_url)
     st.video(video_url)
 
     # 로그아웃 버튼 생성
