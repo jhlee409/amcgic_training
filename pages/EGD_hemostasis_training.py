@@ -90,18 +90,11 @@ if st.session_state.get('logged_in'):
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(video_path)
         
-        # 임시 파일 경로 생성
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            blob.download_to_file(temp_file)
-            temp_file_path = temp_file.name
+        # 파일을 바이트로 읽어들임
+        video_bytes = blob.download_as_bytes()
         
         # 동영상 재생
-        video_file = open(temp_file_path, 'rb')
-        video_bytes = video_file.read()
         st.video(video_bytes, format='video/mp4', start_time=0)
-        
-        # 임시 파일 삭제
-        os.unlink(temp_file_path)
 
       # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
