@@ -80,10 +80,6 @@ if st.session_state.get('logged_in'):
 
     st.sidebar.divider()
 
-    # List and select PNG files
-    file_list_thumbnails = video_list_files('amcgi-bulletin.appspot.com', directory_thumbnails)
-    selected_thumbnail_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_thumbnails)
-
     # 선택한 동영상 파일을 세션 상태에 저장
     if 'selected_thumbnail_file' not in st.session_state:
         st.session_state.selected_thumbnail_file = None
