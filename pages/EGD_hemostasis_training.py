@@ -79,7 +79,7 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_images = "EGD_Hemostasis_training/Default/images/"
         directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
-        directory_thumnbails = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
+        directory_thumbnails = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
@@ -93,7 +93,7 @@ if st.session_state.get('logged_in'):
     elif folder_selection == "stomach_1":
         directory_images = "EGD_Hemostasis_training/stomach_1/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
-        directory_thumnbails = "EGD_Hemostasis_training/stomach_1/thumbnails/"  # 추가: stomach_1 폴더의 비디오 디렉토리
+        directory_thumbnails = "EGD_Hemostasis_training/stomach_1/thumbnails/"  # 추가: stomach_1 폴더의 비디오 디렉토리
     elif folder_selection == "stomach_2":
         directory_images = "EGD_Hemostasis_training/stomach_2/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
