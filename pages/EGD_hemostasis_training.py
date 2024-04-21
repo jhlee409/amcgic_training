@@ -93,7 +93,7 @@ if st.session_state.get('logged_in'):
         expiration_time = datetime.utcnow() + timedelta(seconds=600)
         video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
         # 동영상 플레이어의 크기를 조정하기 위해 HTML 코드 사용
-        video_html = f'<video width="400" controls><source src="{video_url}" type="video/mp4"></video>'
+        video_html = f'<video width="500" controls><source src="{video_url}" type="video/mp4"></video>'
         st.markdown(video_html, unsafe_allow_html=True)
 
     # Function to list files in a specific directory in Firebase Storage
