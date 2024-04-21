@@ -7,6 +7,10 @@ from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
 
+# 동영상 재생을 위한 라이브러리 추가
+import os
+import tempfile
+
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
 
@@ -57,12 +61,7 @@ if st.session_state.get('logged_in'):
         image_stream.seek(0)
         return Image.open(image_stream)
 
-    # # Function to display image in sidebar or main page
-    # def display_large_image(image):
-    #     with st.expander("Full-size Image"):
-    #         st.image(image, use_column_width=True)
-        
-        # Function to list files in a specific directory in Firebase Storage
+    # Function to list files in a specific directory in Firebase Storage
     def png_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -80,6 +79,7 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_images = "EGD_Hemostasis_training/Default/images/"
         directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
+        directory_videos = "EGD_Hemostasis_training/Default/thumbnails/"  # 추가: 초기화 시 비디오 디렉토리 설정
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
@@ -89,15 +89,19 @@ if st.session_state.get('logged_in'):
     elif folder_selection == "esophagus":
         directory_images = "EGD_Hemostasis_training/esophagus/images/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
+        directory_videos = "EGD_Hemostasis_training/esophagus/thumbnails/"  # 추가: esophagus 폴더의 비디오 디렉토리
     elif folder_selection == "stomach_1":
         directory_images = "EGD_Hemostasis_training/stomach_1/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
+        directory_videos = "EGD_Hemostasis_training/stomach_1/thumbnails/"  # 추가: stomach_1 폴더의 비디오 디렉토리
     elif folder_selection == "stomach_2":
         directory_images = "EGD_Hemostasis_training/stomach_2/images/"
         directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
+        directory_videos = "EGD_Hemostasis_training/stomach_2/thumbnails/"  # 추가: stomach_2 폴더의 비디오 디렉토리
     else:
         directory_images = "EGD_Hemostasis_training/duodenum/images/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
+        directory_videos = "EGD_Hemostasis_training/duodenum/thumbnails/"  # 추가: duodenum 폴더의 비디오 디렉토리
 
     st.sidebar.divider()
 
@@ -161,6 +165,32 @@ if st.session_state.get('logged_in'):
         
     st.sidebar.divider()
 
+    # 추가: 동영상 파일 리스트 가져오기
+    video_list = list_files('amcgi-bulletin.appspot.com', directory_videos)
+
+    # 추가: 동영상 파일 선택 드롭다운 메뉴
+    selected_video = st.selectbox("동영상 선택", video_list)
+
+    if selected_video:
+        video_path = directory_videos + selected_video
+        
+        # Firebase Storage에서 동영상 파일 다운로드
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        blob = bucket.blob(video_path)
+        
+        # 임시 파일 경로 생성
+        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+            blob.download_to_file(temp_file)
+            temp_file_path = temp_file.name
+        
+        # 동영상 재생
+        video_file = open(temp_file_path, 'rb')
+        video_bytes = video_file.read()
+        st.video(video_bytes, format='video/mp4', start_time=0)
+        
+        # 임시 파일 삭제
+        os.unlink(temp_file_path)
+
     # Manage thread id
     if 'thread_id' not in st.session_state:
         thread = client.beta.threads.create()
@@ -193,11 +223,6 @@ if st.session_state.get('logged_in'):
             content=prompt
         )
 
-    # # 입력한 메세지 UI에 표시
-    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    #     with st.chat_message(message.role):
-    #         st.write(message.content[0].text.value)
-
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
         thread_id=thread_id,
@@ -218,11 +243,6 @@ if st.session_state.get('logged_in'):
         thread_id=thread_id
     )
 
-    # # assistant 메세지 UI에 추가하기
-    # #if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    # with st.chat_message(messages.data[0].role):
-    #     st.write(messages.data[0].content[0].text.value)
-
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
@@ -242,4 +262,4 @@ if st.session_state.get('logged_in'):
         
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.") 
+    st.error("로그인이 필요합니다.")
