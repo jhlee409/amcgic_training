@@ -1,6 +1,7 @@
 import streamlit as st
 import firebase_admin
 from firebase_admin import credentials, storage
+import timedelta
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
@@ -25,21 +26,11 @@ if st.session_state.get('logged_in'):
         firebase_admin.initialize_app(cred)
 
     # Firebase Storage 참조 생성
-    storage_client = storage.bucket('amcgi-bulletin.appspot.com')
+    bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
-    # MP4 동영상 파일 경로
-    video_path = "EGD_Hemostasis_training/stomach_1/thumbnails/"
-    video_files = storage_client.list_blobs(prefix=video_path)
-
-    # 동영상 파일 표시
-    for video_file in video_files:
-        if video_file.name.endswith(".mp4"):
-            video_url = storage_client.blob(video_file.name).generate_signed_url(
-            expiration=3600,
-            method='GET'
-        )
-            st.write(video_url)
-            st.video(video_url)
+    blob_a1 = bucket.blob("조코딩_streaming구현.mp4")
+    video_url = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    st.video(video_url)
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
