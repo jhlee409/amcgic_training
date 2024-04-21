@@ -92,8 +92,7 @@ if st.session_state.get('logged_in'):
         blob_a1 = bucket.blob(selected_thumbnail_path)
         expiration_time = datetime.utcnow() + timedelta(seconds=600)
         video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
-        st.video(video_url)
-
+        st.video(video_url, format="video/mp4", start_time=0, width=400)
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
