@@ -59,6 +59,7 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_thumbnails = "EGD_Hemostasis_training/Default/thumbnails/"
         directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
+        st.session_state.selected_thumbnail_file = None
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
