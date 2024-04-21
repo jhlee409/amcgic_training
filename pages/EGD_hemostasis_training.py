@@ -95,7 +95,7 @@ if st.session_state.get('logged_in'):
         st.write(video_url)
         #st.video(video_url)
         # 동영상 플레이어의 크기를 조정하기 위해 HTML 코드 사용
-        video_html = f'<video width="600" controls><source src="{video_url}" type="video/mp4"></video>'
+        video_html = f'<video width="600" controls key="{video_url}"><source src="{video_url}" type="video/mp4"></video>'
         st.markdown(video_html, unsafe_allow_html=True)
 
     # Function to list files in a specific directory in Firebase Storage
