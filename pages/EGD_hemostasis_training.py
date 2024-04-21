@@ -29,7 +29,7 @@ if st.session_state.get('logged_in'):
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
     blob_a1 = bucket.blob("조코딩_streaming구현.mp4")
-    video_url = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    video_url = blob_a1.generate_signed_url(expiration=timedelta(seconds=600), method='GET')
     st.write(video_url)
     st.video(video_url)
 
