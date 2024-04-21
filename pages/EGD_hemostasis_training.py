@@ -34,7 +34,7 @@ if st.session_state.get('logged_in'):
     # 동영상 파일 표시
     for video_file in video_files:
         if video_file.name.endswith(".mp4"):
-            video_url = storage_client.blob(video_file.name).generate_signed_url(expiration=86400)
+            video_url = storage_client.blob(video_file.name).generate_signed_url(expiration=8400)
             st.write(video_url)
             st.video(video_url)
 
