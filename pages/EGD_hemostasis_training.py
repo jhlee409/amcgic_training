@@ -169,8 +169,8 @@ if st.session_state.get('logged_in'):
     video_list = list_files('amcgi-bulletin.appspot.com', directory_videos)
 
     # 추가: 동영상 파일 선택 드롭다운 메뉴
-    selected_video = st.selectbox("동영상 선택", video_list)
-
+    selected_video = st.sidebar.selectbox("동영상 선택", video_list)
+    
     if selected_video:
         video_path = directory_videos + selected_video
         
