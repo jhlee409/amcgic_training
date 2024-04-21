@@ -86,15 +86,18 @@ if st.session_state.get('logged_in'):
     if selected_video:
         video_path = directory_thumbnails + selected_video
         
+        try:
         # Firebase Storage에서 동영상 파일 다운로드
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        blob = bucket.blob(video_path)
-        
-        # 파일을 바이트로 읽어들임
-        video_bytes = blob.download_as_bytes()
-        
-        # 동영상 재생
-        st.video(video_bytes, format='video/mp4', start_time=0)
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            blob = bucket.blob(video_path)
+            
+            # 파일을 바이트로 읽어들임
+            video_bytes = blob.download_as_bytes()
+            
+            # 동영상 재생
+            st.video(video_bytes, format='video/mp4', start_time=0)
+        except Exception as e:
+            st.error(f"Error loading video: {str(e)}")
 
       # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
