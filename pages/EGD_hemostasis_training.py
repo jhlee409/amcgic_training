@@ -16,9 +16,6 @@ st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
 
 if st.session_state.get('logged_in'):
 
-    # Initialize prompt variable
-    prompt = ""      
-
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
         # Streamlit Secrets에서 Firebase 설정 정보 로드
