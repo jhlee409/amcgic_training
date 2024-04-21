@@ -92,6 +92,7 @@ if st.session_state.get('logged_in'):
         blob_a1 = bucket.blob(selected_thumbnail_path)
         expiration_time = datetime.utcnow() + timedelta(seconds=600)
         video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
+        st.write(video_url)
         # 동영상 플레이어의 크기를 조정하기 위해 HTML 코드 사용
         video_html = f'<video width="600" controls><source src="{video_url}" type="video/mp4"></video>'
         st.markdown(video_html, unsafe_allow_html=True)
