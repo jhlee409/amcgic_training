@@ -25,7 +25,7 @@ if st.session_state.get('logged_in'):
         firebase_admin.initialize_app(cred)
 
     # Firebase Storage 참조 생성
-    storage_client = storage.bucket()
+    storage_client = storage.bucket('amcgi-bulletin.appspot.com')
 
     # MP4 동영상 파일 경로
     video_path = "EGD_Hemostasis_training/stomach_1/thumbnails/"
