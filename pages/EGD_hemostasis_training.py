@@ -86,6 +86,9 @@ if st.session_state.get('logged_in'):
     file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_images)
     selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
 
+    # 동영상 플레이어를 렌더링할 빈 컨테이너 생성
+    video_container = st.empty()
+
     if selected_image_file:
         if selected_image_file != st.session_state.selected_image_file:
             st.session_state.selected_image_file = selected_image_file
