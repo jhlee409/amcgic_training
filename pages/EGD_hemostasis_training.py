@@ -67,13 +67,13 @@ if st.session_state.get('logged_in'):
     
     elif folder_selection == "esophagus":
         directory_images = "EGD_Hemostasis_training/esophagus/images/"
-        directory_instructions = "AI_EGD_Dx_training/esophagus/instructions/"
+        directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
     elif folder_selection == "stomach":
         directory_images = "EGD_Hemostasis_training/stomach/images/"
-        directory_instructions = "AI_EGD_Dx_training/stomach/instructions/"
+        directory_instructions = "EGD_Hemostasis_training/stomach/instructions/"
     else:
         directory_images = "EGD_Hemostasis_training/duodenum/images/"
-        directory_instructions = "AI_EGD_Dx_training/duodenum/instructions/"
+        directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
 
     st.sidebar.divider()
 
