@@ -158,7 +158,7 @@ if st.session_state.get('logged_in'):
                 # 새 윈도우에서 비디오 재생
                 js_code = f"""
                     <script>
-                        window.open('{video_url}', '_blank', 'width=800,height=600');
+                        window.open('{video_url}', '_blank', 'width=1600,height=1200');
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
