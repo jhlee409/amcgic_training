@@ -82,8 +82,8 @@ if st.session_state.get('logged_in'):
     selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
 
     if selected_image_file:
-        if selected_image_file != st.session_state.selected_thumbnail_file:
-            st.session_state.selected_thumbnail_file = selected_image_file
+        if selected_image_file != st.session_state.selected_image_file:
+            st.session_state.selected_image_file = selected_image_file
             selected_image_path = directory_images + selected_image_file
             # Firebase Storage 참조 생성
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
