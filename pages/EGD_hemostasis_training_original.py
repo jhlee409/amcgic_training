@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import os
 from PIL import Image
 import docx
 import io
@@ -41,7 +42,7 @@ if st.session_state.get('logged_in'):
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
           
-        # Function to list files in a specific directory in Firebase Storage
+    # Function to list files in a specific directory in Firebase Storage
     def pre_videos_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -52,6 +53,24 @@ if st.session_state.get('logged_in'):
             if file_name:  # Check to avoid adding empty strings (in case of directories)
                 file_names.append(file_name)
         return file_names
+    
+    # Function to read file content from Firebase Storage
+    def read_docx_file(bucket_name, file_name):
+        bucket = storage.bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        
+        # Download the file to a temporary location
+        temp_file_path = "/tmp/tempfile.docx"
+        blob.download_to_filename(temp_file_path)
+        
+        # Read the content of the DOCX file
+        doc = docx.Document(temp_file_path)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        
+        # Join the text into a single string
+        return '\n'.join(full_text)
     
     # esophagus or stomach selection
     folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach", "duodenum"])
@@ -101,6 +120,17 @@ if st.session_state.get('logged_in'):
             pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state.pre_video_url = pre_video_url
             
+            # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
+            
+            # Read and display the content of the selected DOCX file
+            if selected_instruction_file:
+                full_path = selected_instruction_file
+                prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                st.session_state['prompt'] = prompt
+                #st.text(prompt)  # Display the content of the docx file as text
+            
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
             
@@ -108,47 +138,6 @@ if st.session_state.get('logged_in'):
         with pre_video_container:
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
-
-    # Function to list files in a specific directory in Firebase Storage
-    def list_files(bucket_name, directory):
-        bucket = storage.bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=directory)
-        file_names = []
-        for blob in blobs:
-            # Extracting file name from the path and adding to the list
-            file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
-                file_names.append(file_name)
-        return file_names
-
-    # Function to read file content from Firebase Storage
-    def read_docx_file(bucket_name, file_name):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(file_name)
-        
-        # Download the file to a temporary location
-        temp_file_path = "/tmp/tempfile.docx"
-        blob.download_to_filename(temp_file_path)
-        
-        # Read the content of the DOCX file
-        doc = docx.Document(temp_file_path)
-        full_text = []
-        for para in doc.paragraphs:
-            full_text.append(para.text)
-        
-        # Join the text into a single string
-        return '\n'.join(full_text)
-    
-    # List and select DOCX files
-    file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
-    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions)
-
-    # Read and display the content of the selected DOCX file
-    if selected_instruction_file:
-        full_path = directory_instructions + selected_instruction_file
-        prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-        st.session_state['prompt'] = prompt
-        #st.text(prompt)  # Display the content of the docx file as text
         
     st.sidebar.divider()
 
