@@ -1,5 +1,6 @@
 import streamlit as st
 import time
+import os
 from PIL import Image
 import docx
 import io
@@ -101,6 +102,10 @@ if st.session_state.get('logged_in'):
             pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state.pre_video_url = pre_video_url
             
+            # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.mp4'
+            selected_instruction_file = directory_instructions + instruction_file_name
+            
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
             
@@ -108,18 +113,6 @@ if st.session_state.get('logged_in'):
         with pre_video_container:
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
-
-    # Function to list files in a specific directory in Firebase Storage
-    def list_files(bucket_name, directory):
-        bucket = storage.bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=directory)
-        file_names = []
-        for blob in blobs:
-            # Extracting file name from the path and adding to the list
-            file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
-                file_names.append(file_name)
-        return file_names
 
     # Function to read file content from Firebase Storage
     def read_docx_file(bucket_name, file_name):
@@ -138,10 +131,6 @@ if st.session_state.get('logged_in'):
         
         # Join the text into a single string
         return '\n'.join(full_text)
-    
-    # List and select DOCX files
-    file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
-    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions)
 
     # Read and display the content of the selected DOCX file
     if selected_instruction_file:
