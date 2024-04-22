@@ -153,7 +153,7 @@ if st.session_state.get('logged_in'):
         prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
         
         message = client.beta.threads.messages.create(
-            thread_id = st.session_state.thread_id
+            thread_id = st.session_state.thread_id,
             thread_id=thread_id,
             role="user", 
             content=prompt
