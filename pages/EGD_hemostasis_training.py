@@ -126,7 +126,7 @@ if st.session_state.get('logged_in'):
             
             # Read and display the content of the selected DOCX file
             if selected_instruction_file:
-                full_path = directory_instructions + selected_instruction_file
+                full_path = selected_instruction_file
                 prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
                 st.session_state['prompt'] = prompt
                 #st.text(prompt)  # Display the content of the docx file as text
