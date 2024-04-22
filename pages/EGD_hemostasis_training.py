@@ -170,16 +170,9 @@ if st.session_state.get('logged_in'):
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
-        if user_input.strip():  # Check if user_input is not empty or whitespace
-            prompt = user_input
-        else:
-            print("Please enter a non-empty prompt.")
-            # Handle the case when user_input is empty or whitespace
-            # You can prompt the user to enter a valid input or take appropriate action
+        prompt = user_input.strip()  # Remove leading/trailing whitespace
     else:
-        print("No user input provided.")
-        # Handle the case when user_input is None or not provided
-        # You can prompt the user to enter a valid input or take appropriate action
+        prompt = ""  # Set prompt to empty string if user_input is None or empty
 
     if prompt:
         message = client.beta.threads.messages.create(
@@ -188,52 +181,37 @@ if st.session_state.get('logged_in'):
             content=prompt
         )
 
-    # # 입력한 메세지 UI에 표시
-    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    #     with st.chat_message(message.role):
-    #         st.write(message.content[0].text.value)
+        #RUN을 돌리는 과정
+        run = client.beta.threads.runs.create(
+            thread_id=thread_id,
+            assistant_id=assistant_id,
+        )
 
-    #RUN을 돌리는 과정
-    run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id,
-    )
+        with st.spinner('열일 중...'):
+            #RUN이 completed 되었나 1초마다 체크
+            while run.status != "completed":
+                time.sleep(1)
+                run = client.beta.threads.runs.retrieve(
+                    thread_id=thread_id,
+                    run_id=run.id
+                )
 
-    with st.spinner('열일 중...'):
-        #RUN이 completed 되었나 1초마다 체크
-        while run.status != "completed":
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=thread_id,
-                run_id=run.id
-            )
+        #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+        messages = client.beta.threads.messages.list(
+            thread_id=thread_id
+        )
 
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
+        #메세지 모두 불러오기
+        thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    # # assistant 메세지 UI에 추가하기
-    # #if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    # with st.chat_message(messages.data[0].role):
-    #     st.write(messages.data[0].content[0].text.value)
-
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
-
-    # 로그아웃 버튼 생성
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-
-    for msg in thread_messages.data:
-        # 메시지 내용 확인 및 필터링 조건 추가
-        if msg.content and msg.content[0].text.value:
-            content = msg.content[0].text.value
-            # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
-            if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
-                with st.chat_message(msg.role):
-                    st.write(content)
+        for msg in thread_messages.data:
+            # 메시지 내용 확인 및 필터링 조건 추가
+            if msg.content and msg.content[0].text.value:
+                content = msg.content[0].text.value
+                # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
+                if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
+                    with st.chat_message(msg.role):
+                        st.write(content)
         
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
