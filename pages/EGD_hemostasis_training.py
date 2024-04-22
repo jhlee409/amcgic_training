@@ -154,7 +154,6 @@ if st.session_state.get('logged_in'):
         
         message = client.beta.threads.messages.create(
             thread_id = st.session_state.thread_id,
-            thread_id=thread_id,
             role="user", 
             content=prompt
         )
