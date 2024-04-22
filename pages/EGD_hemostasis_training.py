@@ -98,10 +98,10 @@ if st.session_state.get('logged_in'):
             video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state.video_url = video_url
 
-        # 동영상 플레이어 렌더링
-        if 'video_url' in st.session_state:
-            video_html = f'<video width="500" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
-            st.markdown(video_html, unsafe_allow_html=True)
+            # 동영상 플레이어 렌더링
+            if 'video_url' in st.session_state:
+                video_html = f'<video width="500" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
+                st.markdown(video_html, unsafe_allow_html=True)
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
