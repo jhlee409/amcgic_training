@@ -40,7 +40,12 @@ if st.session_state.get('logged_in'):
     # Display Form Title
     st.subheader("EGD_Hemostasis_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
+        st.write("- 가장 먼저 왼쪽 sidebar에서 default는 '초기화'입니다. 잠시 기다렸다가 esophagus, stomach, duodenum 중 한 가지를 선택합니다.")
+        st.write("- 그 아래에서 pre_video를 선택해서 기다리시면 화면에 안내가 나옵니다. 그 안내를 따라가시면 됩니다.")
+        st.write("- 마지막에 실제 지혈술의 동영상을 보려면 왼쪽 sidebar에 'play' 버튼을 누르시면 됩니다.")
+        st.write("- 한 증례가 끝나고 다음 증례로 넘어가시려면, 먼저 왼쪽의 '초기화' 버튼을 선택하여 초기화 하고, 처음 과정부터 다시 시작하시면 됩니다.")
+        st.write("- 각 단계마다 반드시 '열일 중이니 기다려 주세요...' 스핀이 멈출 때까지 기다리세요. 스핀 돌고있는 도중에 다른 버튼 누르면 오류납니다.")
+        st.write("- 얘가 융통성이 없습니다. 관련없는 엉뚱한 대답을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
           
     # Function to list files in a specific directory in Firebase Storage
     def pre_videos_list_files(bucket_name, directory):
@@ -73,7 +78,7 @@ if st.session_state.get('logged_in'):
         return '\n'.join(full_text)
     
     # esophagus or stomach selection
-    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach", "duodenum"])
+    folder_selection = st.sidebar.radio("선택 버튼", ["초기화", "esophagus", "stomach", "duodenum"])
     
     directory_videos = "EGD_Hemostasis_training/videos/"
 
