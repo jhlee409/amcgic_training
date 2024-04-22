@@ -96,7 +96,6 @@ if st.session_state.get('logged_in'):
             blob_a1 = bucket.blob(selected_image_path)
             expiration_time = datetime.utcnow() + timedelta(seconds=1600)
             video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
-            st.write(video_url)
             st.session_state.video_url = video_url
 
         # 동영상 플레이어 렌더링
