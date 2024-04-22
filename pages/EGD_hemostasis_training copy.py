@@ -86,28 +86,22 @@ if st.session_state.get('logged_in'):
     file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_images)
     selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
 
-    # 동영상 플레이어를 렌더링할 컨테이너 생성
-    video_container = st.container()
-
     if selected_image_file:
-        if selected_image_file != st.session_state.get('selected_image_file', ''):
+        if selected_image_file != st.session_state.selected_image_file:
             st.session_state.selected_image_file = selected_image_file
             selected_image_path = directory_images + selected_image_file
-            
             # Firebase Storage 참조 생성
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
+
             blob = bucket.blob(selected_image_path)
             expiration_time = datetime.utcnow() + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state.video_url = video_url
-            
-            # 이전 동영상 플레이어 지우기
-            video_container.empty()
-            
-            # 새로운 동영상 플레이어 렌더링
-            with video_container:
-                video_html = f'<video width="500" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
-                st.markdown(video_html, unsafe_allow_html=True)
+
+        # 동영상 플레이어 렌더링
+        if 'video_url' in st.session_state:
+            video_html = f'<video width="500" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
+            st.markdown(video_html, unsafe_allow_html=True)
 
     # Function to list files in a specific directory in Firebase Storage
     def list_files(bucket_name, directory):
