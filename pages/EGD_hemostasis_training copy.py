@@ -170,9 +170,16 @@ if st.session_state.get('logged_in'):
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
-        prompt = user_input.strip()  # Remove leading/trailing whitespace
+        if user_input.strip():  # Check if user_input is not empty or whitespace
+            prompt = user_input
+        else:
+            print("Please enter a non-empty prompt.")
+            # Handle the case when user_input is empty or whitespace
+            # You can prompt the user to enter a valid input or take appropriate action
     else:
-        prompt = ""  # Set prompt to empty string if user_input is None or empty
+        print("No user input provided.")
+        # Handle the case when user_input is None or not provided
+        # You can prompt the user to enter a valid input or take appropriate action
 
     if prompt:
         message = client.beta.threads.messages.create(
@@ -186,20 +193,20 @@ if st.session_state.get('logged_in'):
     #     with st.chat_message(message.role):
     #         st.write(message.content[0].text.value)
 
-        #RUN을 돌리는 과정
-        run = client.beta.threads.runs.create(
-            thread_id=thread_id,
-            assistant_id=assistant_id,
-        )
+    #RUN을 돌리는 과정
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+    )
 
-        with st.spinner('열일 중...'):
-            #RUN이 completed 되었나 1초마다 체크
-            while run.status != "completed":
-                time.sleep(1)
-                run = client.beta.threads.runs.retrieve(
-                    thread_id=thread_id,
-                    run_id=run.id
-                )
+    with st.spinner('열일 중...'):
+        #RUN이 completed 되었나 1초마다 체크
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run.id
+            )
 
     #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
     messages = client.beta.threads.messages.list(
