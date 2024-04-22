@@ -87,7 +87,7 @@ if st.session_state.get('logged_in'):
     if 'selected_thumbnail_file' not in st.session_state:
         st.session_state.selected_thumbnail_file = None
 
-    # List and select PNG files
+    # List and select mp4 files
     file_list_thumbnails = video_list_files('amcgi-bulletin.appspot.com', directory_thumbnails)
     selected_thumbnail_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_thumbnails, key="thumbnail_selectbox")
 
