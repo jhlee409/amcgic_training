@@ -37,12 +37,12 @@ if st.session_state.get('logged_in'):
     client = OpenAI()
 
     # Display Form Title
-    st.subheader("EGD_Dx_training")
+    st.subheader("EGD_Hemostasis_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
-        
+          
         # Function to list files in a specific directory in Firebase Storage
-    def video_list_files(bucket_name, directory):
+    def mp4_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
         file_names = []
@@ -53,15 +53,12 @@ if st.session_state.get('logged_in'):
                 file_names.append(file_name)
         return file_names
     
-    # F1 or F2 selection
-    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach_1", "stomach_2", "duodenum"])
+    # esophagus or stomach selection
+    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach", "duodenum"])
 
     if folder_selection == "초기화":
-        directory_thumbnails = "EGD_Hemostasis_training/Default/thumbnails/"
-        directory_instructions = "EGD_Hemostasis_training/Default/instructions/"
-        st.session_state.selected_thumbnail_file = None
-        video_url = None
-        st.session_state.video_url = video_url
+        directory_images = "EGD_Hemostasis_training/default/images/"
+        directory_instructions = "EGD_Hemostasis_training/default/instructions/"
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
@@ -69,32 +66,25 @@ if st.session_state.get('logged_in'):
         #st.experimental_rerun()
     
     elif folder_selection == "esophagus":
-        directory_thumbnails = "EGD_Hemostasis_training/esophagus/thumbnails/"
-        directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
-    elif folder_selection == "stomach_1":
-        directory_thumbnails = "EGD_Hemostasis_training/stomach_1/thumbnails/"
-        directory_instructions = "EGD_Hemostasis_training/stomach_1/instructions/"
-    elif folder_selection == "stomach_2":
-        directory_thumbnails = "EGD_Hemostasis_training/stomach_2/thumbnails/"
-        directory_instructions = "EGD_Hemostasis_training/stomach_2/instructions/"
+        directory_images = "EGD_Hemostasis_training/esophagus/images/"
+        directory_instructions = "AI_EGD_Dx_training/esophagus/instructions/"
+    elif folder_selection == "stomach":
+        directory_images = "EGD_Hemostasis_training/stomach/images/"
+        directory_instructions = "AI_EGD_Dx_training/stomach/instructions/"
     else:
-        directory_thumbnails = "EGD_Hemostasis_training/duodenum/thumbnails/"
-        directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
+        directory_images = "EGD_Hemostasis_training/duodenum/images/"
+        directory_instructions = "AI_EGD_Dx_training/duodenum/instructions/"
 
     st.sidebar.divider()
 
-    # 선택한 동영상 파일을 세션 상태에 저장
-    if 'selected_thumbnail_file' not in st.session_state:
-        st.session_state.selected_thumbnail_file = None
+    # List and select PNG files
+    file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_images)
+    selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
 
-    # List and select mp4 files
-    file_list_thumbnails = video_list_files('amcgi-bulletin.appspot.com', directory_thumbnails)
-    selected_thumbnail_file = st.sidebar.selectbox(f"증례를 선택하세요.", file_list_thumbnails, key="thumbnail_selectbox")
-
-    if selected_thumbnail_file:
-        if selected_thumbnail_file != st.session_state.selected_thumbnail_file:
-            st.session_state.selected_thumbnail_file = selected_thumbnail_file
-            selected_thumbnail_path = directory_thumbnails + selected_thumbnail_file   
+    if selected_image_file:
+        if selected_image_file != st.session_state.selected_thumbnail_file:
+            st.session_state.selected_thumbnail_file = selected_image_file
+            selected_thumbnail_path = directory_images + selected_image_file
             # Firebase Storage 참조 생성
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
@@ -141,11 +131,7 @@ if st.session_state.get('logged_in'):
     
     # List and select DOCX files
     file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
-    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions, key="instruction_selectbox")
-    st.session_state.prompt = ""
-    thread = client.beta.threads.create()
-    st.session_state.thread_id = thread.id
-    st.session_state['messages'] = []
+    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions)
 
     # Read and display the content of the selected DOCX file
     if selected_instruction_file:
