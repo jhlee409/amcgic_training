@@ -121,7 +121,7 @@ if st.session_state.get('logged_in'):
             st.session_state.pre_video_url = pre_video_url
             
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
-            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.mp4'
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
             
             # Read and display the content of the selected DOCX file
