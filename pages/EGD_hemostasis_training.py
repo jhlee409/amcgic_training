@@ -88,6 +88,7 @@ if st.session_state.get('logged_in'):
 
     if selected_image_file:
         if selected_image_file != st.session_state.selected_image_file:
+            st.session_state.selected_image_file = None
             st.session_state.selected_image_file = selected_image_file
             selected_image_path = directory_images + selected_image_file
             # Firebase Storage 참조 생성
