@@ -129,6 +129,7 @@ if st.session_state.get('logged_in'):
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
             video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
             selected_video_file = directory_videos + video_name
+            st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
             
             # Read and display the content of the selected DOCX file
             if selected_instruction_file:
@@ -147,10 +148,10 @@ if st.session_state.get('logged_in'):
         
         # 'play' 버튼 추가
         if st.sidebar.button('Play'):
-            if selected_video_file:
+            if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
                 # Firebase Storage 참조 생성
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                blob = bucket.blob(selected_video_file)
+                blob = bucket.blob(st.session_state.selected_video_file)
                 expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                 
