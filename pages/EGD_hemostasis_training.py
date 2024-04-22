@@ -144,6 +144,23 @@ if st.session_state.get('logged_in'):
         with pre_video_container:
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
+
+    # 'play' 버튼 추가
+    if st.sidebar.button('Play'):
+        if selected_video_file:
+            # Firebase Storage 참조 생성
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            blob = bucket.blob(selected_video_file)
+            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+            
+            # 새 윈도우에서 비디오 재생
+            js_code = f"""
+                <script>
+                    window.open('{video_url}', '_blank', 'width=800,height=600');
+                </script>
+            """
+            st.components.v1.html(js_code, height=0)
         
     st.sidebar.divider()
 
