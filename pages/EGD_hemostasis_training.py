@@ -57,7 +57,7 @@ if st.session_state.get('logged_in'):
     folder_selection = st.sidebar.radio("Select Folder", ["초기화", "esophagus", "stomach", "duodenum"])
 
     if folder_selection == "초기화":
-        directory_images = "EGD_Hemostasis_training/default/images/"
+        directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
         st.session_state.prompt = ""
         thread = client.beta.threads.create()
@@ -66,47 +66,47 @@ if st.session_state.get('logged_in'):
         #st.experimental_rerun()
     
     elif folder_selection == "esophagus":
-        directory_images = "EGD_Hemostasis_training/esophagus/images/"
+        directory_pre_videos = "EGD_Hemostasis_training/esophagus/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
     elif folder_selection == "stomach":
-        directory_images = "EGD_Hemostasis_training/stomach/images/"
+        directory_pre_videos = "EGD_Hemostasis_training/stomach/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/stomach/instructions/"
     else:
-        directory_images = "EGD_Hemostasis_training/duodenum/images/"
+        directory_pre_videos = "EGD_Hemostasis_training/duodenum/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
 
     st.sidebar.divider()
 
     # 선택한 동영상 파일을 세션 상태에 저장
-    if 'selected_image_file' not in st.session_state:
-        st.session_state.selected_image_file = None
+    if 'selected_pre_videos_file' not in st.session_state:
+        st.session_state.selected_pre_videos_file = None
 
 
     # List and select PNG files
-    file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_images)
-    selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
+    file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
+    selected_pre_videos_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     video_container = st.container()
 
-    if selected_image_file:
-        if selected_image_file != st.session_state.get('selected_image_file', ''):
-            st.session_state.selected_image_file = selected_image_file
-            selected_image_path = directory_images + selected_image_file
+    if selected_pre_videos_file:
+        if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
+            st.session_state.selected_pre_videos_file = selected_pre_videos_file
+            selected_pre_videos_path = directory_pre_videos + selected_pre_videos_file
             
             # Firebase Storage 참조 생성
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            blob = bucket.blob(selected_image_path)
+            blob = bucket.blob(selected_pre_videos_path)
             expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            st.session_state.video_url = video_url
+            pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+            st.session_state.pre_video_url = pre_video_url
             
             # 이전 동영상 플레이어 지우기
             video_container.empty()
             
         # 새로운 동영상 플레이어 렌더링
         with video_container:
-            video_html = f'<video width="500" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
+            video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
     # Function to list files in a specific directory in Firebase Storage
