@@ -129,23 +129,6 @@ if st.session_state.get('logged_in'):
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
             video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
             selected_video_file = directory_videos + video_name
-
-                # 'play' 버튼 추가
-            if st.sidebar.button('Play'):
-                if selected_video_file:
-                    # Firebase Storage 참조 생성
-                    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                    blob = bucket.blob(selected_video_file)
-                    expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-                    video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                    
-                    # 새 윈도우에서 비디오 재생
-                    js_code = f"""
-                        <script>
-                            window.open('{video_url}', '_blank', 'width=800,height=600');
-                        </script>
-                    """
-                    st.components.v1.html(js_code, height=0)
             
             # Read and display the content of the selected DOCX file
             if selected_instruction_file:
@@ -162,6 +145,23 @@ if st.session_state.get('logged_in'):
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
         
+        # 'play' 버튼 추가
+        if st.sidebar.button('Play'):
+            if selected_video_file:
+                # Firebase Storage 참조 생성
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                blob = bucket.blob(selected_video_file)
+                expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                
+                # 새 윈도우에서 비디오 재생
+                js_code = f"""
+                    <script>
+                        window.open('{video_url}', '_blank', 'width=800,height=600');
+                    </script>
+                """
+                st.components.v1.html(js_code, height=0)
+
     st.sidebar.divider()
 
     # Manage thread id
