@@ -94,7 +94,7 @@ if st.session_state.get('logged_in'):
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
             blob_a1 = bucket.blob(selected_image_path)
-            expiration_time = datetime.utcnow() + timedelta(seconds=600)
+            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
             video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state.video_url = video_url
 
