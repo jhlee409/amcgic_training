@@ -77,6 +77,11 @@ if st.session_state.get('logged_in'):
 
     st.sidebar.divider()
 
+    # 선택한 동영상 파일을 세션 상태에 저장
+    if 'selected_image_file' not in st.session_state:
+        st.session_state.selected_image_file = None
+
+
     # List and select PNG files
     file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_images)
     selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
