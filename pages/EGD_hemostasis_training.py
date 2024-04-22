@@ -195,7 +195,7 @@ if st.session_state.get('logged_in'):
         assistant_id=assistant_id,
     )
 
-    with st.spinner('열일 중...'):
+    with st.spinner('열일 중이니 기다려 주세요...'):
         #RUN이 completed 되었나 1초마다 체크
         while run.status != "completed":
             time.sleep(1)
