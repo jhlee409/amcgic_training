@@ -42,7 +42,7 @@ if st.session_state.get('logged_in'):
         st.write("- 얘가 융통성이 없습니다. 너무 짧은 대답(예 n)을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
           
         # Function to list files in a specific directory in Firebase Storage
-    def mp4_list_files(bucket_name, directory):
+    def pre_videos_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
         file_names = []
@@ -83,8 +83,8 @@ if st.session_state.get('logged_in'):
 
 
     # List and select PNG files
-    file_list_images = mp4_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
-    selected_pre_videos_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
+    file_list_pre_videos = pre_videos_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
+    selected_pre_videos_file = st.sidebar.selectbox(f"pre_video를 선택하세요.", file_list_pre_videos)
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     video_container = st.container()
