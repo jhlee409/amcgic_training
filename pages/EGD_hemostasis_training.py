@@ -149,14 +149,10 @@ if st.session_state.get('logged_in'):
 
     # Read and display the content of the selected DOCX file
     if selected_instruction_file:
-        full_path = directory_instructions + selected_instruction_file 
+        full_path = directory_instructions + selected_instruction_file
         prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-        
-        message = client.beta.threads.messages.create(
-            thread_id = st.session_state.thread_id,
-            role="user", 
-            content=prompt
-        )
+        st.session_state['prompt'] = prompt
+        #st.text(prompt)  # Display the content of the docx file as text
         
     st.sidebar.divider()
 
@@ -174,16 +170,16 @@ if st.session_state.get('logged_in'):
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
-        if user_input.strip():
-            user_message = client.beta.threads.messages.create(
-                thread_id=thread_id,
-                role="user",
-                content=user_input 
-            )
+        if user_input.strip():  # Check if user_input is not empty or whitespace
+            prompt = user_input
         else:
             print("Please enter a non-empty prompt.")
+            # Handle the case when user_input is empty or whitespace
+            # You can prompt the user to enter a valid input or take appropriate action
     else:
         print("No user input provided.")
+        # Handle the case when user_input is None or not provided
+        # You can prompt the user to enter a valid input or take appropriate action
 
     if prompt:
         message = client.beta.threads.messages.create(
