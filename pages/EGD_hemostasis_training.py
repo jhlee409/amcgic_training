@@ -84,11 +84,11 @@ if st.session_state.get('logged_in'):
     if selected_image_file:
         if selected_image_file != st.session_state.selected_thumbnail_file:
             st.session_state.selected_thumbnail_file = selected_image_file
-            selected_thumbnail_path = directory_images + selected_image_file
+            selected_image_path = directory_images + selected_image_file
             # Firebase Storage 참조 생성
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
-            blob_a1 = bucket.blob(selected_thumbnail_path)
+            blob_a1 = bucket.blob(selected_image_path)
             expiration_time = datetime.utcnow() + timedelta(seconds=600)
             video_url = blob_a1.generate_signed_url(expiration=expiration_time, method='GET')
             st.write(video_url)
