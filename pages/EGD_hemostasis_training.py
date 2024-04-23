@@ -168,8 +168,6 @@ if st.session_state.get('logged_in'):
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
-
-    st.sidebar.divider()
     
     # '진행' 버튼 추가
     if st.sidebar.button('진행'):
@@ -182,7 +180,9 @@ if st.session_state.get('logged_in'):
             </script>
         """
         # JavaScript 코드 실행
-        st.components.v1.html(js_code, height=0)
+        st.components.v1.html(js_code, height=0)     
+    
+    st.sidebar.divider()
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
