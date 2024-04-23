@@ -94,44 +94,6 @@ if selected_image_file:
     
     st.image(image, width=display_width)
 
-
-    # 선택된 PNG 파일의 이름에서 확장자를 제거하여 DOCX 파일 이름 생성
-    selected_docx_file_1 = os.path.splitext(selected_image_file)[0] + ".docx"
-    #selected_docx_file_2 = os.path.splitext(selected_image_file)[0] + "_2.docx"
-
-    # DOCX 파일의 전체 경로
-    selected_docx_path_1 = os.path.join(directory_instructions, selected_docx_file_1)
-    #selected_docx_path_2 = os.path.join(directory_instructions, selected_docx_file_2)
-
-    # DOCX 파일이 존재하는지 확인
-    if os.path.exists(selected_docx_path_1):
-        # '_1.docx' 파일 표시
-        with open(selected_docx_path_1, "rb") as file:
-            docx_bytes_1 = file.read()
-        st.download_button(
-            label="Download '.docx'",
-            data=docx_bytes_1,
-            file_name=selected_docx_file_1,
-            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        )
-    else:
-        st.error(f"File not found: {selected_docx_file_1}")
-
-    # # 사이드바에 '진행' 버튼 추가
-    # if st.sidebar.button("진행"):
-    #     if os.path.exists(selected_docx_path_2):
-    #         # '_2.docx' 파일 표시
-    #         with open(selected_docx_path_2, "rb") as file:
-    #             docx_bytes_2 = file.read()
-    #         st.download_button(
-    #             label="Download '_2.docx'",
-    #             data=docx_bytes_2,
-    #             file_name=selected_docx_file_2,
-    #             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-    #         )
-    #     else:
-    #         st.error(f"File not found: {selected_docx_file_2}")
-
 st.sidebar.divider()
 
 # 로그아웃 버튼 생성
