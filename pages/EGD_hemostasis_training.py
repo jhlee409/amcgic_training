@@ -168,22 +168,6 @@ if st.session_state.get('logged_in'):
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
-            
-        if st.sidebar.button('진행'):
-            # 사용자의 입력을 세션 상태에 저장
-            st.session_state.user_input = "y"
-            # Streamlit 앱 재실행
-            st.experimental_rerun()
-
-    # 사용자 입력을 처리하는 부분
-    if st.session_state.get('user_input') == "y":
-        # 사용자가 입력한 "y"에 대한 처리 로직을 여기에 작성
-        # 예를 들어, 다음 단계로 진행하는 코드 등
-        st.write("다음 단계로 진행합니다.")
-        
-        # 세션 상태에서 user_input 제거
-        st.session_state.pop('user_input', None)
-                
 
     st.sidebar.divider()
 
