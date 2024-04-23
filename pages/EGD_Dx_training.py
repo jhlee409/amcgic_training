@@ -111,8 +111,6 @@ if selected_image_file:
     else:
         st.error(f"파일을 찾을 수 없습니다: {selected_instruction_file_1}")
 
-    st.markdown(contents_1)
-
     if st.sidebar.button("진행"):
         st.session_state.progress_button_clicked = True
 
