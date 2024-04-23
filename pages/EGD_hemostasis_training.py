@@ -103,19 +103,6 @@ if st.session_state.get('logged_in'):
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
 
     st.sidebar.divider()
-    
-    # '진행' 버튼 추가
-    if st.sidebar.button('진행'):
-        # 키보드로 'y' 입력 및 엔터 키 누르는 JavaScript 코드
-        js_code = """
-            <script>
-                var inputField = document.querySelector("input[type='text']");
-                inputField.value = "y";
-                inputField.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-            </script>
-        """
-        # JavaScript 코드 실행
-        st.components.v1.html(js_code, height=0)
 
     # 선택한 동영상 파일을 세션 상태에 저장
     if 'selected_pre_videos_file' not in st.session_state:
@@ -181,6 +168,21 @@ if st.session_state.get('logged_in'):
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
+            
+        if st.sidebar.button('진행'):
+            # 사용자의 입력을 세션 상태에 저장
+            st.session_state.user_input = "y"
+            # Streamlit 앱 재실행
+            st.experimental_rerun()
+
+# 사용자 입력을 처리하는 부분
+if st.session_state.get('user_input') == "y":
+    # 사용자가 입력한 "y"에 대한 처리 로직을 여기에 작성
+    # 예를 들어, 다음 단계로 진행하는 코드 등
+    st.write("다음 단계로 진행합니다.")
+    
+    # 세션 상태에서 user_input 제거
+    st.session_state.pop('user_input', None)
             
 
     st.sidebar.divider()
