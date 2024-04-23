@@ -137,8 +137,6 @@ if st.session_state.get('logged_in'):
         if selected_instruction_file:
             prompt = read_docx_file('amcgi-bulletin.appspot.com', selected_instruction_file)
             st.session_state['prompt'] = prompt
-      
-    st.sidebar.divider()
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
@@ -157,6 +155,8 @@ if st.session_state.get('logged_in'):
         # 사용자 입력 창에 'y' 입력 및 엔터 효과 적용
         user_input = 'y'
         prompt = user_input
+        
+    st.sidebar.divider()
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
