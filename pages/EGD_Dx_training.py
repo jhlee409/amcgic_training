@@ -94,32 +94,43 @@ if selected_image_file:
     
     st.image(image, width=display_width)
 
-    # 선택한 image와 같은 이름의 txt 파일 찾기
-    instruction_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1' + '.txt'
-    selected_instruction_file_1 = directory_instructions + instruction_file_name_1
 
-    instruction_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2' + '.txt'
-    selected_instruction_file_2 = directory_instructions + instruction_file_name_2
-   
-    if 'progress_button_clicked' not in st.session_state:
-        st.session_state.progress_button_clicked = False
+    # 선택된 PNG 파일의 이름에서 확장자를 제거하여 DOCX 파일 이름 생성
+    selected_docx_file_1 = os.path.splitext(selected_image_file)[0] + "_1.docx"
+    selected_docx_file_2 = os.path.splitext(selected_image_file)[0] + "_2.docx"
 
-    if os.path.exists(selected_instruction_file_1):
-        with open(selected_instruction_file_1, "r", encoding="utf-8") as f:
-            contents_1 = f.read()
-        st.markdown(contents_1)
+    # DOCX 파일의 전체 경로
+    selected_docx_path_1 = os.path.join(directory_instructions, selected_docx_file_1)
+    selected_docx_path_2 = os.path.join(directory_instructions, selected_docx_file_2)
+
+    # DOCX 파일이 존재하는지 확인
+    if os.path.exists(selected_docx_path_1):
+        # '_1.docx' 파일 표시
+        with open(selected_docx_path_1, "rb") as file:
+            docx_bytes_1 = file.read()
+        st.download_button(
+            label="Download '_1.docx'",
+            data=docx_bytes_1,
+            file_name=selected_docx_file_1,
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        )
     else:
-        st.error(f"파일을 찾을 수 없습니다: {selected_instruction_file_1}")
+        st.error(f"File not found: {selected_docx_file_1}")
 
+    # 사이드바에 '진행' 버튼 추가
     if st.sidebar.button("진행"):
-        st.session_state.progress_button_clicked = True
-
-    if st.session_state.progress_button_clicked:
-        with open(selected_instruction_file_2, "r", encoding="utf-8") as f:
-            contents_2 = f.read()
-        st.markdown(contents_2)
-    else:
-        st.error(f"파일을 찾을 수 없습니다: {selected_instruction_file_2}")
+        if os.path.exists(selected_docx_path_2):
+            # '_2.docx' 파일 표시
+            with open(selected_docx_path_2, "rb") as file:
+                docx_bytes_2 = file.read()
+            st.download_button(
+                label="Download '_2.docx'",
+                data=docx_bytes_2,
+                file_name=selected_docx_file_2,
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
+        else:
+            st.error(f"File not found: {selected_docx_file_2}")
 
 st.sidebar.divider()
 
