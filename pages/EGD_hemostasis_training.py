@@ -249,10 +249,10 @@ if st.session_state.get('logged_in'):
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    # 로그아웃 버튼 생성
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+    # # 로그아웃 버튼 생성
+    # if st.sidebar.button('로그아웃'):
+    #     st.session_state.logged_in = False
+    #     st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
 
     for msg in thread_messages.data:
         # 메시지 내용 확인 및 필터링 조건 추가
