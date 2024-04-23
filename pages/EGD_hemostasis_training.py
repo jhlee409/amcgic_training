@@ -152,37 +152,42 @@ if st.session_state.get('logged_in'):
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
         
-    # '진행' 버튼 추가
-    if st.sidebar.button('진행'):
-        # 키보드로 'y' 입력 및 엔터 키 누르는 JavaScript 코드
-        js_code = """
-            <script>
-                var inputField = document.querySelector("input[type='text']");
-                inputField.value = "y";
-                inputField.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-            </script>
-        """
-        # JavaScript 코드 실행
-        st.components.v1.html(js_code, height=0)
-
-    st.sidebar.divider()
-    
-    # 'play' 버튼 추가
-    if st.sidebar.button('Play'):
-        if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
-            # Firebase Storage 참조 생성
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            blob = bucket.blob(st.session_state.selected_video_file)
-            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            
-            # 새 윈도우에서 비디오 재생
-            js_code = f"""
+        # '진행' 버튼 추가
+        if st.sidebar.button('진행'):
+            # 키보드로 'y' 입력 및 엔터 키 누르는 JavaScript 코드
+            js_code = """
                 <script>
-                    window.open('{video_url}', '_blank', 'width=1600,height=1200');
+                    var inputField = document.querySelector("input[type='text']");
+                    inputField.value = "y";
+                    inputField.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
                 </script>
             """
+            # JavaScript 코드 실행
             st.components.v1.html(js_code, height=0)
+            
+        st.sidebar.divider()
+        
+        # 'play' 버튼 추가
+        if st.sidebar.button('Play'):
+            if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
+                # Firebase Storage 참조 생성
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                blob = bucket.blob(st.session_state.selected_video_file)
+                expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                
+                # 새 윈도우에서 비디오 재생
+                js_code = f"""
+                    <script>
+                        window.open('{video_url}', '_blank', 'width=1600,height=1200');
+                    </script>
+                """
+                st.components.v1.html(js_code, height=0)
+        
+        
+
+
+    
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
