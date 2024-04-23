@@ -105,7 +105,7 @@ if selected_image_file:
         st.session_state.progress_button_clicked = False
 
     if os.path.exists(selected_instruction_file_1):
-        with open(selected_instruction_file_1, "r") as f:
+        with open(selected_instruction_file_1, "r", encoding="utf-8") as f:
             contents_1 = f.read()
         st.markdown(contents_1)
     else:
@@ -115,9 +115,11 @@ if selected_image_file:
         st.session_state.progress_button_clicked = True
 
     if st.session_state.progress_button_clicked:
-        with open(selected_instruction_file_2, "r") as f:
+        with open(selected_instruction_file_2, "r", encoding="utf-8") as f:
             contents_2 = f.read()
         st.markdown(contents_2)
+    else:
+        st.error(f"파일을 찾을 수 없습니다: {selected_instruction_file_2}")
 
 st.sidebar.divider()
 
