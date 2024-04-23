@@ -3,7 +3,6 @@ import time
 from PIL import Image
 import docx
 import io
-import os
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
@@ -57,8 +56,13 @@ if st.session_state.get('logged_in'):
         blob.download_to_file(image_stream)
         image_stream.seek(0)
         return Image.open(image_stream)
+
+    # # Function to display image in sidebar or main page
+    # def display_large_image(image):
+    #     with st.expander("Full-size Image"):
+    #         st.image(image, use_column_width=True)
         
-    # Function to list files in a specific directory in Firebase Storage
+        # Function to list files in a specific directory in Firebase Storage
     def png_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -70,24 +74,6 @@ if st.session_state.get('logged_in'):
                 file_names.append(file_name)
         return file_names
     
-    # Function to read file content from Firebase Storage
-    def read_docx_file(bucket_name, file_name):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(file_name)
-        
-        # Download the file to a temporary location
-        temp_file_path = "/tmp/tempfile.docx"
-        blob.download_to_filename(temp_file_path)
-        
-        # Read the content of the DOCX file
-        doc = docx.Document(temp_file_path)
-        full_text = []
-        for para in doc.paragraphs:
-            full_text.append(para.text)
-        
-        # Join the text into a single string
-        return '\n'.join(full_text)
-
     # F1 or F2 selection
     folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2", "working"])
 
@@ -129,15 +115,47 @@ if st.session_state.get('logged_in'):
         
         st.image(image, width=display_width)
 
-        # 선택한 image와 같은 이름의 docx 파일 찾기
-        instruction_file_name = os.path.splitext(selected_image_file)[0] + '.docx'
-        selected_instruction_file = directory_instructions + instruction_file_name
+    # Function to list files in a specific directory in Firebase Storage
+    def list_files(bucket_name, directory):
+        bucket = storage.bucket(bucket_name)
+        blobs = bucket.list_blobs(prefix=directory)
+        file_names = []
+        for blob in blobs:
+            # Extracting file name from the path and adding to the list
+            file_name = blob.name[len(directory):]  # Remove directory path from file name
+            if file_name:  # Check to avoid adding empty strings (in case of directories)
+                file_names.append(file_name)
+        return file_names
 
-        # Read and display the content of the selected DOCX file
-        if selected_instruction_file:
-            prompt = read_docx_file('amcgi-bulletin.appspot.com', selected_instruction_file)
-            st.session_state['prompt'] = prompt
-      
+    # Function to read file content from Firebase Storage
+    def read_docx_file(bucket_name, file_name):
+        bucket = storage.bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        
+        # Download the file to a temporary location
+        temp_file_path = "/tmp/tempfile.docx"
+        blob.download_to_filename(temp_file_path)
+        
+        # Read the content of the DOCX file
+        doc = docx.Document(temp_file_path)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        
+        # Join the text into a single string
+        return '\n'.join(full_text)
+    
+    # List and select DOCX files
+    file_list_instructions = list_files('amcgi-bulletin.appspot.com', directory_instructions)
+    selected_instruction_file = st.sidebar.selectbox(f"case instruction 파일을 선택하세요.", file_list_instructions)
+
+    # Read and display the content of the selected DOCX file
+    if selected_instruction_file:
+        full_path = directory_instructions + selected_instruction_file
+        prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+        st.session_state['prompt'] = prompt
+        #st.text(prompt)  # Display the content of the docx file as text
+        
     st.sidebar.divider()
 
     # Manage thread id
