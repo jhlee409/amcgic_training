@@ -168,12 +168,6 @@ if st.session_state.get('logged_in'):
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
-                
-        # '진행' 버튼 추가
-        if st.sidebar.button('진행'):
-            # 사용자 입력 창에 'y' 입력 및 엔터 효과 적용
-            user_input = 'y'
-            prompt = user_input
 
     st.sidebar.divider()
 
