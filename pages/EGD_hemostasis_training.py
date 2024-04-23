@@ -167,7 +167,9 @@ if st.session_state.get('logged_in'):
                         window.open('{video_url}', '_blank', 'width=1600,height=1200');
                     </script>
                 """
-                st.components.v1.html(js_code, height=0)
+                st.components.v1.html(js_code, height=0) 
+    
+    st.sidebar.divider()
     
     # '진행' 버튼 추가
     if st.sidebar.button('진행'):
@@ -180,9 +182,7 @@ if st.session_state.get('logged_in'):
             </script>
         """
         # JavaScript 코드 실행
-        st.components.v1.html(js_code, height=0)     
-    
-    st.sidebar.divider()
+        st.components.v1.html(js_code, height=0)    
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
