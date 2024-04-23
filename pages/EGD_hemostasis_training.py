@@ -112,19 +112,6 @@ if st.session_state.get('logged_in'):
     # List and select PNG files
     file_list_pre_videos = pre_videos_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
     selected_pre_videos_file = st.sidebar.selectbox(f"pre_video를 선택하세요.", file_list_pre_videos)
-    
-    # '진행' 버튼 추가
-    if st.sidebar.button('진행'):
-        # 키보드로 'y' 입력 및 엔터 키 누르는 JavaScript 코드
-        js_code = """
-            <script>
-                var inputField = document.querySelector("input[type='text']");
-                inputField.value = "y";
-                inputField.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-            </script>
-        """
-        # JavaScript 코드 실행
-        st.components.v1.html(js_code, height=0)
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     pre_video_container = st.container()
@@ -181,6 +168,21 @@ if st.session_state.get('logged_in'):
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
+                
+    st.divider()
+                
+    # '진행' 버튼 추가
+    if st.sidebar.button('진행'):
+        # 키보드로 'y' 입력 및 엔터 키 누르는 JavaScript 코드
+        js_code = """
+            <script>
+                var inputField = document.querySelector("input[type='text']");
+                inputField.value = "y";
+                inputField.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
+            </script>
+        """
+        # JavaScript 코드 실행
+        st.components.v1.html(js_code, height=0)
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
