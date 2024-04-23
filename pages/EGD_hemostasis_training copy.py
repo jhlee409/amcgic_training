@@ -168,19 +168,6 @@ if st.session_state.get('logged_in'):
                     </script>
                 """
                 st.components.v1.html(js_code, height=0)
-        
-    # '진행' 버튼 추가
-    if st.sidebar.button('진행'):
-        # 키보드로 'y' 입력 및 엔터 키 누르는 JavaScript 코드
-        js_code = """
-            <script>
-                var inputField = document.querySelector("input[type='text']");
-                inputField.value = "y";
-                inputField.dispatchEvent(new KeyboardEvent('keydown', {'key': 'Enter'}));
-            </script>
-        """
-        # JavaScript 코드 실행
-        st.components.v1.html(js_code, height=0)
 
     st.sidebar.divider()
 
