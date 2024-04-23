@@ -151,6 +151,12 @@ if st.session_state.get('logged_in'):
 
     # Get user input from chat nput
     user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+    
+    # '진행' 버튼 추가
+    if st.sidebar.button('진행'):
+        # 사용자 입력 창에 'y' 입력 및 엔터 효과 적용
+        user_input = 'y'
+        prompt = user_input
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
