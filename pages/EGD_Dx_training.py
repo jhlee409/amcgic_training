@@ -94,6 +94,23 @@ if selected_image_file:
     
     st.image(image, width=display_width)
 
+    # Find the corresponding docx file
+    docx_file_name = os.path.splitext(selected_image_file)[0] + '.docx'
+    docx_file_path = directory_instructions + docx_file_name
+    
+    # Download and read the contents of the docx file
+    bucket = storage.bucket('amcgi-bulletin.appspot.com')
+    blob = bucket.blob(docx_file_path)
+    docx_stream = io.BytesIO()
+    blob.download_to_file(docx_stream)
+    docx_stream.seek(0)
+    
+    doc = docx.Document(docx_stream)
+    docx_content = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+    
+    st.write("Instructions:")
+    st.write(docx_content)
+
 st.sidebar.divider()
 
 # 로그아웃 버튼 생성
