@@ -94,7 +94,7 @@ if selected_image_file:
     
     st.image(image, width=display_width)
 
-    # 선택한 image와 같은 이름의 docx 파일 찾기
+    # 선택한 image와 같은 이름의 txt 파일 찾기
     instruction_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1' + '.txt'
     selected_instruction_file_1 = directory_instructions + instruction_file_name_1
 
