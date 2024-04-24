@@ -95,7 +95,7 @@ if selected_image_file:
     st.image(image, width=display_width)
 
     # Find the corresponding docx file
-    docx_file_name = os.path.splitext(selected_image_file)[0] + '_1.docx'
+    docx_file_name = os.path.splitext(selected_image_file)[0] + '.docx'
     docx_file_path = directory_instructions + docx_file_name
     
     # Download and read the contents of the docx file
