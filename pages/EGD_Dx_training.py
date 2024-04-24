@@ -109,6 +109,8 @@ if selected_image_file:
     
     st.markdown(docx_content_1)
 
+    st.divider()
+
     # Find the corresponding _2.docx file
     docx_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2.docx'
     docx_file_path_2 = directory_instructions + docx_file_name_2
