@@ -30,7 +30,7 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Display Form Title
+    # Display Form Title_
     st.subheader("EGD_Dx_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 왼쪽 sidebar에서 F1용인지 F2용인지를 선택합니다.")
@@ -86,7 +86,6 @@ if selected_image_file:
     image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
     
     # Open the image to check its dimensions
-    # The 'image' variable already contains a PIL Image object, so you don't need to open it again
     width, height = image.size
     
     # Determine the display width based on the width-height ratio
@@ -94,37 +93,39 @@ if selected_image_file:
     
     st.image(image, width=display_width)
 
-    # Find the corresponding docx file
+    # Find the corresponding _1.docx file
     docx_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1.docx'
     docx_file_path_1 = directory_instructions + docx_file_name_1
     
-    # Download and read the contents of the docx file
+    # Download and read the contents of the _1.docx file
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
     blob = bucket.blob(docx_file_path_1)
     docx_stream_1 = io.BytesIO()
     blob.download_to_file(docx_stream_1)
     docx_stream_1.seek(0)
     
-    doc = docx.Document(docx_stream_1)
-    docx_content = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+    doc_1 = docx.Document(docx_stream_1)
+    docx_content_1 = '\n'.join([paragraph.text for paragraph in doc_1.paragraphs])
     
-    st.markdown(docx_content)
+    docx_placeholder = st.empty()
+    docx_placeholder.markdown(docx_content_1)
 
-    # Find the corresponding docx file
+    # Find the corresponding _2.docx file
     docx_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2.docx'
     docx_file_path_2 = directory_instructions + docx_file_name_2
     
-    # Download and read the contents of the docx file
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
+    # Download and read the contents of the _2.docx file
     blob = bucket.blob(docx_file_path_2)
     docx_stream_2 = io.BytesIO()
     blob.download_to_file(docx_stream_2)
     docx_stream_2.seek(0)
     
-    doc = docx.Document(docx_stream_2)
-    docx_content = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+    doc_2 = docx.Document(docx_stream_2)
+    docx_content_2 = '\n'.join([paragraph.text for paragraph in doc_2.paragraphs])
     
-    st.markdown(docx_content)
+    if st.sidebar.button('진행'):
+        docx_placeholder.empty()  # Clear the content of _1.docx
+        docx_placeholder.markdown(docx_content_2)  # Show the content of _2.docx
 
 st.sidebar.divider()
 
