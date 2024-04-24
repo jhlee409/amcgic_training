@@ -124,7 +124,7 @@ if selected_image_file:
     docx_content_2 = '\n'.join([paragraph.text for paragraph in doc_2.paragraphs])
     
     if st.sidebar.button('진행'):
-        docx_placeholder.empty()  # Clear the content of _1.docx
+        #docx_placeholder.empty()  # Clear the content of _1.docx
         docx_placeholder.markdown(docx_content_2)  # Show the content of _2.docx
 
 st.sidebar.divider()
