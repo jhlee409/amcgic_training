@@ -95,17 +95,33 @@ if selected_image_file:
     st.image(image, width=display_width)
 
     # Find the corresponding docx file
-    docx_file_name = os.path.splitext(selected_image_file)[0] + '_1.docx'
-    docx_file_path = directory_instructions + docx_file_name
+    docx_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1.docx'
+    docx_file_path_1 = directory_instructions + docx_file_name_1
     
     # Download and read the contents of the docx file
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    blob = bucket.blob(docx_file_path)
-    docx_stream = io.BytesIO()
-    blob.download_to_file(docx_stream)
-    docx_stream.seek(0)
+    blob = bucket.blob(docx_file_path_1)
+    docx_stream_1 = io.BytesIO()
+    blob.download_to_file(docx_stream_1)
+    docx_stream_1.seek(0)
     
-    doc = docx.Document(docx_stream)
+    doc = docx.Document(docx_stream_1)
+    docx_content = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+    
+    st.markdown(docx_content)
+
+    # Find the corresponding docx file
+    docx_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2.docx'
+    docx_file_path_2 = directory_instructions + docx_file_name_2
+    
+    # Download and read the contents of the docx file
+    bucket = storage.bucket('amcgi-bulletin.appspot.com')
+    blob = bucket.blob(docx_file_path_2)
+    docx_stream_2 = io.BytesIO()
+    blob.download_to_file(docx_stream_2)
+    docx_stream_2.seek(0)
+    
+    doc = docx.Document(docx_stream_2)
     docx_content = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
     
     st.markdown(docx_content)
