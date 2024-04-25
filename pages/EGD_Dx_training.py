@@ -60,77 +60,81 @@ if st.session_state.get('logged_in'):
         return file_names
     
     # F1 or F2 selection
-folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2", "working"])
+    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2", "working"])
 
-if folder_selection == "초기화":
-    directory_images = "AI_EGD_Dx_training/Default/image/"
-    directory_instructions = "AI_EGD_Dx_training/Default/instruction/"
+    if folder_selection == "초기화":
+        directory_images = "AI_EGD_Dx_training/Default/image/"
+        directory_instructions = "AI_EGD_Dx_training/Default/instruction/"
 
-elif folder_selection == "F1":
-    directory_images = "AI_EGD_Dx_training/F1/images/"
-    directory_instructions = "AI_EGD_Dx_training/F1/instructions/"
-elif folder_selection == "F2":
-    directory_images = "AI_EGD_Dx_training/F2/images/"
-    directory_instructions = "AI_EGD_Dx_training/F2/instructions/"
+    elif folder_selection == "F1":
+        directory_images = "AI_EGD_Dx_training/F1/images/"
+        directory_instructions = "AI_EGD_Dx_training/F1/instructions/"
+    elif folder_selection == "F2":
+        directory_images = "AI_EGD_Dx_training/F2/images/"
+        directory_instructions = "AI_EGD_Dx_training/F2/instructions/"
+    else:
+        directory_images = "AI_EGD_Dx_training/working/images/"
+        directory_instructions = "AI_EGD_Dx_training/working/instructions/"
+
+    st.sidebar.divider()
+
+    # List and select PNG files
+    file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
+    selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
+
+    if selected_image_file:
+        selected_image_path = directory_images + selected_image_file
+        image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
+        
+        # Open the image to check its dimensions
+        width, height = image.size
+        
+        # Determine the display width based on the width-height ratio
+        display_width = 1400 if width >= 1.6 * height else 700
+        
+        st.image(image, width=display_width)
+
+        # Find the corresponding _1.docx file
+        docx_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1.docx'
+        docx_file_path_1 = directory_instructions + docx_file_name_1
+        
+        # Download and read the contents of the _1.docx file
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        blob = bucket.blob(docx_file_path_1)
+        docx_stream_1 = io.BytesIO()
+        blob.download_to_file(docx_stream_1)
+        docx_stream_1.seek(0)
+        
+        doc_1 = docx.Document(docx_stream_1)
+        docx_content_1 = '\n'.join([paragraph.text for paragraph in doc_1.paragraphs])
+        
+        st.markdown(docx_content_1)
+
+        st.divider()
+
+        # Find the corresponding _2.docx file
+        docx_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2.docx'
+        docx_file_path_2 = directory_instructions + docx_file_name_2
+        
+        # Download and read the contents of the _2.docx file
+        blob = bucket.blob(docx_file_path_2)
+        docx_stream_2 = io.BytesIO()
+        blob.download_to_file(docx_stream_2)
+        docx_stream_2.seek(0)
+        
+        doc_2 = docx.Document(docx_stream_2)
+        docx_content_2 = '\n'.join([paragraph.text for paragraph in doc_2.paragraphs])
+        
+        if st.sidebar.button('진행'):
+            st.markdown(docx_content_2)  # Show the content of _2.docx
+
+    st.sidebar.divider()
+
+    # 로그아웃 버튼 생성
+    if st.sidebar.button('로그아웃'):
+        st.session_state.logged_in = False
+        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+
 else:
-    directory_images = "AI_EGD_Dx_training/working/images/"
-    directory_instructions = "AI_EGD_Dx_training/working/instructions/"
-
-st.sidebar.divider()
-
-# List and select PNG files
-file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
-selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
-
-if selected_image_file:
-    selected_image_path = directory_images + selected_image_file
-    image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
-    
-    # Open the image to check its dimensions
-    width, height = image.size
-    
-    # Determine the display width based on the width-height ratio
-    display_width = 1400 if width >= 1.6 * height else 700
-    
-    st.image(image, width=display_width)
-
-    # Find the corresponding _1.docx file
-    docx_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1.docx'
-    docx_file_path_1 = directory_instructions + docx_file_name_1
-    
-    # Download and read the contents of the _1.docx file
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    blob = bucket.blob(docx_file_path_1)
-    docx_stream_1 = io.BytesIO()
-    blob.download_to_file(docx_stream_1)
-    docx_stream_1.seek(0)
-    
-    doc_1 = docx.Document(docx_stream_1)
-    docx_content_1 = '\n'.join([paragraph.text for paragraph in doc_1.paragraphs])
-    
-    st.markdown(docx_content_1)
-
-    st.divider()
-
-    # Find the corresponding _2.docx file
-    docx_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2.docx'
-    docx_file_path_2 = directory_instructions + docx_file_name_2
-    
-    # Download and read the contents of the _2.docx file
-    blob = bucket.blob(docx_file_path_2)
-    docx_stream_2 = io.BytesIO()
-    blob.download_to_file(docx_stream_2)
-    docx_stream_2.seek(0)
-    
-    doc_2 = docx.Document(docx_stream_2)
-    docx_content_2 = '\n'.join([paragraph.text for paragraph in doc_2.paragraphs])
-    
-    if st.sidebar.button('진행'):
-        st.markdown(docx_content_2)  # Show the content of _2.docx
-
-st.sidebar.divider()
-
-# 로그아웃 버튼 생성
-if st.sidebar.button('로그아웃'):
-    st.session_state.logged_in = False
-    st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
+    st.error("로그인이 필요합니다.") 
