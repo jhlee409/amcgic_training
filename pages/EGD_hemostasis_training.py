@@ -177,46 +177,38 @@ if st.session_state.get('logged_in'):
                     
                     # 새로운 컨테이너에 file2의 내용 출력
                     with st.container():
-                        st.markdown(prompt2_markdown)  # Display the content of the docx file with line breaks
+                        st.markdown(prompt2_markdown)
                 
-                st.session_state['show_expander'] = True
-
-    st.sidebar.divider()
-
-    # 로그아웃 버튼 생성
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+                if st.session_state.get('selected_video_file'):
+                    # Firebase Storage 참조 생성
+                    bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                    blob = bucket.blob(st.session_state.selected_video_file)
+                    expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+                    video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                     
-    # # 'play' 버튼 대신 expander 추가
-    # if st.session_state.get('show_expander'):
-    #     video_expander = st.expander('실제 지혈술 동영상을 보시려면 여기를 클릭해 주세요')
-    #     with video_expander:
-        if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
-            # Firebase Storage 참조 생성
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            blob = bucket.blob(st.session_state.selected_video_file)
-            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-
-            # expander 내부에 비디오 플레이어 삽입
-            video_html = f'''
-                <video id="video_player" width="500" controls controlsList="nodownload">
-                    <source src="{video_url}" type="video/mp4">
-                </video>
-                <script>
+                    # 비디오 플레이어 삽입
+                    video_html = f'''
+                    <video id="video_player" width="500" controls controlsList="nodownload">
+                        <source src="{video_url}" type="video/mp4">
+                    </video>
+                    <script>
                     var video_player = document.getElementById('video_player');
                     video_player.addEventListener('contextmenu', function(e) {{
                         e.preventDefault();
                     }});
-                </script>
-            '''
-            st.components.v1.html(video_html, height=450)
-    
-    if folder_selection == "초기화":
-        if 'show_expander' in st.session_state:
-            del st.session_state['show_expander']
-        
+                    </script>
+                    '''
+                    st.components.v1.html(video_html, height=450)
+
+            st.sidebar.divider()
+
+            # 로그아웃 버튼 생성
+            if st.sidebar.button('로그아웃'):
+                st.session_state.logged_in = False
+                st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+
+            if folder_selection == "초기화":
+                st.empty()  # 동영상 플레이어 제거
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.") 
