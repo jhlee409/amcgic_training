@@ -192,26 +192,26 @@ if st.session_state.get('logged_in'):
     # if st.session_state.get('show_expander'):
     #     video_expander = st.expander('실제 지혈술 동영상을 보시려면 여기를 클릭해 주세요')
     #     with video_expander:
-    if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
-        # Firebase Storage 참조 생성
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        blob = bucket.blob(st.session_state.selected_video_file)
-        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-        video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
+            # Firebase Storage 참조 생성
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            blob = bucket.blob(st.session_state.selected_video_file)
+            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
-        # expander 내부에 비디오 플레이어 삽입
-        video_html = f'''
-            <video id="video_player" width="500" controls controlsList="nodownload">
-                <source src="{video_url}" type="video/mp4">
-            </video>
-            <script>
-                var video_player = document.getElementById('video_player');
-                video_player.addEventListener('contextmenu', function(e) {{
-                    e.preventDefault();
-                }});
-            </script>
-        '''
-        st.components.v1.html(video_html, height=450)
+            # expander 내부에 비디오 플레이어 삽입
+            video_html = f'''
+                <video id="video_player" width="500" controls controlsList="nodownload">
+                    <source src="{video_url}" type="video/mp4">
+                </video>
+                <script>
+                    var video_player = document.getElementById('video_player');
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                </script>
+            '''
+            st.components.v1.html(video_html, height=450)
     
     if folder_selection == "초기화":
         if 'show_expander' in st.session_state:
