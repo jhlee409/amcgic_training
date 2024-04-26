@@ -34,7 +34,10 @@ if st.session_state.get('logged_in'):
     st.subheader("EGD_Hemostasis_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 왼쪽 sidebar에서 default는 '초기화'입니다. 잠시 기다렸다가 esophagus, stomach, duodenum 중 한 가지를 선택합니다.")
-        st.write("- 얘가 융통성이 없습니다. 관련없는 엉뚱한 대답을 넣거나, 빙빙 돌려서 대답하거나, 지시 대명사(거시기)를 많이 쓰면 잘 못알아 듣습니다.")
+        st.write("- 다음 아래에서 pre_video를 선택하면 치료전 case 동영상과 질문이 나타납니다.")
+        st.write("- 잘 생각해 보고 '진행' 버튼을 누르면 답과 시술 동영상을 볼수있는 expadner가 나타납니다.")
+        st.write("- expander를 펼치면 동영상 player가 나타납니다. play해서 보시면 됩니다.")
+        st.write("- 다음 증례로 넘어가려면 다시 '초기화'를 선택하여 같은 과정을 진행합니다.")
           
     # Function to list files in a specific directory in Firebase Storage
     def pre_videos_list_files(bucket_name, directory):
