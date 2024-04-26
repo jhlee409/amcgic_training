@@ -282,11 +282,14 @@ if st.session_state.get('logged_in'):
 
                 # expander 내부에 비디오 플레이어 삽입
                 video_html = f'''
-                    <video id="video_player" width="500" controls>
+                    <video id="video_player" width="500" controls controlsList="nodownload">
                         <source src="{video_url}" type="video/mp4">
                     </video>
                     <script>
                         var video_player = document.getElementById('video_player');
+                        video_player.addEventListener('contextmenu', function(e) {{
+                            e.preventDefault();
+                        }});
                     </script>
                 '''
                 st.components.v1.html(video_html, height=450)
