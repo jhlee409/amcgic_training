@@ -284,7 +284,6 @@ if st.session_state.get('logged_in'):
                 </video>
                 <script>
                     var video_player = document.getElementById('video_player');
-                    video_player.playbackRate = {selected_speed};
                 </script>
             '''
             st.components.v1.html(video_html, height=450)
