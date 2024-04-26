@@ -174,7 +174,7 @@ if st.session_state.get('logged_in'):
 
                 # expander 내부에 비디오 플레이어 삽입
                 video_html = f'''
-                    <video id="video_player" width="600" controls>
+                    <video id="video_player" width="500" controls>
                         <source src="{video_url}" type="video/mp4">
                     </video>
                     <script>
