@@ -177,10 +177,6 @@ if st.session_state.get('logged_in'):
                     # 새로운 컨테이너에 file2의 내용 출력
                     with st.container():
                         st.markdown(prompt2_markdown)
-                        
-                    # 10줄만큼의 빈 공간 추가
-                    for _ in range(10):
-                        st.write("")
                 
                 if st.session_state.get('selected_video_file'):
                     # Firebase Storage 참조 생성
