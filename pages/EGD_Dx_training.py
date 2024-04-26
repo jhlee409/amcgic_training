@@ -99,7 +99,7 @@ if st.session_state.get('logged_in'):
         img_str = base64.b64encode(buffered.getvalue()).decode()
         
         # Create the HTML code with oncontextmenu attribute
-        html_code = f'<img src="data:image/png;base64,{img_str}" alt="Image" width="{display_width}" oncontextmenu="return false;">'
+        html_code = f'<img src="data:image/png;base64,{img_str}" alt="Image" width="{display_width}" oncontextmenu="return false;" style="pointer-events: none;">'
         
         # Display the image using HTML code
         st.markdown(html_code, unsafe_allow_html=True)
