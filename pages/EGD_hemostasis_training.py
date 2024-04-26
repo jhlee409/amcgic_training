@@ -90,7 +90,8 @@ if st.session_state.get('logged_in'):
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
         st.session_state['messages'] = []
-        #st.experimental_rerun()
+        if 'show_expander' in st.session_state:
+            del st.session_state['show_expander']
     
     elif folder_selection == "esophagus":
         directory_pre_videos = "EGD_Hemostasis_training/esophagus/pre_videos/"
@@ -157,6 +158,7 @@ if st.session_state.get('logged_in'):
             # 사용자 입력 창에 'y' 입력 및 엔터 효과 적용
             user_input = 'y'
             prompt = user_input
+            st.session_state['show_expander'] = True
         
         # # 'play' 버튼 추가
         # if st.sidebar.button('Play'):
@@ -268,26 +270,27 @@ if st.session_state.get('logged_in'):
                     st.write(content)
                     
     # 'play' 버튼 대신 expander 추가
-    video_expander = st.expander('실제 지혈술 동영상을 보시려면 여기를 클릭해 주세요')
-    with video_expander:
-        if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
-            # Firebase Storage 참조 생성
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            blob = bucket.blob(st.session_state.selected_video_file)
-            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+    if st.session_state.get('show_expander'):
+        video_expander = st.expander('실제 지혈술 동영상을 보시려면 여기를 클릭해 주세요')
+        with video_expander:
+            if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
+                # Firebase Storage 참조 생성
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                blob = bucket.blob(st.session_state.selected_video_file)
+                expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
-            # expander 내부에 비디오 플레이어 삽입
-            video_html = f'''
-                <video id="video_player" width="500" controls>
-                    <source src="{video_url}" type="video/mp4">
-                </video>
-                <script>
-                    var video_player = document.getElementById('video_player');
-                </script>
-            '''
-            st.components.v1.html(video_html, height=450)
-        
+                # expander 내부에 비디오 플레이어 삽입
+                video_html = f'''
+                    <video id="video_player" width="500" controls>
+                        <source src="{video_url}" type="video/mp4">
+                    </video>
+                    <script>
+                        var video_player = document.getElementById('video_player');
+                    </script>
+                '''
+                st.components.v1.html(video_html, height=450)
+            
         
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
