@@ -141,21 +141,8 @@ if st.session_state.get('logged_in'):
             
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:
-            # video_html = f'<video width="500" controls controlsList="nodownload"><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
-            # st.markdown(video_html, unsafe_allow_html=True)
-            
-            video_html = f'''
-                <video id="video_player" width="500" controls controlsList="nodownload">
-                    <source src="{st.session_state.pre_video_url}" type="video/mp4">
-                </video>
-                <script>
-                    var video_player = document.getElementById('video_player');
-                    video_player.addEventListener('contextmenu', function(e) {{
-                        e.preventDefault();
-                    }});
-                </script>
-            '''
-            st.components.v1.html(video_html, height=450)
+            video_html = f'<video width="500" controls controlsList="nodownload"><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
+            st.markdown(video_html, unsafe_allow_html=True)
             
             instruction_file_name1 = os.path.splitext(selected_pre_videos_file)[0] + '_1.docx'
             selected_instruction_file1 = directory_instructions + instruction_file_name1
