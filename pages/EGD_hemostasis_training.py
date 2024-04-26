@@ -103,6 +103,7 @@ if st.session_state.get('logged_in'):
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     pre_video_container = st.container()
+    video_player_container = st.container()
 
     if selected_pre_videos_file:
         if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
@@ -138,6 +139,7 @@ if st.session_state.get('logged_in'):
             
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
+            video_player_container.empty()
             
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:           
@@ -163,6 +165,7 @@ if st.session_state.get('logged_in'):
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):
                 pre_video_container.empty()
+                video_player_container.empty()
                 
                 if selected_instruction_file1:
                     full_path1 = selected_instruction_file1
