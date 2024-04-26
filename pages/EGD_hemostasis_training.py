@@ -180,7 +180,7 @@ if st.session_state.get('logged_in'):
                         
                     # 10줄만큼의 빈 공간 추가
                     for _ in range(10):
-                        st.empty()
+                        st.write("")
                 
                 if st.session_state.get('selected_video_file'):
                     # Firebase Storage 참조 생성
