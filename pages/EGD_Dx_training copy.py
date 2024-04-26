@@ -1,9 +1,8 @@
 import streamlit as st
+import time
 from PIL import Image
 import docx
 import io
-from io import BytesIO
-import base64
 import os
 import firebase_admin
 from firebase_admin import credentials, storage
@@ -93,16 +92,7 @@ if st.session_state.get('logged_in'):
         # Determine the display width based on the width-height ratio
         display_width = 1400 if width >= 1.6 * height else 700
         
-        # Convert the image to base64
-        buffered = BytesIO()
-        image.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
-        
-        # Create the HTML code with oncontextmenu attribute
-        html_code = f'<img src="data:image/png;base64,{img_str}" alt="Image" width="{display_width}" oncontextmenu="return false;">'
-        
-        # Display the image using HTML code
-        st.markdown(html_code, unsafe_allow_html=True)
+        st.image(image, width=display_width)
 
         # Find the corresponding _1.docx file
         docx_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1.docx'
