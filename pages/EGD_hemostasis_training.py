@@ -126,12 +126,12 @@ if st.session_state.get('logged_in'):
             st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
             
             # Read and display the content of the selected DOCX file
-            if selected_instruction_file1:
-                full_path1 = selected_instruction_file1
-                prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
-                prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                st.markdown(prompt1_markdown) 
+        if selected_instruction_file1:
+            full_path1 = selected_instruction_file1
+            prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
+            prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
+            prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
+            st.markdown(prompt1_markdown) 
             
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
@@ -149,9 +149,8 @@ if st.session_state.get('logged_in'):
                 if selected_instruction_file2:
                     full_path2 = selected_instruction_file2
                     prompt2 = read_docx_file('amcgi-bulletin.appspot.com', full_path2)
-                    prompt2_lines = prompt2.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                    prompt2_markdown = '\n'.join(prompt2_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                    st.markdown(prompt2_markdown)
+                    st.text(prompt2)  # Display the content of the docx file as text
+                st.session_state['show_expander'] = True
 
     st.sidebar.divider()
 
