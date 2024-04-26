@@ -147,7 +147,6 @@ if st.session_state.get('logged_in'):
                 if selected_instruction_file2:
                     full_path2 = selected_instruction_file2
                     prompt2 = read_docx_file('amcgi-bulletin.appspot.com', full_path2)
-                    st.text(prompt1)
                     st.text(prompt2)  # Display the content of the docx file as text
                 st.session_state['show_expander'] = True
 
