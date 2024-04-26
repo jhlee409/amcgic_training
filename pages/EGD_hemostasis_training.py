@@ -76,10 +76,7 @@ if st.session_state.get('logged_in'):
 
     if folder_selection == "초기화":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
-        directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-        if 'show_expander' in st.session_state:
-            del st.session_state['show_expander']
-    
+        directory_instructions = "EGD_Hemostasis_training/default/instructions/"   
     elif folder_selection == "esophagus":
         directory_pre_videos = "EGD_Hemostasis_training/esophagus/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
@@ -163,12 +160,7 @@ if st.session_state.get('logged_in'):
             selected_instruction_file2 = directory_instructions + instruction_file_name2
 
             # '진행' 버튼 추가
-            if st.sidebar.button('진행'):
-                pre_video_container.empty()
-                video_player_container.empty()
-                st.empty()
-                st.session_state.pre_video_url = []
-                
+            if st.sidebar.button('진행'):               
                 if selected_instruction_file1:
                     full_path1 = selected_instruction_file1
                     prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
