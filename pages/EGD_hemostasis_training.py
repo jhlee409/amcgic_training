@@ -151,7 +151,12 @@ if st.session_state.get('logged_in'):
                     prompt2 = read_docx_file('amcgi-bulletin.appspot.com', full_path2)
                     prompt2_lines = prompt2.split('\n')  # 내용을 줄 바꿈 문자로 분리
                     prompt2_markdown = '\n'.join(prompt2_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                    st.markdown(prompt2_markdown)
+                    
+                    # 새로운 컨테이너에 '같은이름'_2.docx 파일의 내용 출력
+                    with st.container():
+                        st.markdown(prompt2_markdown)  # Display the content of the docx file with line breaks
+    
+    st.session_state['show_expander'] = True
 
     st.sidebar.divider()
 
