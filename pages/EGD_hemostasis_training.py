@@ -130,14 +130,6 @@ if st.session_state.get('logged_in'):
                 full_path1 = selected_instruction_file1
                 prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
                 st.text(prompt1)  # Display the content of the docx file as text
-                
-            # '진행' 버튼 추가
-            if st.sidebar.button('진행'):
-                if selected_instruction_file2:
-                    full_path2 = selected_instruction_file2
-                    prompt2 = read_docx_file('amcgi-bulletin.appspot.com', full_path2)
-                    st.text(prompt2)  # Display the content of the docx file as text
-                st.session_state['show_expander'] = True
             
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
@@ -146,6 +138,9 @@ if st.session_state.get('logged_in'):
         with pre_video_container:
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
+        
+        instruction_file_name2 = os.path.splitext(selected_pre_videos_file)[0] + '_2.docx'
+        selected_instruction_file2 = directory_instructions + instruction_file_name2
             
         # '진행' 버튼 추가
         if st.sidebar.button('진행'):
