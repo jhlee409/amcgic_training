@@ -164,9 +164,10 @@ if st.session_state.get('logged_in'):
 
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):
-                # pre_video_container.empty()
-                # video_player_container.empty()
+                pre_video_container.empty()
+                video_player_container.empty()
                 st.empty()
+                st.session_state.pre_video_url = []
                 
                 if selected_instruction_file1:
                     full_path1 = selected_instruction_file1
