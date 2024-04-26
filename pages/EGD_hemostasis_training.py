@@ -140,12 +140,22 @@ if st.session_state.get('logged_in'):
         with pre_video_container:
             video_html = f'<video width="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
+            
+            instruction_file_name1 = os.path.splitext(selected_pre_videos_file)[0] + '_1.docx'
+            selected_instruction_file1 = directory_instructions + instruction_file_name1
 
             instruction_file_name2 = os.path.splitext(selected_pre_videos_file)[0] + '_2.docx'
             selected_instruction_file2 = directory_instructions + instruction_file_name2
 
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):
+                if selected_instruction_file1:
+                    full_path1 = selected_instruction_file1
+                    prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
+                    prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
+                    prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
+                    st.markdown(prompt1_markdown)
+                
                 if selected_instruction_file2:
                     full_path2 = selected_instruction_file2
                     prompt2 = read_docx_file('amcgi-bulletin.appspot.com', full_path2)
