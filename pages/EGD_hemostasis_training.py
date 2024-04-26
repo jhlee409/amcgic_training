@@ -158,8 +158,9 @@ if st.session_state.get('logged_in'):
             user_input = 'y'
             prompt = user_input
         
-        # 'play' 버튼 추가
-        if st.sidebar.button('Play'):
+        # 'play' 버튼 대신 expander 추가
+        video_expander = st.expander('실제 지혈술 동영상을 보시려면 여기를 클릭해 주세요')
+        with video_expander:
             if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
                 # Firebase Storage 참조 생성
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')
@@ -168,23 +169,48 @@ if st.session_state.get('logged_in'):
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                 
                 # 재생 속도 선택 옵션
-                playback_speeds = [1.0, 1.5, 2.0, 3.0]
-                selected_speed = st.sidebar.selectbox("재생 속도 선택", playback_speeds)
-                
-                # 새 윈도우에서 비디오 재생
-                js_code = f"""
+                playback_speeds = [1.0, 1.5, 2.0, 3.0] 
+                selected_speed = st.selectbox("재생 속도 선택", playback_speeds)
+
+                # expander 내부에 비디오 플레이어 삽입
+                video_html = f'''
+                    <video id="video_player" width="800" controls>
+                        <source src="{video_url}" type="video/mp4">
+                    </video>
                     <script>
-                        var video_url = '{video_url}';
-                        var selected_speed = {selected_speed};
-                        
-                        var video_window = window.open('', '_blank', 'width=1600,height=1200');
-                        video_window.document.write('<video id="video_player" width="100%" height="100%" controls><source src="' + video_url + '" type="video/mp4"></video>');
-                        
-                        var video_player = video_window.document.getElementById('video_player');
-                        video_player.playbackRate = selected_speed;
+                        var video_player = document.getElementById('video_player');
+                        video_player.playbackRate = {selected_speed};
                     </script>
-                """
-                st.components.v1.html(js_code, height=0)
+                '''
+                st.components.v1.html(video_html, height=450)
+        
+        # # 'play' 버튼 추가
+        # if st.sidebar.button('Play'):
+        #     if st.session_state.get('selected_video_file'):  # 세션 상태에서 가져오기
+        #         # Firebase Storage 참조 생성
+        #         bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        #         blob = bucket.blob(st.session_state.selected_video_file)
+        #         expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+        #         video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                
+        #         # 재생 속도 선택 옵션
+        #         playback_speeds = [1.0, 1.5, 2.0, 3.0]
+        #         selected_speed = st.sidebar.selectbox("재생 속도 선택", playback_speeds)
+                
+        #         # 새 윈도우에서 비디오 재생
+        #         js_code = f"""
+        #             <script>
+        #                 var video_url = '{video_url}';
+        #                 var selected_speed = {selected_speed};
+                        
+        #                 var video_window = window.open('', '_blank', 'width=1600,height=1200');
+        #                 video_window.document.write('<video id="video_player" width="100%" height="100%" controls><source src="' + video_url + '" type="video/mp4"></video>');
+                        
+        #                 var video_player = video_window.document.getElementById('video_player');
+        #                 video_player.playbackRate = selected_speed;
+        #             </script>
+        #         """
+        #         st.components.v1.html(js_code, height=0)
 
     st.sidebar.divider()
 
