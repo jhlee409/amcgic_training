@@ -156,8 +156,9 @@ if st.session_state.get('logged_in'):
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):                             
                 if st.session_state.get('selected_video_file'):
-                    # 이전 pre_video 플레이어 제거
+                    # 이전 동영상 플레이어 지우기
                     pre_video_container.empty()
+                    
                     # Firebase Storage 참조 생성
                     bucket = storage.bucket('amcgi-bulletin.appspot.com')
                     blob = bucket.blob(st.session_state.selected_video_file)
