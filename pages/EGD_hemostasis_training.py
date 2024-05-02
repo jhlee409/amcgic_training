@@ -155,14 +155,13 @@ if st.session_state.get('logged_in'):
 
         # '진행' 버튼 추가
         if st.sidebar.button('진행'):
+            st.markdown("---")
             if st.session_state.get('selected_video_file'):
                 # Firebase Storage 참조 생성
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')
                 blob = bucket.blob(st.session_state.selected_video_file)
                 expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-
-                st.markdown("---")
 
                 # 비디오 플레이어 삽입
                 video_html = f'''
