@@ -148,7 +148,7 @@ if st.session_state.get('logged_in'):
                     }});
                 </script>
             '''
-            st.components.v1.html(video_html, height=250)
+            st.components.v1.html(video_html, height=350)
             
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
