@@ -154,8 +154,7 @@ if st.session_state.get('logged_in'):
             selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
-            if st.sidebar.button('진행'):
-                st.empty()                             
+            if st.sidebar.button('진행'):                             
                 if st.session_state.get('selected_video_file'):
                     # 이전 동영상 플레이어 지우기
                     
@@ -180,7 +179,7 @@ if st.session_state.get('logged_in'):
                     }});
                     </script>
                     '''
-                    with pre_video_container:
+                    with video_player_container:
                         st.components.v1.html(video_html, height=450)
 
             st.sidebar.divider()
