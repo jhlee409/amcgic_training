@@ -164,7 +164,7 @@ if st.session_state.get('logged_in'):
                 
                 # 비디오 플레이어 삽입
                 video_html = f'''
-                <video id="video_player" width="550" controls controlsList="nodownload">
+                <video id="video_player" width="600" controls controlsList="nodownload">
                     <source src="{video_url}" type="video/mp4">
                 </video>
                 <script>
@@ -175,7 +175,7 @@ if st.session_state.get('logged_in'):
                 </script>
                 '''
                 with video_player_container:
-                    st.components.v1.html(video_html, height=550)
+                    st.components.v1.html(video_html, height=600)
 
             st.sidebar.divider()
 
