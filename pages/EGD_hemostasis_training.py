@@ -155,7 +155,6 @@ if st.session_state.get('logged_in'):
 
         # '진행' 버튼 추가
         if st.sidebar.button('진행'):
-            st.markdown("---")
             if st.session_state.get('selected_video_file'):
                 # Firebase Storage 참조 생성
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')
