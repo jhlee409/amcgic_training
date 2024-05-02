@@ -156,21 +156,7 @@ if st.session_state.get('logged_in'):
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):
                 pre_video_container.empty()
-                video_player_container.empty() 
-                with pre_video_container:           
-                    video_html = f'''
-                        <video id="video_player" width="500" controls controlsList="nodownload">
-                            <source src="{st.session_state.pre_video_url}" type="video/mp4">
-                        </video>
-                        <script>
-                            var video_player = document.getElementById('video_player');
-                            video_player.addEventListener('contextmenu', function(e) {{
-                                e.preventDefault();
-                            }});
-                        </script>
-                    '''
-                    st.components.v1.html(video_html, height=450) 
-                                              
+                video_player_container.empty()                             
                 if st.session_state.get('selected_video_file'):
                     
                     # Firebase Storage 참조 생성
