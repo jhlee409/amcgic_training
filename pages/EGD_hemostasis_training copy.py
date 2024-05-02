@@ -179,7 +179,7 @@ if st.session_state.get('logged_in'):
                     }});
                     </script>
                     '''
-                    with video_player_container:
+                    with pre_video_container:
                         st.components.v1.html(video_html, height=450)
 
             st.sidebar.divider()
