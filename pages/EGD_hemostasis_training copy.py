@@ -157,6 +157,7 @@ if st.session_state.get('logged_in'):
             if st.sidebar.button('진행'):
                 pre_video_container.empty()
                 video_player_container.empty() 
+                
                 with pre_video_container:           
                     video_html = f'''
                         <video id="video_player" width="500" controls controlsList="nodownload">
@@ -178,6 +179,7 @@ if st.session_state.get('logged_in'):
                     blob = bucket.blob(st.session_state.selected_video_file)
                     expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                     video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                    st.session_state.video_url = video_url
                     
                     pre_video_container.empty()
                     video_player_container.empty()
