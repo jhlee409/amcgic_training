@@ -153,35 +153,35 @@ if st.session_state.get('logged_in'):
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
 
-            # '진행' 버튼 추가
-            if st.sidebar.button('진행'):  
-                st.session_state.selected_pre_videos_file = None                          
-                if st.session_state.get('selected_video_file'):
-                    # 이전 동영상 플레이어 지우기
-                    
-                    # Firebase Storage 참조 생성
-                    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                    blob = bucket.blob(st.session_state.selected_video_file)
-                    expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-                    video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                    
-                    pre_video_container.empty()
-                    video_player_container.empty()
-                    
-                    # 비디오 플레이어 삽입
-                    video_html = f'''
-                    <video id="video_player" width="500" controls controlsList="nodownload">
-                        <source src="{video_url}" type="video/mp4">
-                    </video>
-                    <script>
-                    var video_player = document.getElementById('video_player');
-                    video_player.addEventListener('contextmenu', function(e) {{
-                        e.preventDefault();
-                    }});
-                    </script>
-                    '''
-                    with video_player_container:
-                        st.components.v1.html(video_html, height=450)
+    # '진행' 버튼 추가
+    if st.sidebar.button('진행'):
+        pre_video_container.empty()
+        video_player_container.empty()                             
+        if st.session_state.get('selected_video_file'):
+            
+            # Firebase Storage 참조 생성
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            blob = bucket.blob(st.session_state.selected_video_file)
+            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+            
+            pre_video_container.empty()
+            video_player_container.empty()
+            
+            # 비디오 플레이어 삽입
+            video_html = f'''
+            <video id="video_player" width="500" controls controlsList="nodownload">
+                <source src="{video_url}" type="video/mp4">
+            </video>
+            <script>
+            var video_player = document.getElementById('video_player');
+            video_player.addEventListener('contextmenu', function(e) {{
+                e.preventDefault();
+            }});
+            </script>
+            '''
+            with video_player_container:
+                st.components.v1.html(video_html, height=450)
 
             st.sidebar.divider()
 
