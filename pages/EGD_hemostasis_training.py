@@ -138,7 +138,7 @@ if st.session_state.get('logged_in'):
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:           
             video_html = f'''
-                <video id="video_player" width="500" controls controlsList="nodownload">
+                <video id="video_player" width="250" controls controlsList="nodownload">
                     <source src="{st.session_state.pre_video_url}" type="video/mp4">
                 </video>
                 <script>
@@ -148,25 +148,19 @@ if st.session_state.get('logged_in'):
                     }});
                 </script>
             '''
-            st.components.v1.html(video_html, height=450)
+            st.components.v1.html(video_html, height=250)
             
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
 
         # '진행' 버튼 추가
         if st.sidebar.button('진행'):
-            pre_video_container.empty()
-            video_player_container.empty()                             
             if st.session_state.get('selected_video_file'):
-                
                 # Firebase Storage 참조 생성
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')
                 blob = bucket.blob(st.session_state.selected_video_file)
                 expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                
-                pre_video_container.empty()
-                video_player_container.empty()
                 
                 # 비디오 플레이어 삽입
                 video_html = f'''
@@ -181,7 +175,7 @@ if st.session_state.get('logged_in'):
                 </script>
                 '''
                 with video_player_container:
-                    st.components.v1.html(video_html, height=450)
+                    st.components.v1.html(video_html, height=550)
 
             st.sidebar.divider()
 
