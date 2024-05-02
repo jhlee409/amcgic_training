@@ -117,7 +117,7 @@ if st.session_state.get('logged_in'):
             # 선택한 pre_video와 같은 이름의 docx 파일 찾기
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
-                       
+                    
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
             video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
             selected_video_file = directory_videos + video_name
@@ -154,19 +154,16 @@ if st.session_state.get('logged_in'):
             selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
-            if st.sidebar.button('진행'):
-                pre_video_container.empty()
-                video_player_container.empty()                             
+            if st.sidebar.button('진행'):                             
                 if st.session_state.get('selected_video_file'):
+                    # 이전 동영상 플레이어 지우기
+                    pre_video_container.empty()
                     
                     # Firebase Storage 참조 생성
                     bucket = storage.bucket('amcgi-bulletin.appspot.com')
                     blob = bucket.blob(st.session_state.selected_video_file)
                     expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                     video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                    
-                    pre_video_container.empty()
-                    video_player_container.empty()
                     
                     # 비디오 플레이어 삽입
                     video_html = f'''
