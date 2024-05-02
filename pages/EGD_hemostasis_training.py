@@ -115,24 +115,21 @@ if st.session_state.get('logged_in'):
             st.session_state.pre_video_url = pre_video_url
             
             # 선택한 pre_video와 같은 이름의 docx 파일 찾기
-            instruction_file_name1 = os.path.splitext(selected_pre_videos_file)[0] + '_1.docx'
-            selected_instruction_file1 = directory_instructions + instruction_file_name1
-            
-            instruction_file_name2 = os.path.splitext(selected_pre_videos_file)[0] + '_2.docx'
-            selected_instruction_file2 = directory_instructions + instruction_file_name2
-            
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
+                       
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
             video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
             selected_video_file = directory_videos + video_name
             st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
             
             # Read and display the content of the selected DOCX file
-            if selected_instruction_file1:
-                full_path1 = selected_instruction_file1
-                prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
-                prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                st.markdown(prompt1_markdown)
+            if selected_instruction_file:
+                full_path = selected_instruction_file
+                prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
+                prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
+                st.markdown(prompt_markdown)
             
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
@@ -153,50 +150,37 @@ if st.session_state.get('logged_in'):
             '''
             st.components.v1.html(video_html, height=450)
             
-            instruction_file_name1 = os.path.splitext(selected_pre_videos_file)[0] + '_1.docx'
-            selected_instruction_file1 = directory_instructions + instruction_file_name1
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
 
-            instruction_file_name2 = os.path.splitext(selected_pre_videos_file)[0] + '_2.docx'
-            selected_instruction_file2 = directory_instructions + instruction_file_name2
-
-            # '진행' 버튼 추가
-            if st.sidebar.button('진행'):               
-                if selected_instruction_file1:
-                    full_path1 = selected_instruction_file1
-                    prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
-                    prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                    prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                    st.markdown(prompt1_markdown)
+        # '진행' 버튼 추가
+        if st.sidebar.button('진행'):
+            pre_video_container.empty()
+            video_player_container.empty()                             
+            if st.session_state.get('selected_video_file'):
                 
-                if selected_instruction_file2:
-                    full_path2 = selected_instruction_file2
-                    prompt2 = read_docx_file('amcgi-bulletin.appspot.com', full_path2)
-                    prompt2_lines = prompt2.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                    prompt2_markdown = '\n'.join(prompt2_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                    
-                    # 새로운 컨테이너에 file2의 내용 출력
-                    with st.container():
-                        st.markdown(prompt2_markdown)
+                # Firebase Storage 참조 생성
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                blob = bucket.blob(st.session_state.selected_video_file)
+                expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                 
-                if st.session_state.get('selected_video_file'):
-                    # Firebase Storage 참조 생성
-                    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                    blob = bucket.blob(st.session_state.selected_video_file)
-                    expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-                    video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                    
-                    # 비디오 플레이어 삽입
-                    video_html = f'''
-                    <video id="video_player" width="500" controls controlsList="nodownload">
-                        <source src="{video_url}" type="video/mp4">
-                    </video>
-                    <script>
-                    var video_player = document.getElementById('video_player');
-                    video_player.addEventListener('contextmenu', function(e) {{
-                        e.preventDefault();
-                    }});
-                    </script>
-                    '''
+                pre_video_container.empty()
+                video_player_container.empty()
+                
+                # 비디오 플레이어 삽입
+                video_html = f'''
+                <video id="video_player" width="500" controls controlsList="nodownload">
+                    <source src="{video_url}" type="video/mp4">
+                </video>
+                <script>
+                var video_player = document.getElementById('video_player');
+                video_player.addEventListener('contextmenu', function(e) {{
+                    e.preventDefault();
+                }});
+                </script>
+                '''
+                with video_player_container:
                     st.components.v1.html(video_html, height=450)
 
             st.sidebar.divider()
