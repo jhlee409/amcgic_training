@@ -135,23 +135,23 @@ if st.session_state.get('logged_in'):
             pre_video_container.empty()
             video_player_container.empty()
             
-            # 새로운 동영상 플레이어 렌더링
-            with pre_video_container:           
-                video_html = f'''
-                    <video id="video_player" width="500" controls controlsList="nodownload">
-                        <source src="{st.session_state.pre_video_url}" type="video/mp4">
-                    </video>
-                    <script>
-                        var video_player = document.getElementById('video_player');
-                        video_player.addEventListener('contextmenu', function(e) {{
-                            e.preventDefault();
-                        }});
-                    </script>
-                '''
-                st.components.v1.html(video_html, height=450)
-                
-                instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
-                selected_instruction_file = directory_instructions + instruction_file_name
+        # 새로운 동영상 플레이어 렌더링
+        with pre_video_container:           
+            video_html = f'''
+                <video id="video_player" width="500" controls controlsList="nodownload">
+                    <source src="{st.session_state.pre_video_url}" type="video/mp4">
+                </video>
+                <script>
+                    var video_player = document.getElementById('video_player');
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                </script>
+            '''
+            st.components.v1.html(video_html, height=450)
+            
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):                             
