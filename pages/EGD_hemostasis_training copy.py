@@ -148,7 +148,7 @@ if st.session_state.get('logged_in'):
                     }});
                 </script>
             '''
-            st.components.v1.html(video_html, height=450)
+            st.components.v1.html(video_html, height=250)
             
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
@@ -164,7 +164,7 @@ if st.session_state.get('logged_in'):
                 
                 # 비디오 플레이어 삽입
                 video_html = f'''
-                <video id="video_player" width="450" controls controlsList="nodownload">
+                <video id="video_player" width="500" controls controlsList="nodownload">
                     <source src="{video_url}" type="video/mp4">
                 </video>
                 <script>
@@ -175,7 +175,7 @@ if st.session_state.get('logged_in'):
                 </script>
                 '''
                 with video_player_container:
-                    st.components.v1.html(video_html, height=450)
+                    st.components.v1.html(video_html, height=500)
 
             st.sidebar.divider()
 
