@@ -154,9 +154,7 @@ if st.session_state.get('logged_in'):
             selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
-            if st.sidebar.button('진행'):
-                pre_video_container.empty()
-                video_player_container.empty()                               
+            if st.sidebar.button('진행'):                             
                 if st.session_state.get('selected_video_file'):
                     # Firebase Storage 참조 생성
                     bucket = storage.bucket('amcgi-bulletin.appspot.com')
