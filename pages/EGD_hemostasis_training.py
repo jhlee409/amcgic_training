@@ -161,7 +161,8 @@ if st.session_state.get('logged_in'):
                 blob = bucket.blob(st.session_state.selected_video_file)
                 expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                st.divider()
+
+                st.markdown("---")
 
                 # 비디오 플레이어 삽입
                 video_html = f'''
