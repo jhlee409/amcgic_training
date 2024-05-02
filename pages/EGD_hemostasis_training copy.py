@@ -175,7 +175,7 @@ if st.session_state.get('logged_in'):
                 </script>
                 '''
                 with video_player_container:
-                    st.components.v1.html(video_html, height=500)
+                    st.components.v1.html(video_html, height=550)
 
             st.sidebar.divider()
 
