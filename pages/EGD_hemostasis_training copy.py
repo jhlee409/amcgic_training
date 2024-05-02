@@ -162,24 +162,19 @@ if st.session_state.get('logged_in'):
                     expiration_time = datetime.utcnow() + timedelta(seconds=1600)
                     video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                     
-                    pre_video_container.empty()
-                    video_player_container.empty()
-                    
-                    with pre_video_container: 
-                    
-                        # 비디오 플레이어 삽입
-                        video_html = f'''
-                        <video id="video_player" width="500" controls controlsList="nodownload">
-                            <source src="{video_url}" type="video/mp4">
-                        </video>
-                        <script>
-                        var video_player = document.getElementById('video_player');
-                        video_player.addEventListener('contextmenu', function(e) {{
-                            e.preventDefault();
-                        }});
-                        </script>
-                        '''
-                        st.components.v1.html(video_html, height=450)
+                    # 비디오 플레이어 삽입
+                    video_html = f'''
+                    <video id="video_player" width="500" controls controlsList="nodownload">
+                        <source src="{video_url}" type="video/mp4">
+                    </video>
+                    <script>
+                    var video_player = document.getElementById('video_player');
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                    </script>
+                    '''
+                    st.components.v1.html(video_html, height=450)
 
             st.sidebar.divider()
 
