@@ -125,11 +125,11 @@ if st.session_state.get('logged_in'):
             
             # Read and display the content of the selected DOCX file
             if selected_instruction_file:
-                full_path1 = selected_instruction_file
-                prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
-                prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                st.markdown(prompt1_markdown)
+                full_path = selected_instruction_file
+                prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
+                prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
+                st.markdown(prompt_markdown)
             
             # 이전 동영상 플레이어 지우기
             pre_video_container.empty()
@@ -150,17 +150,17 @@ if st.session_state.get('logged_in'):
             '''
             st.components.v1.html(video_html, height=450)
             
-            instruction_file_name1 = os.path.splitext(selected_pre_videos_file)[0] + '_1.docx'
-            selected_instruction_file1 = directory_instructions + instruction_file_name1
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
             if st.sidebar.button('진행'):               
-                if selected_instruction_file1:
-                    full_path1 = selected_instruction_file1
-                    prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
-                    prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                    prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                    st.markdown(prompt1_markdown)
+                if selected_instruction_file:
+                    full_path = selected_instruction_file
+                    prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                    prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
+                    prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
+                    st.markdown(prompt_markdown)
                 
                 if st.session_state.get('selected_video_file'):
                     # Firebase Storage 참조 생성
