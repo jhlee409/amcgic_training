@@ -177,21 +177,6 @@ if st.session_state.get('logged_in'):
                 with video_player_container:
                     st.components.v1.html(video_html, height=450)
 
-                # pre_video 플레이어를 expander 안으로 이동
-                with st.expander("이전 치료 영상 다시보기"):
-                    pre_video_html = f'''
-                    <video id="pre_video_player" width="500" controls controlsList="nodownload">
-                        <source src="{st.session_state.pre_video_url}" type="video/mp4">
-                    </video>
-                    <script>
-                    var pre_video_player = document.getElementById('pre_video_player');
-                    pre_video_player.addEventListener('contextmenu', function(e) {{
-                        e.preventDefault();
-                    }});
-                    </script>
-                    '''
-                    st.components.v1.html(pre_video_html, height=450)
-
             st.sidebar.divider()
 
             # 로그아웃 버튼 생성
