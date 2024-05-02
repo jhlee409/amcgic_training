@@ -154,7 +154,8 @@ if st.session_state.get('logged_in'):
             selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
-            if st.sidebar.button('진행'):                             
+            if st.sidebar.button('진행'):  
+                st.session_state.selected_pre_videos_file = None                          
                 if st.session_state.get('selected_video_file'):
                     # 이전 동영상 플레이어 지우기
                     
