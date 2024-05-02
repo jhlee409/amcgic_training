@@ -115,8 +115,8 @@ if st.session_state.get('logged_in'):
             st.session_state.pre_video_url = pre_video_url
             
             # 선택한 pre_video와 같은 이름의 docx 파일 찾기
-            instruction_file_name1 = os.path.splitext(selected_pre_videos_file)[0] + '_1.docx'
-            selected_instruction_file1 = directory_instructions + instruction_file_name1
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
                        
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
             video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
@@ -124,8 +124,8 @@ if st.session_state.get('logged_in'):
             st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
             
             # Read and display the content of the selected DOCX file
-            if selected_instruction_file1:
-                full_path1 = selected_instruction_file1
+            if selected_instruction_file:
+                full_path1 = selected_instruction_file
                 prompt1 = read_docx_file('amcgi-bulletin.appspot.com', full_path1)
                 prompt1_lines = prompt1.split('\n')  # 내용을 줄 바꿈 문자로 분리
                 prompt1_markdown = '\n'.join(prompt1_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
