@@ -154,14 +154,7 @@ if st.session_state.get('logged_in'):
             selected_instruction_file = directory_instructions + instruction_file_name
 
             # '진행' 버튼 추가
-            if st.sidebar.button('진행'):               
-                if selected_instruction_file:
-                    full_path = selected_instruction_file
-                    prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-                    prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                    prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                    st.markdown(prompt_markdown)
-                
+            if st.sidebar.button('진행'):                               
                 if st.session_state.get('selected_video_file'):
                     # Firebase Storage 참조 생성
                     bucket = storage.bucket('amcgi-bulletin.appspot.com')
