@@ -138,7 +138,7 @@ if st.session_state.get('logged_in'):
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:           
             video_html = f'''
-                <video id="video_player" width="500" controls controlsList="nodownload">
+                <video id="video_player" width="250" controls controlsList="nodownload">
                     <source src="{st.session_state.pre_video_url}" type="video/mp4">
                 </video>
                 <script>
