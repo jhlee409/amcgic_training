@@ -78,8 +78,8 @@ if st.session_state.get('logged_in'):
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
     if folder_selection == "강의":
-        directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
-        directory_instructions = "EGD_Hemostasis_training/default/instructions/"    
+        directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
+        directory_instructions = "EGD_Hemostasis_training/default/instruction/"    
     elif folder_selection == "esophagus":
         directory_pre_videos = "EGD_Hemostasis_training/esophagus/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
