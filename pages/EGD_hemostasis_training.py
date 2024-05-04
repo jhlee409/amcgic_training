@@ -70,7 +70,7 @@ if st.session_state.get('logged_in'):
         return '\n'.join(full_text)
     
     # esophagus or stomach selection
-    folder_selection = st.sidebar.radio("선택 버튼", ["초기화", "강의", "esophagus", "stomach", "duodenum"])
+    folder_selection = st.sidebar.radio("선택 버튼", ["초기화", "Hemostais 강의", "esophagus", "stomach", "duodenum"])
     
     directory_videos = "EGD_Hemostasis_training/videos/"
 
