@@ -33,7 +33,8 @@ if st.session_state.get('logged_in'):
     # Display Form Title
     st.subheader("EGD 기타 강의 모음")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 이 EGD 기타 강의 모음은 상부 지혈술 외의 주제에 대한 강의 동영상 모음입니다. EGD 지혈술 강의를 보시려면 EGD hemostasis training으로 이동하셔서 Hemostasis 강의 항목으로 이동하세요.")
+        st.write("- 이 EGD 기타 강의 모음은 상부 지혈술 외의 EGD에 대한 강의 동영상 모음입니다.")
+        st.write("- EGD 지혈술 강의를 보시려면 EGD hemostasis training으로 이동하셔서 Hemostasis 강의 항목으로 이동하세요.")
         st.write("- 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
           
