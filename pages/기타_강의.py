@@ -52,7 +52,7 @@ if st.session_state.get('logged_in'):
     video_player_container = st.container()
     
     # 왼쪽 사이드바에서 10개 강의 중 하나 선택
-    lectures = ["Description Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "LxPhx_Esophagus", "SET"]
+    lectures = ["Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", ["Default"] + lectures)
     
     if selected_lecture != "Default":
