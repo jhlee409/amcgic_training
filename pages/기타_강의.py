@@ -75,8 +75,8 @@ if st.session_state.get('logged_in'):
     directory_videos = "EGD_Hemostasis_training/videos/"
 
     if folder_selection == "초기화":
-        directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
-        directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+        directory_pre_videos = "Lectures/videos/"
+        directory_instructions = "Lectures/instructions/"
     elif folder_selection == "Hemostasis 강의":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
         directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"    
