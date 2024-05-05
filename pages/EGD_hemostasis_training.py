@@ -169,7 +169,7 @@ if st.session_state.get('logged_in'):
 
                 # 비디오 플레이어 삽입
                 video_html = f'''
-                <video id="video_player" width="600" controls controlsList="nodownload">
+                <video id="video_player" width="1000" controls controlsList="nodownload">
                     <source src="{video_url}" type="video/mp4">
                 </video>
                 <script>
@@ -180,13 +180,13 @@ if st.session_state.get('logged_in'):
                 </script>
                 '''
                 with video_player_container:
-                    st.components.v1.html(video_html, height=600)
-
-            st.sidebar.divider()
-            
+                    st.components.v1.html(video_html, height=1000)
+                      
             if folder_selection == "초기화":
                 st.empty()  # 동영상 플레이어 제거
-
+                
+        st.sidebar.divider()
+        
         # 로그아웃 버튼 생성
         if st.sidebar.button('로그아웃'):
             st.session_state.logged_in = False
