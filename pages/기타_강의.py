@@ -80,7 +80,7 @@ if st.session_state.get('logged_in'):
             # 새로운 동영상 플레이어 렌더링
             with video_player_container:
                 video_html = f'''
-                    <video id="video_player" width="700" controls controlsList="nodownload">
+                    <video id="video_player" width="900" controls controlsList="nodownload">
                         <source src="{mp4_url}" type="video/mp4">
                     </video>
                     <script>
@@ -90,7 +90,7 @@ if st.session_state.get('logged_in'):
                         }});
                     </script>
                 '''
-                st.components.v1.html(video_html, height=700)
+                st.components.v1.html(video_html, height=900)
         else:
             st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
     
