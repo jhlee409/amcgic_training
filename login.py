@@ -1,5 +1,6 @@
 import streamlit as st
-import pandas as pd
+import requests
+import json
 
 st.set_page_config(page_title="GI_training", layout="wide")
 
@@ -13,40 +14,37 @@ with st.expander("**이 프로그램 사용 방법**"):
     st.write("* 이 프로그램은 울산의대 서울아산병원 이진혁과 의대 관계자 및 다른 서울아산병원 소화기 선생님들의 참여에 의해 제작되었습니다.")
 st.divider()
 
-# 로그아웃 버튼 상태 관리
-if 'logged_in' not in st.session_state:
-    st.session_state.logged_in = False
+# 사용자 인풋
+email = st.text_input("Email")
+password = st.text_input("Password", type="password")
 
-# 로그인 상태에 따른 UI 표시
-if not st.session_state.logged_in:
-    # 사용자 ID 및 비밀번호 입력창 설정
-    st.subheader("로그인 페이지")
-    id = st.text_input("사용자 ID")
-    password = st.text_input("비밀번호", type="password")
+# 로그인 버튼
+if st.button("Login"):
+    try:
+        # Streamlit secret에서 Firebase API 키 가져오기
+        api_key = st.secrets["FIREBASE_API_KEY"]
+        request_ref = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
+        headers = {"Content-Type": "application/json"}
+        data = json.dumps({"email": email, "password": password, "returnSecureToken": True})
 
-    # 로그인 버튼 추가
-    login_button = st.button('로그인')
+        response = requests.post(request_ref, headers=headers, data=data)
+        response_data = response.json()
 
-    # 로그인 버튼이 클릭되었을 때만 처리
-    if login_button:
-        # ID 및 비밀번호 확인
-        is_login = id == "amcgi" and password == "3986"
-
-        if is_login:
-            # 로그인 성공 시 처리
-            st.success("로그인에 성공하셨습니다. 이제 왼편의 각 프로그램을 사용하실 수 있습니다.")
-            st.session_state.logged_in = True
-            st.divider()
+        if response.status_code == 200:
+            st.success(f"{email}님, 로그인에 성공하셨습니다. 이제 왼쪽의 메뉴를 이용하실 수 있습니다.")
+            st.session_state['logged_in'] = True 
         else:
-            st.error("로그인 정보가 정확하지 않습니다.")
-else:
-    # 로그인 성공 시 화면
-    st.success("로그인에 성공하셨습니다. 이제 왼편의 각 프로그램을 사용하실 수 있습니다.")
-    st.divider()
+            st.error(response_data["error"]["message"])
+    except Exception as e:
+        st.error("An error occurred: " + str(e))
+
+# 로그 아웃 버튼
+if "logged_in" in st.session_state and st.session_state['logged_in']:
     
-    # 로그아웃 버튼 생성
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+    if st.sidebar.button("Logout"):
+        st.session_state['logged_in'] = False
+        st.success("로그아웃 되었습니다.")
+        # 필요시 추가적인 세션 상태 초기화 코드
+        # 예: del st.session_state['logged_in']
 
     st.write("마지막 수정 날짜 및 수정사항: 2024년 2월 15일; EGD 사진 진단 훈련 프로그램 내용 삭제")
