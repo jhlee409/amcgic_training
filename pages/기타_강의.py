@@ -82,7 +82,7 @@ if st.session_state.get('logged_in'):
         with video_player_placeholder.container():
             video_html = f'''
             <div style="display: flex; justify-content: center;">
-                <video width="1000" height="1000" controls controlsList="nodownload">
+                <video width="1000" height="700" controls controlsList="nodownload">
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
             </div>
