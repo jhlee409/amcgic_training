@@ -60,12 +60,14 @@ if st.session_state.get('logged_in'):
         # 선택된 강의와 같은 이름의 mp4 파일 찾기
         directory_lectures = "Lectures/"
         mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
+
+        # 선택된 강의에 해당하는 mp4 파일 찾기
         selected_mp4 = None
-        for mp4_file in mp4_files:
-            if selected_lecture in mp4_file:
-                selected_mp4 = mp4_file
+        for file_name in mp4_files:
+            if file_name.startswith(selected_lecture):
+                selected_mp4 = file_name
                 break
-        
+
         if selected_mp4:
             # Firebase Storage에서 선택된 mp4 파일의 URL 생성
             selected_mp4_path = directory_lectures + selected_mp4
@@ -95,7 +97,7 @@ if st.session_state.get('logged_in'):
                 st.markdown(video_html, unsafe_allow_html=True)
         else:
             st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
-            
+
     st.sidebar.divider()
     
     # 로그아웃 버튼 생성
