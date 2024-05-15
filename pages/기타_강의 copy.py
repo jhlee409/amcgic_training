@@ -52,52 +52,51 @@ if st.session_state.get('logged_in'):
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     video_player_container = st.container()
     
-    # 왼쪽 사이드바에서 10개 강의 중 하나 선택
+    # 동영상 플레이어를 렌더링할 플레이스홀더 생성
+    video_player_placeholder = st.empty()
+
+    # 왼쪽 사이드바에서 강의 선택
     lectures = ["Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET", "PEG", "EUS_basic", "EUS_SET", "EUS_case"]
-    selected_lecture = st.sidebar.radio("강의를 선택하세요", ["Default"] + lectures)
-    
-    if selected_lecture != "Default":
-        # 선택된 강의와 같은 이름의 mp4 파일 찾기
-        directory_lectures = "Lectures/"
-        mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
+    selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures)
 
-        # 선택된 강의에 해당하는 mp4 파일 찾기
-        selected_mp4 = None
-        for file_name in mp4_files:
-            if file_name.startswith(selected_lecture):
-                selected_mp4 = file_name
-                break
+    # 선택된 강의와 같은 이름의 mp4 파일 찾기
+    directory_lectures = "Lectures/"
+    mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
 
-        if selected_mp4:
-            # Firebase Storage에서 선택된 mp4 파일의 URL 생성
-            selected_mp4_path = directory_lectures + selected_mp4
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            blob = bucket.blob(selected_mp4_path)
-            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-            mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            
-            # 이전 동영상 플레이어 지우기
-            video_player_container.empty()
-            
-            # 새로운 동영상 플레이어 렌더링
-            with video_player_container:
-                video_html = f'''
-                <div style="display: flex; justify-content: center;">
-                    <video width="1000" height="1000" controls controlsList="nodownload">
-                        <source src="{mp4_url}" type="video/mp4">
-                    </video>
-                </div>
-                <script>
-                var video_player = document.querySelector("video");
-                video_player.addEventListener('contextmenu', function(e) {{
-                    e.preventDefault();
-                }});
-                </script>
-                '''
-                st.markdown(video_html, unsafe_allow_html=True)
-        else:
-            st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
+    # 선택된 강의에 해당하는 mp4 파일 찾기
+    selected_mp4 = None
+    for file_name in mp4_files:
+        if file_name.startswith(selected_lecture):
+            selected_mp4 = file_name
+            break
 
+    if selected_mp4:
+        # Firebase Storage에서 선택된 mp4 파일의 URL 생성
+        selected_mp4_path = directory_lectures + selected_mp4
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        blob = bucket.blob(selected_mp4_path)
+        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+        mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        
+        # 동영상 플레이어 렌더링
+        with video_player_placeholder.container():
+            video_html = f'''
+            <div style="display: flex; justify-content: center;">
+                <video width="1000" height="1000" controls controlsList="nodownload">
+                    <source src="{mp4_url}" type="video/mp4">
+                </video>
+            </div>
+            <script>
+            var video_player = document.querySelector("video");
+            video_player.addEventListener('contextmenu', function(e) {{
+                e.preventDefault();
+            }});
+            </script>
+            '''
+            st.markdown(video_html, unsafe_allow_html=True)
+    else:
+        st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
+        
     st.sidebar.divider()
     
     # 로그아웃 버튼 생성
