@@ -69,7 +69,7 @@ if st.session_state.get('logged_in'):
         if selected_mp4:
             # Firebase Storage에서 선택된 mp4 파일의 URL 생성
             selected_mp4_path = directory_lectures + selected_mp4
-            bucket = storage.bucket('amcgi-bulletin.appspot.com') 
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
             blob = bucket.blob(selected_mp4_path)
             expiration_time = datetime.utcnow() + timedelta(seconds=1600)
             mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
@@ -80,20 +80,22 @@ if st.session_state.get('logged_in'):
             # 새로운 동영상 플레이어 렌더링
             with video_player_container:
                 video_html = f'''
-                    <video id="video_player" width="1000" controls controlsList="nodownload">
+                <div style="display: flex; justify-content: center;">
+                    <video width="1000" height="1000" controls controlsList="nodownload">
                         <source src="{mp4_url}" type="video/mp4">
                     </video>
-                    <script>
-                        var video_player = document.getElementById('video_player');
-                        video_player.addEventListener('contextmenu', function(e) {{
-                            e.preventDefault();
-                        }});
-                    </script>
+                </div>
+                <script>
+                var video_player = document.querySelector("video");
+                video_player.addEventListener('contextmenu', function(e) {{
+                    e.preventDefault();
+                }});
+                </script>
                 '''
-                st.components.v1.html(video_html, height=1000)
+                st.markdown(video_html, unsafe_allow_html=True)
         else:
             st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
-    
+            
     st.sidebar.divider()
     
     # 로그아웃 버튼 생성
