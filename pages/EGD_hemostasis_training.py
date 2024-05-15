@@ -143,7 +143,7 @@ if st.session_state.get('logged_in'):
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:           
             with pre_video_container:
-                video_html = f'<video width="500" height="350" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
+                video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
                         
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
