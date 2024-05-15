@@ -142,7 +142,7 @@ if st.session_state.get('logged_in'):
             
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:           
-            st.video(st.session_state.pre_video_url, format='video/mp4')
+            st.video(st.session_state.pre_video_url, format='video/mp4', height=500)
             
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
@@ -158,7 +158,7 @@ if st.session_state.get('logged_in'):
 
                 # 비디오 플레이어 삽입
                 with video_player_container:
-                    st.video(video_url, format='video/mp4', start_time=0)
+                    st.video(video_url, format='video/mp4', , height=1000)
                       
             if folder_selection == "초기화":
                 st.empty()  # 동영상 플레이어 제거
