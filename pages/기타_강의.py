@@ -56,7 +56,7 @@ if st.session_state.get('logged_in'):
     video_player_placeholder = st.empty()
 
     # 왼쪽 사이드바에서 강의 선택
-    lectures = ["Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET", "PEG", "EUS_basic", "EUS_SET", "EUS_case"]
+    lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET", "PEG", "EUS_basic", "EUS_SET", "EUS_case"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
