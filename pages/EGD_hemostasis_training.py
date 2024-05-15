@@ -160,7 +160,7 @@ if st.session_state.get('logged_in'):
 
                 # 비디오 플레이어 삽입
                 with video_player_container:
-                    video_html = f'<video width="1000" height="1000" controls><source src="{video_url}" type="video/mp4"></video>'
+                    video_html = f'<video width="1000" height="500" controls><source src="{video_url}" type="video/mp4"></video>'
                     st.markdown(video_html, unsafe_allow_html=True)
 
             if folder_selection == "초기화":
