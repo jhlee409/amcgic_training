@@ -158,7 +158,7 @@ if st.session_state.get('logged_in'):
 
                 # 비디오 플레이어 삽입
                 with video_player_container:
-                    st.video(video_url, format='video/mp4', , height=1000)
+                    st.video(video_url, format='video/mp4', height=1000)
                       
             if folder_selection == "초기화":
                 st.empty()  # 동영상 플레이어 제거
