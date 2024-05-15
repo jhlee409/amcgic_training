@@ -142,7 +142,18 @@ if st.session_state.get('logged_in'):
             
         # 새로운 동영상 플레이어 렌더링
         with pre_video_container:           
-            st.video(st.session_state.pre_video_url, format='video/mp4')
+            video_html = f'''
+                <video id="video_player" width="350" controls controlsList="nodownload">
+                    <source src="{st.session_state.pre_video_url}" type="video/mp4">
+                </video>
+                <script>
+                    var video_player = document.getElementById('video_player');
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                </script>
+            '''
+            st.components.v1.html(video_html, height=350)
             
             instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
             selected_instruction_file = directory_instructions + instruction_file_name
@@ -157,8 +168,19 @@ if st.session_state.get('logged_in'):
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
                 # 비디오 플레이어 삽입
+                video_html = f'''
+                <video id="video_player" width="1000" controls controlsList="nodownload">
+                    <source src="{video_url}" type="video/mp4">
+                </video>
+                <script>
+                var video_player = document.getElementById('video_player');
+                video_player.addEventListener('contextmenu', function(e) {{
+                    e.preventDefault();
+                }});
+                </script>
+                '''
                 with video_player_container:
-                    st.video(video_url, format='video/mp4')
+                    st.components.v1.html(video_html, height=1000)
                       
             if folder_selection == "초기화":
                 st.empty()  # 동영상 플레이어 제거
@@ -172,4 +194,4 @@ if st.session_state.get('logged_in'):
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.")
+    st.error("로그인이 필요합니다.") 
