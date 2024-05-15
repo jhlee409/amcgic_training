@@ -159,13 +159,9 @@ if st.session_state.get('logged_in'):
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
                 # 비디오 플레이어 삽입
-                # with video_player_container:
-                #     st.video(video_url, format='video/mp4', height=1000)
-
                 with video_player_container:
-                    video_html = f'<video width="1000" height="500" controls><source src="{st.session_state.video_url}" type="video/mp4"></video>'
-                    st.markdown(video_html, unsafe_allow_html=True)
-                      
+                    st.video(video_url, format='video/mp4', height=1000)
+
             if folder_selection == "초기화":
                 st.empty()  # 동영상 플레이어 제거
                 
