@@ -118,15 +118,15 @@ if st.session_state.get('logged_in'):
             expiration_time = datetime.utcnow() + timedelta(seconds=1600)
             pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state.pre_video_url = pre_video_url
-            
-            # 선택한 pre_video와 같은 이름의 docx 파일 찾기
-            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
-            selected_instruction_file = directory_instructions + instruction_file_name
-                       
+
             # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
             video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
             selected_video_file = directory_videos + video_name
             st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
+            
+            # 선택한 pre_video와 같은 이름의 docx 파일 찾기
+            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+            selected_instruction_file = directory_instructions + instruction_file_name
             
             # Read and display the content of the selected DOCX file
             if selected_instruction_file:
