@@ -159,6 +159,7 @@ if st.session_state.get('logged_in'):
                     st.session_state.previous_folder_selection = folder_selection
                     pre_video_container.empty()
                     video_player_container.empty()
+                    st.empty()
                     
         instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
