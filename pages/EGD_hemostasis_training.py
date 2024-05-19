@@ -155,6 +155,9 @@ if st.session_state.get('logged_in'):
                 video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
 
+            if folder_selection == "초기화":
+                st.empty()  # 동영상 플레이어 제거
+
         instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
 
