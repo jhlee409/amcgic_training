@@ -117,66 +117,66 @@ if st.session_state.get('logged_in'):
     pre_video_container = st.container()
     video_player_container = st.container()
 
-    if selected_pre_videos_file:
-        if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
-            st.session_state.selected_pre_videos_file = selected_pre_videos_file
-            selected_pre_videos_path = directory_pre_videos + selected_pre_videos_file
-            
-            # Firebase Storage 참조 생성
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            blob = bucket.blob(selected_pre_videos_path)
-            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-            pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            st.session_state.pre_video_url = pre_video_url
+    #if selected_pre_videos_file:
+    if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
+        st.session_state.selected_pre_videos_file = selected_pre_videos_file
+        selected_pre_videos_path = directory_pre_videos + selected_pre_videos_file
+        
+        # Firebase Storage 참조 생성
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        blob = bucket.blob(selected_pre_videos_path)
+        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+        pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        st.session_state.pre_video_url = pre_video_url
 
-            # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
-            video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
-            selected_video_file = directory_videos + video_name
-            st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
-            
-            # 선택한 pre_video와 같은 이름의 docx 파일 찾기
-            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
-            selected_instruction_file = directory_instructions + instruction_file_name
-            
-            # Read and display the content of the selected DOCX file
-            if selected_instruction_file:
-                full_path = selected_instruction_file
-                prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-                prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
-                prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-                st.markdown(prompt_markdown)
-            
-            # 이전 동영상 플레이어 지우기
-            pre_video_container.empty()
-            video_player_container.empty()
-            
-            # 새로운 동영상 플레이어 렌더링        
-            with pre_video_container:
-                video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
-                st.markdown(video_html, unsafe_allow_html=True)
-
-            if folder_selection == "초기화":
-                st.empty()  # 동영상 플레이어 제거
-
+        # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
+        video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
+        selected_video_file = directory_videos + video_name
+        st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
+        
+        # 선택한 pre_video와 같은 이름의 docx 파일 찾기
         instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
+        
+        # Read and display the content of the selected DOCX file
+        if selected_instruction_file:
+            full_path = selected_instruction_file
+            prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+            prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
+            prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
+            st.markdown(prompt_markdown)
+        
+        # 이전 동영상 플레이어 지우기
+        pre_video_container.empty()
+        video_player_container.empty()
+        
+        # 새로운 동영상 플레이어 렌더링        
+        with pre_video_container:
+            video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
+            st.markdown(video_html, unsafe_allow_html=True)
 
-        # '진행' 버튼 추가
-        if st.sidebar.button('진행'):
-            if st.session_state.get('selected_video_file'):
-                # Firebase Storage 참조 생성
-                bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                blob = bucket.blob(st.session_state.selected_video_file)
-                expiration_time = datetime.utcnow() + timedelta(seconds=1600)
-                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        if folder_selection == "초기화":
+            st.empty()  # 동영상 플레이어 제거
 
-                # 비디오 플레이어 삽입
-                with video_player_container:
-                    video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
-                    st.markdown(video_html, unsafe_allow_html=True)
+    instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+    selected_instruction_file = directory_instructions + instruction_file_name
 
-            if folder_selection == "초기화":
-                st.empty()  # 동영상 플레이어 제거
+    # '진행' 버튼 추가
+    if st.sidebar.button('진행'):
+        if st.session_state.get('selected_video_file'):
+            # Firebase Storage 참조 생성
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            blob = bucket.blob(st.session_state.selected_video_file)
+            expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+
+            # 비디오 플레이어 삽입
+            with video_player_container:
+                video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
+                st.markdown(video_html, unsafe_allow_html=True)
+
+        if folder_selection == "초기화":
+            st.empty()  # 동영상 플레이어 제거
                 
         st.sidebar.divider()
         
