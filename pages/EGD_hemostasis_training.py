@@ -163,6 +163,7 @@ if st.session_state.get('logged_in'):
             st.session_state.previous_folder_selection = folder_selection
             pre_video_container.empty()
             video_player_container.empty()
+            st.empty()
 
         # '진행' 버튼 추가
         if st.sidebar.button('진행'):
