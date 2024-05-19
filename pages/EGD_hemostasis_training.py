@@ -76,9 +76,16 @@ if st.session_state.get('logged_in'):
     
     directory_videos = "EGD_Hemostasis_training/videos/"
 
+    # 동영상 플레이어를 렌더링할 컨테이너 생성
+    pre_video_container = st.container()
+    video_player_container = st.container()
+
     if folder_selection == "초기화":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+        pre_video_container.empty()
+        video_player_container.empty()
+
     elif folder_selection == "Hemostasis 강의":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
         directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"    
