@@ -117,7 +117,6 @@ if st.session_state.get('logged_in'):
     pre_video_container = st.container()
     video_player_container = st.container()
 
-    #if selected_pre_videos_file:
     if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
         st.session_state.selected_pre_videos_file = selected_pre_videos_file
         selected_pre_videos_path = directory_pre_videos + selected_pre_videos_file
