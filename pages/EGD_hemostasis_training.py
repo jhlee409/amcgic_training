@@ -83,19 +83,15 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-
     elif folder_selection == "Hemostasis 강의":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
         directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
-
     elif folder_selection == "esophagus":
         directory_pre_videos = "EGD_Hemostasis_training/esophagus/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
-
     elif folder_selection == "stomach":
         directory_pre_videos = "EGD_Hemostasis_training/stomach/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/stomach/instructions/"
-
     else:
         directory_pre_videos = "EGD_Hemostasis_training/duodenum/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
@@ -111,8 +107,11 @@ if st.session_state.get('logged_in'):
     file_list_pre_videos = pre_videos_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
     selected_pre_videos_file = st.sidebar.selectbox(f"pre_video를 선택하세요.", file_list_pre_videos)
 
-    if folder_selection == "초기화":
-        st.empty()  # 동영상 플레이어 제거
+    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어 제거
+    if st.session_state.get('previous_folder_selection', None) != folder_selection:
+        st.session_state.previous_folder_selection = folder_selection
+        pre_video_container.empty()
+        video_player_container.empty()
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     pre_video_container = st.container()
