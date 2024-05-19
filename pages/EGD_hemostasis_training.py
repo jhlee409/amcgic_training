@@ -107,6 +107,10 @@ if st.session_state.get('logged_in'):
     pre_video_container = st.container()
     video_player_container = st.container()
 
+    # 이전 동영상 플레이어 지우기
+    pre_video_container.empty()
+    video_player_container.empty()
+
     if selected_pre_videos_file:
         if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
             st.session_state.selected_pre_videos_file = selected_pre_videos_file
