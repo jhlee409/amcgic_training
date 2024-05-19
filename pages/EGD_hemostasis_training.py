@@ -112,7 +112,7 @@ if st.session_state.get('logged_in'):
         st.session_state.previous_folder_selection = folder_selection
         pre_video_container.empty()
         video_player_container.empty()
-        folder_selection == "초기화":
+        folder_selection == "초기화"
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     pre_video_container = st.container()
