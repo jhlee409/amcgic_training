@@ -83,6 +83,9 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+        pre_video_container.empty()
+        video_player_container.empty()
+        selected_pre_videos_file = "000.mp4"  # default 동영상으로 설정
         st.empty()  # 동영상 플레이어 제거
 
     elif folder_selection == "Hemostasis 강의":
