@@ -157,7 +157,6 @@ if st.session_state.get('logged_in'):
         if folder_selection == "초기화":
             st.empty()  # 동영상 플레이어 제거
 
-    if folder_selection == "초기화":
         st.empty()  # 동영상 플레이어 제거
 
     instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
