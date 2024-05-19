@@ -85,6 +85,7 @@ if st.session_state.get('logged_in'):
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
         pre_video_container.empty()
         video_player_container.empty()
+        selected_pre_videos_file = "000.mp4"  # default 동영상으로 설정
 
     elif folder_selection == "Hemostasis 강의":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
