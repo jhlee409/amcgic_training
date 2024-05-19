@@ -83,18 +83,24 @@ if st.session_state.get('logged_in'):
     if folder_selection == "초기화":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+        st.empty()  # 동영상 플레이어 제거
+
     elif folder_selection == "Hemostasis 강의":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
-        directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"    
+        directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
+        st.empty()  # 동영상 플레이어 제거    
     elif folder_selection == "esophagus":
         directory_pre_videos = "EGD_Hemostasis_training/esophagus/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/esophagus/instructions/"
+        st.empty()  # 동영상 플레이어 제거
     elif folder_selection == "stomach":
         directory_pre_videos = "EGD_Hemostasis_training/stomach/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/stomach/instructions/"
+        st.empty()  # 동영상 플레이어 제거
     else:
         directory_pre_videos = "EGD_Hemostasis_training/duodenum/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/duodenum/instructions/"
+        st.empty()  # 동영상 플레이어 제거
 
     st.sidebar.divider()
 
