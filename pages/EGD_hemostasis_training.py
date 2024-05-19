@@ -154,6 +154,11 @@ if st.session_state.get('logged_in'):
             with pre_video_container:
                 video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
+
+                if st.session_state.get('previous_folder_selection', None) != folder_selection:
+                    st.session_state.previous_folder_selection = folder_selection
+                    pre_video_container.empty()
+                    video_player_container.empty()
                     
         instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
