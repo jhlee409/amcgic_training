@@ -110,9 +110,11 @@ if st.session_state.get('logged_in'):
     # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어 제거
     if st.session_state.get('previous_folder_selection', None) != folder_selection:
         st.session_state.previous_folder_selection = folder_selection
-        folder_selection == "초기화"
         pre_video_container.empty()
         video_player_container.empty()
+        if folder_selection == "초기화":
+            pre_video_container.empty()
+            video_player_container.empty()
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     pre_video_container = st.container()
