@@ -155,8 +155,14 @@ if st.session_state.get('logged_in'):
                 video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
                     
-            instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
-            selected_instruction_file = directory_instructions + instruction_file_name
+        instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+        selected_instruction_file = directory_instructions + instruction_file_name
+
+        # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어 제거
+        if st.session_state.get('previous_folder_selection', None) != folder_selection:
+            st.session_state.previous_folder_selection = folder_selection
+            pre_video_container.empty()
+            video_player_container.empty()
 
         # '진행' 버튼 추가
         if st.sidebar.button('진행'):
