@@ -213,7 +213,7 @@ if st.session_state.get('logged_in'):
         if msg.content and msg.content[0].text.value:
             content = msg.content[0].text.value
             # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
-            if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
+            if content.strip() not in ['', '..', '...'] or '전체 지시 사항' not in content:
                 with st.chat_message(msg.role):
                     st.write(content)
             
