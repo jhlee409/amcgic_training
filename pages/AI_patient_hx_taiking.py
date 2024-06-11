@@ -176,7 +176,22 @@ if st.session_state.get('logged_in'):
         st.session_state['messages'] = []
         for msg in thread_messages.data:
             msg.content[0].text.value=""
+        
+        # 이전 대화기록 삭제 후 000.docx 파일 선택
         selected_case_file = "000.docx"
+        
+        # sidebar의 selectbox에서도 000.docx 선택
+        st.session_state.selected_case_file = selected_case_file
+
+    # Streamlit Sidebar with Dropdown for file selection
+    case_directory = "AI_patient_Hx_taking/case/"
+    case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
+
+    # 세션 상태에 selected_case_file이 있으면 해당 값으로 선택, 없으면 case_file_list의 첫번째 항목 선택
+    if 'selected_case_file' not in st.session_state:
+        st.session_state.selected_case_file = case_file_list[0]
+
+    selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list, index=case_file_list.index(st.session_state.selected_case_file))
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
