@@ -173,19 +173,10 @@ if st.session_state.get('logged_in'):
         prompt = []
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
-        docx_file = None
+        #docx_file = None
         st.session_state['messages'] = []
         for msg in thread_messages.data:
             msg.content[0].text.value=""
-        
-        # Set selected_case_file to '000.docx' in the 'case' folder
-        selected_case_file = '000.docx'
-        st.session_state['selected_case_file'] = selected_case_file
-
-        # Read content of '000.docx' and store in prompt variable
-        case_full_path = case_directory + selected_case_file
-        prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
-        st.session_state['prompt'] = prompt
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
