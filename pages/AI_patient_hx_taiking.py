@@ -208,6 +208,9 @@ if st.session_state.get('logged_in'):
         st.session_state['messages'] = []
         for msg in thread_messages.data:
             msg.content[0].text.value=""
+        # Clear the message box in col2
+        st.session_state.message_box = ""
+        message_container.markdown("", unsafe_allow_html=True)
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
