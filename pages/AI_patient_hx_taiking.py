@@ -214,6 +214,7 @@ if st.session_state.get('logged_in'):
         message_box.markdown(
             f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}",
             unsafe_allow_html=True
+        )
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
