@@ -170,19 +170,19 @@ if st.session_state.get('logged_in'):
         st.session_state.logged_in = False
         st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
         
-    # assistant 메세지 UI에 추가하기
-    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        with st.chat_message(messages.data[0].role):
-            st.write(messages.data[0].content[0].text.value)
+    # # assistant 메세지 UI에 추가하기
+    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+    #     with st.chat_message(messages.data[0].role):
+    #         st.write(messages.data[0].content[0].text.value)
 
-    # for msg in thread_messages.data:
-    # # 메시지 내용 확인 및 필터링 조건 추가
-    #     if msg.content and msg.content[0].text.value:
-    #         content = msg.content[0].text.value
-    #         # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
-    #         if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
-    #             with st.chat_message(msg.role):
-    #                 st.write(content)
+    for msg in thread_messages.data:
+    # 메시지 내용 확인 및 필터링 조건 추가
+        if msg.content and msg.content[0].text.value:
+            content = msg.content[0].text.value
+            # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
+            if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
+                with st.chat_message(msg.role):
+                    st.write(content)
         
             
 else:
