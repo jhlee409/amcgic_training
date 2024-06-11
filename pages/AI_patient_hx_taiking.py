@@ -184,7 +184,7 @@ if st.session_state.get('logged_in'):
         if st.sidebar.button('로그아웃'):
             st.session_state.logged_in = False
             st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-            
+                
     with col2:
         # 메시지 창 컨테이너 생성
         message_container = st.container()
@@ -199,6 +199,8 @@ if st.session_state.get('logged_in'):
                 border-radius: 5px;
                 height: 600px;
                 overflow-y: auto;
+            }
+            .message-container p {
                 text-align: left;
             }
             </style>
