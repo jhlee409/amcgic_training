@@ -176,13 +176,7 @@ if st.session_state.get('logged_in'):
         st.session_state['messages'] = []
         for msg in thread_messages.data:
             msg.content[0].text.value=""
-        
-        # 이전 대화기록 삭제 후 000.docx 파일 선택
-        selected_case_file = "000.docx"
-        
-        # sidebar의 selectbox에서도 000.docx 선택
-        st.session_state.selected_case_file = selected_case_file
-        st.session_state.selected_case_file = case_file_list[0]
+    st.session_state.selected_case_file = case_file_list[0]
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
