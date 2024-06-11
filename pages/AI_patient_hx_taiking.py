@@ -191,7 +191,7 @@ if st.session_state.get('logged_in'):
     if 'selected_case_file' not in st.session_state:
         st.session_state.selected_case_file = case_file_list[0]
 
-    selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list, index=case_file_list.index(st.session_state.selected_case_file))
+    selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list, index=case_file_list.index(st.session_state.selected_case_file), key="case_file_selectbox")
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
