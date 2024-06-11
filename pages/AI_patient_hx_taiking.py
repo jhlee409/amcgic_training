@@ -70,32 +70,7 @@ if st.session_state.get('logged_in'):
         
         # Join the text into a single string
         return '\n'.join(full_text)
-
-    # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_patient_Hx_taking/case/"  # Note: Removed the leading './'
-    file_list = list_files('amcgi-bulletin.appspot.com', directory)
-    selected_file = st.sidebar.selectbox("증례 파일을 선택하세요.", file_list)
-
-    # Read content of the selected file and store in prompt variable
-    if selected_file:
-    # Include the directory in the path when reading the file
-        full_path = directory + selected_file
-        prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-        st.session_state['prompt'] = prompt
-    st.sidebar.divider()
-        
-    # Function to list files in a specific directory in Firebase Storage
-    def list_files(bucket_name, directory):
-        bucket = storage.bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=directory)
-        file_names = []
-        for blob in blobs:
-            # Extracting file name from the path and adding to the list
-            file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
-                file_names.append(file_name)
-        return file_names
-
+    
     # Function to get file content from Firebase Storage
     def get_file_content(bucket_name, directory, file_name):
         bucket = storage.bucket(bucket_name)
@@ -128,7 +103,7 @@ if st.session_state.get('logged_in'):
             )
         else:
             st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
-
+        
     # Manage thread id
     if 'thread_id' not in st.session_state:
         thread = client.beta.threads.create()
