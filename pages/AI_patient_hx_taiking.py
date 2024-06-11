@@ -173,7 +173,7 @@ if st.session_state.get('logged_in'):
         prompt = []
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
-        #docx_file = None
+        selected_case_file = None
         st.session_state['messages'] = []
         for msg in thread_messages.data:
             msg.content[0].text.value=""
