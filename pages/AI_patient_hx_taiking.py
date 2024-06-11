@@ -176,6 +176,7 @@ if st.session_state.get('logged_in'):
         st.session_state['messages'] = []
         for msg in thread_messages.data:
             msg.content[0].text.value=""
+        selected_case_file = "000.docx"
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
