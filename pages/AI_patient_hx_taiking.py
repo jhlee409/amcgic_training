@@ -199,6 +199,7 @@ if st.session_state.get('logged_in'):
                 border-radius: 5px;
                 height: 600px;
                 overflow-y: auto;
+                text-align: left;
             }
             </style>
             """,
@@ -210,7 +211,9 @@ if st.session_state.get('logged_in'):
 
     # assistant 메시지를 메시지 창에 추가
     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        message_box.markdown(f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}")
+        message_box.markdown(
+            f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}",
+            unsafe_allow_html=True
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
