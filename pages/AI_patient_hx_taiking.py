@@ -190,6 +190,9 @@ if st.session_state.get('logged_in'):
 
     # 대화 내용을 컨테이너에 표시
     with chat_container:
+        # 대화 컨테이너에 chat-container 클래스 적용
+        st.markdown('<div class="chat-container">', unsafe_allow_html=True)
+        
         for msg in thread_messages.data:
             # 메시지 내용 확인 및 필터링 조건 추가
             if msg.content and msg.content[0].text.value:
@@ -199,12 +202,8 @@ if st.session_state.get('logged_in'):
                     if msg.role != 'user':
                         with st.chat_message(msg.role):
                             st.write(content)
-
-    # 스크롤바 적용
-    chat_container.add_style("""
-        height: 400px;
-        overflow-y: scroll;
-    """)
+        
+        st.markdown('</div>', unsafe_allow_html=True)
             
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
