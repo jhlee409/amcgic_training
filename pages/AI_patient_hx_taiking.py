@@ -96,7 +96,7 @@ if st.session_state.get('logged_in'):
         if excel_file in reference_file_list:
             file_content = get_file_content('amcgi-bulletin.appspot.com', reference_directory, excel_file)
             st.sidebar.download_button(
-                label="Download Excel File",
+                label="Case 해설 자료 다운로드",
                 data=file_content,
                 file_name=excel_file,
                 mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
@@ -121,7 +121,7 @@ if st.session_state.get('logged_in'):
         st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
         st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
         st.write("- 다음 증례로 넘어가기 전에 '이전 대화기록 삭제버튼'을 꼭 눌러주세요. 안 누르면 이전 기록이 계속 남아 영향을 줍니다.")
-        st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있습니다.")
+        st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
     st.divider()
 
     # Get user input from chat nput
