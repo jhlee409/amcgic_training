@@ -133,14 +133,14 @@ if st.session_state.get('logged_in'):
     assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
 
     # Display Form Title
-    st.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.4.0")
+    st.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
     with st.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
-        st.write("- 왼쪽 sidebar에서 증례 파일과 같은 이름의 해설자료를 선택해서 준비될 때까지 기다려 주세요.")
+        st.write("- 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
         st.write("- AI가 '선생님, 처음 뵙겠습니다. 잘 부탁드립니다.'라고 하면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
-        st.write("- 문진을 마치는 질문은 '궁금한 점이 있으신가요?' 입니다.")
+        st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
         st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
         st.write("- 다음 증례로 넘어가기 전에 '이전 대화기록 삭제버튼'을 꼭 눌러주세요. 안 누르면 이전 기록이 계속 남아 영향을 줍니다.")
-        st.write("- 증례 해설 자료는 필요할 때만 다운 받아 주세요. 전체가 다시 reset 됩니다.")
+        st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있습니다.")
     st.divider()
 
     # Get user input from chat nput
