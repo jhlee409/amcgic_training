@@ -216,6 +216,8 @@ if st.session_state.get('logged_in'):
             unsafe_allow_html=True
         )
 
+        message_box.markdown("---")
+
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
