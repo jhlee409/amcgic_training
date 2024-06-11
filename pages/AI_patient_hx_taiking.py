@@ -186,12 +186,31 @@ if st.session_state.get('logged_in'):
             st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
             
     with col2:
-        # 메시지 창 생성
+    # 메시지 창 생성
         message_box = message_container.empty()
+
+        # 메시지 창 컨테이너에 테두리 추가
+        message_container.markdown(
+            """
+            <style>
+            .message-container {
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+                height: 600px;
+                overflow-y: auto;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # 메시지 창 컨테이너에 클래스 추가
+        message_container.div(cls="message-container")
 
     # assistant 메시지를 메시지 창에 추가
     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        message_box.markdown(f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}")
+        message_box.text(f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}")
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
