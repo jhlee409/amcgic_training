@@ -182,6 +182,7 @@ if st.session_state.get('logged_in'):
         
         # sidebar의 selectbox에서도 000.docx 선택
         st.session_state.selected_case_file = selected_case_file
+        st.experimental_rerun()
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
