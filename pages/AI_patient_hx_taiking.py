@@ -142,6 +142,10 @@ if st.session_state.get('logged_in'):
     input_container = st.container()
     with input_container:
         user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+
+    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    if user_input:
+        prompt = user_input
                 
         # Manage thread id
         if 'thread_id' not in st.session_state:
@@ -162,13 +166,6 @@ if st.session_state.get('logged_in'):
             st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을 한 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
             st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
         st.divider()
-
-    # Get user input from chat input
-    user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
-
-    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-    if user_input:
-        prompt = user_input
 
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
