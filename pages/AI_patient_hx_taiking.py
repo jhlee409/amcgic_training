@@ -77,6 +77,10 @@ if st.session_state.get('logged_in'):
         blob = bucket.blob(directory + file_name)
         return blob.download_as_bytes()
 
+    # 메인 컨텐츠와 메시지 창을 위한 컨테이너 생성
+    main_container = st.container()
+    message_container = st.container()
+
     # 레이아웃 조정
     col1, col2 = st.columns([3, 1])
 
@@ -137,16 +141,7 @@ if st.session_state.get('logged_in'):
                 )
             else:
                 st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
-
-    # col1과 col2 아래에 입력창 추가
-    input_container = st.container()
-    with input_container:
-        user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
-
-    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-    if user_input:
-        prompt = user_input
-                
+            
         # Manage thread id
         if 'thread_id' not in st.session_state:
             thread = client.beta.threads.create()
@@ -157,15 +152,22 @@ if st.session_state.get('logged_in'):
         assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
 
         # Display Form Title
-        st.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
-        with st.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
+        main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
+        with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
             st.write("- 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
             st.write("- AI가 '선생님, 처음 뵙겠습니다. 잘 부탁드립니다.'라고 하면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
             st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
             st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
-            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을 한 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
+            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
             st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
-        st.divider()
+        main_container.divider()
+
+    # Get user input from chat input
+    user_input = main_container.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+
+    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    if user_input:
+        prompt = user_input
 
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
