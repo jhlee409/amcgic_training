@@ -187,9 +187,6 @@ if st.session_state.get('logged_in'):
         docx_file = None
         selected_case_file = None
 
-        # Rerun the app to reflect the changes
-        st.experimental_rerun()
-
     st.sidebar.divider()
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
