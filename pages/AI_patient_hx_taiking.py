@@ -77,110 +77,125 @@ if st.session_state.get('logged_in'):
         blob = bucket.blob(directory + file_name)
         return blob.download_as_bytes()
 
-    # Streamlit Sidebar with Dropdown for file selection
-    case_directory = "AI_patient_Hx_taking/case/"
-    case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
-    selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
+    # 메인 컨텐츠와 메시지 창을 위한 컨테이너 생성
+    main_container = st.container()
+    message_container = st.container()
 
-    # Read content of the selected case file and store in prompt variable
-    if selected_case_file:
-        # Include the directory in the path when reading the file
-        case_full_path = case_directory + selected_case_file
-        prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
-        st.session_state['prompt'] = prompt
+    # 레이아웃 조정
+    col1, col2 = st.columns([3, 1])
 
-        # Find the corresponding Excel file in the reference directory
-        reference_directory = "AI_patient_Hx_taking/reference/"
-        reference_file_list = list_files('amcgi-bulletin.appspot.com', reference_directory)
-        excel_file = selected_case_file.replace('.docx', '.xlsx')
-        if excel_file in reference_file_list:
-            file_content = get_file_content('amcgi-bulletin.appspot.com', reference_directory, excel_file)
-            st.sidebar.download_button(
-                label="Case 해설 자료 다운로드",
-                data=file_content,
-                file_name=excel_file,
-                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-            )
-        else:
-            st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
-        
-    # Manage thread id
-    if 'thread_id' not in st.session_state:
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
+    with col1:
+        # Streamlit Sidebar with Dropdown for file selection
+        case_directory = "AI_patient_Hx_taking/case/"
+        case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
+        selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
 
-    thread_id = st.session_state.thread_id
+        # Read content of the selected case file and store in prompt variable
+        if selected_case_file:
+            # Include the directory in the path when reading the file
+            case_full_path = case_directory + selected_case_file
+            prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
+            st.session_state['prompt'] = prompt
 
-    assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
+            # Find the corresponding Excel file in the reference directory
+            reference_directory = "AI_patient_Hx_taking/reference/"
+            reference_file_list = list_files('amcgi-bulletin.appspot.com', reference_directory)
+            excel_file = selected_case_file.replace('.docx', '.xlsx')
+            if excel_file in reference_file_list:
+                file_content = get_file_content('amcgi-bulletin.appspot.com', reference_directory, excel_file)
+                st.sidebar.download_button(
+                    label="Case 해설 자료 다운로드",
+                    data=file_content,
+                    file_name=excel_file,
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+            else:
+                st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
+            
+        # Manage thread id
+        if 'thread_id' not in st.session_state:
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
 
-    # Display Form Title
-    st.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
-    with st.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
-        st.write("- 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
-        st.write("- AI가 '선생님, 처음 뵙겠습니다. 잘 부탁드립니다.'라고 하면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
-        st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
-        st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
-        st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을 두 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
-        st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
-    st.divider()
+        thread_id = st.session_state.thread_id
 
-    # Get user input from chat nput
-    user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+        assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
 
-    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-    if user_input:
-        prompt = user_input
+        # Display Form Title
+        main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
+        with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
+            st.write("- 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
+            st.write("- AI가 '선생님, 처음 뵙겠습니다. 잘 부탁드립니다.'라고 하면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
+            st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
+            st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
+            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을 두 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
+            st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
+        main_container.divider()
 
-    message = client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=prompt
-    )
-    #RUN을 돌리는 과정
-    run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id,
-    )
+        # Get user input from chat input
+        user_input = main_container.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
 
-    with st.spinner('열일 중...'):
-        #RUN이 completed 되었나 1초마다 체크
-        while run.status != "completed":
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=thread_id,
-                run_id=run.id
-            )
+        # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+        if user_input:
+            prompt = user_input
 
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=prompt
+        )
+        #RUN을 돌리는 과정
+        run = client.beta.threads.runs.create(
+            thread_id=thread_id,
+            assistant_id=assistant_id,
+        )
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+        with main_container.spinner('열일 중...'):
+            #RUN이 completed 되었나 1초마다 체크
+            while run.status != "completed":
+                time.sleep(1)
+                run = client.beta.threads.runs.retrieve(
+                    thread_id=thread_id,
+                    run_id=run.id
+                )
 
-    st.sidebar.divider()
+        #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+        messages = client.beta.threads.messages.list(
+            thread_id=thread_id
+        )
 
-    # Clear button in the sidebar
-    if st.sidebar.button('이전 대화기록 삭제 버튼'):
-        # Reset the prompt, create a new thread, and clear the docx_file and messages
-        prompt = []
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        st.session_state['messages'] = []
-        for msg in thread_messages.data:
-            msg.content[0].text.value=""
+        #메세지 모두 불러오기
+        thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    st.sidebar.divider()
-    # 로그아웃 버튼 생성
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-        
-    # # assistant 메세지 UI에 추가하기
+        st.sidebar.divider()
+
+        # Clear button in the sidebar
+        if st.sidebar.button('이전 대화기록 삭제 버튼'):
+            # Reset the prompt, create a new thread, and clear the docx_file and messages
+            prompt = []
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
+            st.session_state['messages'] = []
+            for msg in thread_messages.data:
+                msg.content[0].text.value=""
+
+        st.sidebar.divider()
+        # 로그아웃 버튼 생성
+        if st.sidebar.button('로그아웃'):
+            st.session_state.logged_in = False
+            st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+            
+    with col2:
+        # 메시지 창 생성
+        message_box = message_container.empty()
+
+    # assistant 메시지를 메시지 창에 추가
     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        with st.chat_message(messages.data[0].role):
-            st.write(messages.data[0].content[0].text.value)
+        message_box.markdown(f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}")
+
+else:
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
+    st.error("로그인이 필요합니다.")
 
     # #메세지 모두 불러오기
     # thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
@@ -194,7 +209,3 @@ if st.session_state.get('logged_in'):
     #             if msg.role != 'user':
     #                 with st.chat_message(msg.role):
     #                     st.write(content)
-            
-else:
-    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.") 
