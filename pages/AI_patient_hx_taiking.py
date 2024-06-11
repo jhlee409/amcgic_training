@@ -84,6 +84,36 @@ if st.session_state.get('logged_in'):
     # 레이아웃 조정
     col1, col2 = st.columns([3, 1])
 
+    with col1:
+        # 메시지 창 컨테이너 생성
+        message_container = st.container()
+
+        # 메시지 창 컨테이너에 테두리 추가
+        message_container.markdown(
+            """
+            <style>
+            .message-container {
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+                height: 600px;
+                overflow-y: auto;
+            }
+            .message-container p {
+                text-align: left;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # 메시지 창 생성
+        message_box = message_container.empty()
+
+        # 메시지 창 생성
+        if 'message_box' not in st.session_state:
+            st.session_state.message_box = ""
+
     with col2:
         # Streamlit Sidebar with Dropdown for file selection
         case_directory = "AI_patient_Hx_taking/case/"
@@ -184,36 +214,6 @@ if st.session_state.get('logged_in'):
         if st.sidebar.button('로그아웃'):
             st.session_state.logged_in = False
             st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-                
-    with col1:
-        # 메시지 창 컨테이너 생성
-        message_container = st.container()
-
-        # 메시지 창 컨테이너에 테두리 추가
-        message_container.markdown(
-            """
-            <style>
-            .message-container {
-                border: 1px solid #ccc;
-                padding: 10px;
-                border-radius: 5px;
-                height: 600px;
-                overflow-y: auto;
-            }
-            .message-container p {
-                text-align: left;
-            }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-
-        # 메시지 창 생성
-        message_box = message_container.empty()
-
-        # 메시지 창 생성
-        if 'message_box' not in st.session_state:
-            st.session_state.message_box = ""
 
     # assistant 메시지를 메시지 창에 추가
     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
