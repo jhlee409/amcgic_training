@@ -84,7 +84,7 @@ if st.session_state.get('logged_in'):
     # 레이아웃 조정
     col1, col2 = st.columns([3, 1])
 
-    with col1:
+    with col2:
         # Streamlit Sidebar with Dropdown for file selection
         case_directory = "AI_patient_Hx_taking/case/"
         case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
@@ -185,7 +185,7 @@ if st.session_state.get('logged_in'):
             st.session_state.logged_in = False
             st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
                 
-    with col2:
+    with col1:
         # 메시지 창 컨테이너 생성
         message_container = st.container()
 
