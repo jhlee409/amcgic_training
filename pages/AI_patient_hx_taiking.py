@@ -169,6 +169,11 @@ if st.session_state.get('logged_in'):
 
     # Clear button in the sidebar
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
+
+        # Reset session state variables except for 'logged_in' and 'selected_page'
+        logged_in = st.session_state.get('logged_in', False)
+        selected_page = st.session_state.get('selected_page', '')
+
         # Reset all session state variables
         st.session_state.clear()
 
