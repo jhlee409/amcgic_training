@@ -171,7 +171,7 @@ if st.session_state.get('logged_in'):
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
 
         # Reset session state variables except for 'logged_in' and 'selected_page'
-        logged_in = st.session_state.get('logged_in', True)
+        st.session_state['logged_in'] = True 
         selected_page = st.session_state.get('selected_page', '')
 
         # Reset all session state variables
@@ -186,6 +186,9 @@ if st.session_state.get('logged_in'):
         prompt = ""
         docx_file = None
         selected_case_file = None
+
+        # Rerun the app to reflect the changes
+        st.experimental_rerun()
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
