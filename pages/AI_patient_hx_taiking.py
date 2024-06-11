@@ -104,6 +104,13 @@ if st.session_state.get('logged_in'):
         else:
             st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
         
+        # 새로운 case 선택 시 이전 대화 기록 자동 삭제
+        if 'thread_id' in st.session_state:
+            thread_messages = client.beta.threads.messages.list(st.session_state.thread_id, order="asc")
+            for msg in thread_messages.data:
+                msg.content[0].text.value = ""
+            st.session_state['messages'] = []
+
     # Manage thread id
     if 'thread_id' not in st.session_state:
         thread = client.beta.threads.create()
@@ -119,12 +126,11 @@ if st.session_state.get('logged_in'):
         st.write("- 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
         st.write("- AI가 '선생님, 처음 뵙겠습니다. 잘 부탁드립니다.'라고 하면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
         st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
-        st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
-        st.write("- 다음 증례로 넘어가기 전에 '이전 대화기록 삭제버튼'을 꼭 눌러주세요. 안 누르면 이전 기록이 계속 남아 오작동합니다.")
+        st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 결과가 늦게 나올 수 있습니다. 참을성을 가지고 기다려 주세요.^^")
         st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
     st.divider()
 
-    # Get user input from chat nput
+    # Get user input from chat input
     user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
 
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
@@ -136,6 +142,7 @@ if st.session_state.get('logged_in'):
         role="user",
         content=prompt
     )
+
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
         thread_id=thread_id,
@@ -156,41 +163,28 @@ if st.session_state.get('logged_in'):
         thread_id=thread_id
     )
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
-
     st.sidebar.divider()
-
-    # Clear button in the sidebar
-    if st.sidebar.button('이전 대화기록 삭제 버튼'):
-        # Reset the prompt, create a new thread, and clear the docx_file and messages
-        prompt = []
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        st.session_state['messages'] = []
-        for msg in thread_messages.data:
-            msg.content[0].text.value=""
-
-    st.sidebar.divider()
+    
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.experimental_rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
         
-    # # assistant 메세지 UI에 추가하기
+    # assistant 메세지 UI에 추가하기
     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
         with st.chat_message(messages.data[0].role):
             st.write(messages.data[0].content[0].text.value)
 
     # for msg in thread_messages.data:
-    #     # 메시지 내용 확인 및 필터링 조건 추가
+    # # 메시지 내용 확인 및 필터링 조건 추가
     #     if msg.content and msg.content[0].text.value:
     #         content = msg.content[0].text.value
     #         # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
     #         if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
     #             with st.chat_message(msg.role):
     #                 st.write(content)
+        
             
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.") 
+    st.error("로그인이 필요합니다.")
