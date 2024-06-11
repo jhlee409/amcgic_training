@@ -169,13 +169,21 @@ if st.session_state.get('logged_in'):
 
     # Clear button in the sidebar
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
-        # Reset the prompt, create a new thread, and clear the docx_file and messages
-        prompt = []
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
+        # Reset all session state variables
+        st.session_state.clear()
+
+        # Initialize necessary session state variables
         st.session_state['messages'] = []
-        for msg in thread_messages.data:
-            msg.content[0].text.value=""
+        thread = client.beta.threads.create()
+        st.session_state['thread_id'] = thread.id
+
+        # Set default values for variables
+        prompt = ""
+        docx_file = None
+        selected_case_file = None
+
+        # Rerun the app to reflect the changes
+        st.experimental_rerun()
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
