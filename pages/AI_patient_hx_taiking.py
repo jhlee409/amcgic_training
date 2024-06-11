@@ -182,6 +182,9 @@ if st.session_state.get('logged_in'):
         with st.chat_message(messages.data[0].role):
             st.write(messages.data[0].content[0].text.value)
 
+    # #메세지 모두 불러오기
+    # thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+
     # for msg in thread_messages.data:
     #     # 메시지 내용 확인 및 필터링 조건 추가
     #     if msg.content and msg.content[0].text.value:
