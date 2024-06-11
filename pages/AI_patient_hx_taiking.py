@@ -85,22 +85,16 @@ if st.session_state.get('logged_in'):
     st.sidebar.divider()
         
     # Function to list files in a specific directory in Firebase Storage
-    def list_files2(bucket_name, directory):
+    def list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
         file_names = []
         for blob in blobs:
-            # Extracting file name from the path
-            file_name = blob.name[len(directory):]
-            if file_name:  # Avoid adding directory names
+            # Extracting file name from the path and adding to the list
+            file_name = blob.name[len(directory):]  # Remove directory path from file name
+            if file_name:  # Check to avoid adding empty strings (in case of directories)
                 file_names.append(file_name)
         return file_names
-        
-    # Function to download file from Firebase Storage
-    def download_file(bucket_name, directory, file_name, download_path):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(directory + file_name)
-        blob.download_to_filename(download_path)
 
     # Function to get file content from Firebase Storage
     def get_file_content(bucket_name, directory, file_name):
@@ -109,19 +103,31 @@ if st.session_state.get('logged_in'):
         return blob.download_as_bytes()
 
     # Streamlit Sidebar with Dropdown for file selection
-    directory = "AI_patient_Hx_taking/reference/"
-    file_list2 = list_files2('amcgi-bulletin.appspot.com', directory)
-    selected_file = st.sidebar.selectbox("해설 자료를 선택하여 다운로드하세요.", file_list2)
+    case_directory = "AI_patient_Hx_taking/case/"
+    case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
+    selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
 
-    # Download the selected file
-    if selected_file:
-        file_content = get_file_content('amcgi-bulletin.appspot.com', directory, selected_file)
-        st.sidebar.download_button(
-            label="Download File",
-            data=file_content,
-            file_name=selected_file,
-            mime='application/octet-stream'
-        )
+    # Read content of the selected case file and store in prompt variable
+    if selected_case_file:
+        # Include the directory in the path when reading the file
+        case_full_path = case_directory + selected_case_file
+        prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
+        st.session_state['prompt'] = prompt
+
+        # Find the corresponding Excel file in the reference directory
+        reference_directory = "AI_patient_Hx_taking/reference/"
+        reference_file_list = list_files('amcgi-bulletin.appspot.com', reference_directory)
+        excel_file = selected_case_file.replace('.docx', '.xlsx')
+        if excel_file in reference_file_list:
+            file_content = get_file_content('amcgi-bulletin.appspot.com', reference_directory, excel_file)
+            st.sidebar.download_button(
+                label="Download Excel File",
+                data=file_content,
+                file_name=excel_file,
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
+        else:
+            st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
