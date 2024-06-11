@@ -160,8 +160,7 @@ if st.session_state.get('logged_in'):
             st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 길게는 1분까지 걸리므로, 참을성을 가지고 기다려 주세요.^^")
             st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
             st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
-        main_container.divider()
-
+            
     # col1과 col2 아래에 입력창 추가
     input_container = st.container()
     with input_container:
