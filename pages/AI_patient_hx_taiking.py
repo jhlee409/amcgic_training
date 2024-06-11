@@ -106,10 +106,12 @@ if st.session_state.get('logged_in'):
         
         # 새로운 case 선택 시 이전 대화 기록 자동 삭제
         if 'thread_id' in st.session_state:
-            thread_messages = client.beta.threads.messages.list(st.session_state.thread_id, order="asc")
-            for msg in thread_messages.data:
-                msg.content[0].text.value = ""
+            client.beta.threads.delete(st.session_state.thread_id)
             st.session_state['messages'] = []
+
+        # 새로운 thread 생성
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
 
     # Manage thread id
     if 'thread_id' not in st.session_state:
