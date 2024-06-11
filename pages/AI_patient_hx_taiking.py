@@ -162,12 +162,12 @@ if st.session_state.get('logged_in'):
             st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다울로드 하지 마시고, 마지막에 다운로드 받아주세요.")
         main_container.divider()
 
-# Get user input from chat input
-user_input = main_container.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+    # Get user input from chat input
+    user_input = main_container.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
 
-# 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-if user_input:
-    prompt = user_input
+    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    if user_input:
+        prompt = user_input
 
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
