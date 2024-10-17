@@ -46,5 +46,3 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
         st.success("로그아웃 되었습니다.")
         # 필요시 추가적인 세션 상태 초기화 코드
         # 예: del st.session_state['logged_in']
-
-    st.write("마지막 수정 날짜 및 수정사항: 2024년 2월 15일; EGD 사진 진단 훈련 프로그램 내용 삭제")
