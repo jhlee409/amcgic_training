@@ -331,6 +331,8 @@ if st.session_state.get('logged_in'):
         with col4:
             st.write("또는 텍스트로 입력하기")
             text_input = st.text_input("텍스트 입력:", key="text_input")
+            if text_input:  # 텍스트 입력이 있으면 처리
+                process_input(text_input)
 
     # Process input (both voice and text)
     def process_input(user_input):
@@ -372,6 +374,7 @@ if st.session_state.get('logged_in'):
     if st.session_state.get('voice_input'):
         user_input = st.session_state.voice_input
         st.session_state.voice_input = None  # Clear the input
+        process_input(user_input)
         
         # Process voice input (same as text input processing)
         client = OpenAI()
