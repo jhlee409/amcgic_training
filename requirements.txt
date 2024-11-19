@@ -9,4 +9,3 @@ SpeechRecognition
 gTTS 
 audio-recorder-streamlit 
 pydub
-pyAudio
