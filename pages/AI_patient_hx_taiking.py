@@ -4,28 +4,69 @@ import docx
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
+import speech_recognition as sr
+import threading
+from gtts import gTTS
+import os
+import tempfile
+from audio_recorder_streamlit import audio_recorder
+import io
+from pydub import AudioSegment
+from pydub.playback import play
 
 # Set page to wide mode
 st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout="wide")
 
-if st.session_state.get('logged_in'):
+def text_to_speech(text):
+    """Convert text to speech and play it"""
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
+        tts = gTTS(text=text, lang='ko')
+        tts.save(fp.name)
+        st.audio(fp.name)
+    os.unlink(fp.name)
 
+def process_audio(audio_bytes):
+    """Convert audio bytes to text using speech recognition"""
+    if audio_bytes is None:
+        return None
+    
+    # Convert audio bytes to AudioSegment
+    audio = AudioSegment.from_wav(io.BytesIO(audio_bytes))
+    
+    # Export as WAV file
+    with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as fp:
+        audio.export(fp.name, format='wav')
+        
+        # Initialize recognizer
+        r = sr.Recognizer()
+        
+        # Read the temporary file
+        with sr.AudioFile(fp.name) as source:
+            audio_data = r.record(source)
+            
+            try:
+                # Recognize speech using Google Speech Recognition
+                text = r.recognize_google(audio_data, language='ko-KR')
+                return text
+            except sr.UnknownValueError:
+                st.error("음성을 인식할 수 없습니다.")
+                return None
+            except sr.RequestError:
+                st.error("음성 인식 서비스에 접근할 수 없습니다.")
+                return None
+            finally:
+                os.unlink(fp.name)
+
+if st.session_state.get('logged_in'):
     # Initialize session state variables
     if 'messages' not in st.session_state:
         st.session_state['messages'] = []
 
-    # Initialize prompt variable
-    prompt = ""
-
+    # Initialize OpenAI client
     client = OpenAI()
 
-    # 세션 상태 초기화
-    if 'messages' not in st.session_state:
-        st.session_state.messages = []
-
-    # Check if Firebase app has already been initialized
+    # Firebase initialization (same as original code)
     if not firebase_admin._apps:
-        # Streamlit Secrets에서 Firebase 설정 정보 로드
         cred = credentials.Certificate({
             "type": "service_account",
             "project_id": st.secrets["project_id"],
@@ -41,54 +82,43 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Function to list files in a specific directory in Firebase Storage
+    # Firebase functions (same as original)
     def list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
         file_names = []
         for blob in blobs:
-            # Extracting file name from the path and adding to the list
-            file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
+            file_name = blob.name[len(directory):]
+            if file_name:
                 file_names.append(file_name)
         return file_names
 
-    # Function to read file content from Firebase Storage
     def read_docx_file(bucket_name, file_name):
         bucket = storage.bucket(bucket_name)
         blob = bucket.blob(file_name)
         
-        # Download the file to a temporary location
         temp_file_path = "/tmp/tempfile.docx"
         blob.download_to_filename(temp_file_path)
         
-        # Read the content of the DOCX file
         doc = docx.Document(temp_file_path)
         full_text = []
         for para in doc.paragraphs:
             full_text.append(para.text)
         
-        # Join the text into a single string
         return '\n'.join(full_text)
-    
-    # Function to get file content from Firebase Storage
+
     def get_file_content(bucket_name, directory, file_name):
         bucket = storage.bucket(bucket_name)
         blob = bucket.blob(directory + file_name)
         return blob.download_as_bytes()
 
-    # 메인 컨텐츠와 메시지 창을 위한 컨테이너 생성
+    # Layout setup
     main_container = st.container()
     message_container = st.container()
-
-    # 레이아웃 조정
     col1, col2 = st.columns([3, 1])
 
     with col1:
-        # 메시지 창 컨테이너 생성
         message_container = st.container()
-
-        # 메시지 창 컨테이너에 테두리 추가
         message_container.markdown(
             """
             <style>
@@ -107,27 +137,21 @@ if st.session_state.get('logged_in'):
             unsafe_allow_html=True
         )
 
-        # 메시지 창 생성
         message_box = message_container.empty()
-
-        # 메시지 창 생성
         if 'message_box' not in st.session_state:
             st.session_state.message_box = ""
 
     with col2:
-        # Streamlit Sidebar with Dropdown for file selection
+        # File selection
         case_directory = "AI_patient_Hx_taking/case/"
         case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
         selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
 
-        # Read content of the selected case file and store in prompt variable
         if selected_case_file:
-            # Include the directory in the path when reading the file
             case_full_path = case_directory + selected_case_file
             prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
             st.session_state['prompt'] = prompt
 
-            # Find the corresponding Excel file in the reference directory
             reference_directory = "AI_patient_Hx_taking/reference/"
             reference_file_list = list_files('amcgi-bulletin.appspot.com', reference_directory)
             excel_file = selected_case_file.replace('.docx', '.xlsx')
@@ -141,105 +165,72 @@ if st.session_state.get('logged_in'):
                 )
             else:
                 st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
-            
-        # Manage thread id
-        if 'thread_id' not in st.session_state:
-            thread = client.beta.threads.create()
-            st.session_state.thread_id = thread.id
 
-        thread_id = st.session_state.thread_id
-
-        assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
-
-        # Display Form Title
-        main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
-        with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
-            st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
-            st.write("- case가 준비되면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
-            st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
-            st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 좀 길게 걸릴 수 있으니, 기다려 주세요.^^")
-            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  한 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
-            st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다운로드 하지 마시고, 마지막에 다운로드해 주세요.")
-
-    # col1과 col2 아래에 입력창 추가
+    # Voice input/output section
     input_container = st.container()
     with input_container:
-        user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+        col3, col4 = st.columns([1, 1])
+        
+        with col3:
+            st.write("음성으로 질문하기")
+            audio_bytes = audio_recorder()
+            if audio_bytes:
+                user_input = process_audio(audio_bytes)
+                if user_input:
+                    st.write(f"인식된 텍스트: {user_input}")
+                    
+                    # Process the user input through OpenAI
+                    message = client.beta.threads.messages.create(
+                        thread_id=st.session_state.thread_id,
+                        role="user",
+                        content=user_input
+                    )
 
-    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-    if user_input:
-        prompt = user_input
+                    run = client.beta.threads.runs.create(
+                        thread_id=st.session_state.thread_id,
+                        assistant_id=assistant_id,
+                    )
 
-    message = client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=prompt
-    )
-    #RUN을 돌리는 과정
-    run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id,
-    )
+                    with st.spinner('응답 생성 중...'):
+                        while run.status != "completed":
+                            time.sleep(1)
+                            run = client.beta.threads.runs.retrieve(
+                                thread_id=st.session_state.thread_id,
+                                run_id=run.id
+                            )
 
-    with st.spinner('열일 중...'):
-        #RUN이 completed 되었나 1초마다 체크
-        while run.status != "completed":
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=thread_id,
-                run_id=run.id
-            )
+                    messages = client.beta.threads.messages.list(
+                        thread_id=st.session_state.thread_id
+                    )
 
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
+                    # Convert assistant's response to speech
+                    if messages.data[0].role == "assistant":
+                        response_text = messages.data[0].content[0].text.value
+                        st.session_state.message_box += f"🤖: {response_text}\n\n"
+                        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+                        text_to_speech(response_text)
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+        with col4:
+            st.write("또는 텍스트로 입력하기")
+            text_input = st.text_input("텍스트 입력:", key="text_input")
+            if text_input:
+                message = client.beta.threads.messages.create(
+                    thread_id=st.session_state.thread_id,
+                    role="user",
+                    content=text_input
+                )
 
+    # Clear conversation button and logout (same as original)
     st.sidebar.divider()
-
-    # Clear button in the sidebar
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
-        # Reset the prompt, create a new thread, and clear the docx_file and messages
-        prompt = []
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
+        st.session_state.thread_id = client.beta.threads.create().id
         st.session_state['messages'] = []
-        for msg in thread_messages.data:
-            msg.content[0].text.value=""
-        # Clear the message box in col2
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
 
-    # assistant 메시지를 메시지 창에 추가
-    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-        else:
-            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
-
-    st.sidebar.divider()
-    # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
-        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+        st.rerun()
 
 else:
-    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
-
-    # #메세지 모두 불러오기
-    # thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
-
-    # for msg in thread_messages.data:
-    #     # 메시지 내용 확인 및 필터링 조건 추가
-    #     if msg.content and msg.content[0].text.value:
-    #         content = msg.content[0].text.value
-    #         # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
-    #         if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
-    #             if msg.role != 'user':
-    #                 with st.chat_message(msg.role):
-    #                     st.write(content)
