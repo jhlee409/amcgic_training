@@ -5,4 +5,8 @@ python-dotenv
 pillow
 firebase-admin
 pandas
-
+SpeechRecognition 
+gTTS 
+audio-recorder-streamlit 
+pydub
+pyAudio
