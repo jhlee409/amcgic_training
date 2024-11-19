@@ -4,68 +4,99 @@ import docx
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
-import speech_recognition as sr
-import threading
-from gtts import gTTS
-import os
-import tempfile
-from audio_recorder_streamlit import audio_recorder
-import io
-from pydub import AudioSegment
-from pydub.playback import play
+import streamlit.components.v1 as components
 
 # Set page to wide mode
 st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout="wide")
 
-def text_to_speech(text):
-    """Convert text to speech and play it"""
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.mp3') as fp:
-        tts = gTTS(text=text, lang='ko')
-        tts.save(fp.name)
-        st.audio(fp.name)
-    os.unlink(fp.name)
+# HTML/JavaScript for voice recognition
+def voice_input_component():
+    return components.html(
+        """
+        <div>
+            <button id="startButton" onclick="startRecording()">음성 입력 시작</button>
+            <button id="stopButton" onclick="stopRecording()" disabled>중지</button>
+            <p id="status"></p>
+            <p id="result"></p>
+        </div>
 
-def process_audio(audio_bytes):
-    """Convert audio bytes to text using speech recognition"""
-    if audio_bytes is None:
-        return None
-    
-    # Convert audio bytes to AudioSegment
-    audio = AudioSegment.from_wav(io.BytesIO(audio_bytes))
-    
-    # Export as WAV file
-    with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as fp:
-        audio.export(fp.name, format='wav')
+        <script>
+        let recognition;
         
-        # Initialize recognizer
-        r = sr.Recognizer()
-        
-        # Read the temporary file
-        with sr.AudioFile(fp.name) as source:
-            audio_data = r.record(source)
+        function startRecording() {
+            recognition = new webkitSpeechRecognition() || new SpeechRecognition();
+            recognition.lang = 'ko-KR';
+            recognition.continuous = true;
+            recognition.interimResults = true;
             
-            try:
-                # Recognize speech using Google Speech Recognition
-                text = r.recognize_google(audio_data, language='ko-KR')
-                return text
-            except sr.UnknownValueError:
-                st.error("음성을 인식할 수 없습니다.")
-                return None
-            except sr.RequestError:
-                st.error("음성 인식 서비스에 접근할 수 없습니다.")
-                return None
-            finally:
-                os.unlink(fp.name)
+            document.getElementById('startButton').disabled = true;
+            document.getElementById('stopButton').disabled = false;
+            document.getElementById('status').textContent = '듣는 중...';
+            
+            recognition.onresult = function(event) {
+                let finalTranscript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    }
+                }
+                if (finalTranscript) {
+                    document.getElementById('result').textContent = finalTranscript;
+                    // Send result to Streamlit
+                    window.parent.postMessage({type: 'voice_input', value: finalTranscript}, '*');
+                }
+            };
+            
+            recognition.start();
+        }
+        
+        function stopRecording() {
+            if (recognition) {
+                recognition.stop();
+                document.getElementById('startButton').disabled = false;
+                document.getElementById('stopButton').disabled = true;
+                document.getElementById('status').textContent = '음성 입력 중지됨';
+            }
+        }
+        
+        // Cleanup
+        window.onbeforeunload = function() {
+            if (recognition) {
+                recognition.stop();
+            }
+        };
+        </script>
+        """,
+        height=150,
+    )
+
+# Text-to-speech component
+def voice_output_component(text):
+    return components.html(
+        f"""
+        <script>
+        function speak(text) {{
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ko-KR';
+            window.speechSynthesis.speak(utterance);
+        }}
+        speak("{text}");
+        </script>
+        """,
+        height=0,
+    )
 
 if st.session_state.get('logged_in'):
     # Initialize session state variables
     if 'messages' not in st.session_state:
         st.session_state['messages'] = []
+        
+    if 'thread_id' not in st.session_state:
+        client = OpenAI()
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
 
-    # Initialize OpenAI client
-    client = OpenAI()
-
-    # Firebase initialization (same as original code)
+    # Firebase initialization
     if not firebase_admin._apps:
         cred = credentials.Certificate({
             "type": "service_account",
@@ -82,7 +113,7 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Firebase functions (same as original)
+    # Firebase functions
     def list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -173,54 +204,80 @@ if st.session_state.get('logged_in'):
         
         with col3:
             st.write("음성으로 질문하기")
-            audio_bytes = audio_recorder()
-            if audio_bytes:
-                user_input = process_audio(audio_bytes)
-                if user_input:
-                    st.write(f"인식된 텍스트: {user_input}")
-                    
-                    # Process the user input through OpenAI
-                    message = client.beta.threads.messages.create(
-                        thread_id=st.session_state.thread_id,
-                        role="user",
-                        content=user_input
-                    )
-
-                    run = client.beta.threads.runs.create(
-                        thread_id=st.session_state.thread_id,
-                        assistant_id=assistant_id,
-                    )
-
-                    with st.spinner('응답 생성 중...'):
-                        while run.status != "completed":
-                            time.sleep(1)
-                            run = client.beta.threads.runs.retrieve(
-                                thread_id=st.session_state.thread_id,
-                                run_id=run.id
-                            )
-
-                    messages = client.beta.threads.messages.list(
-                        thread_id=st.session_state.thread_id
-                    )
-
-                    # Convert assistant's response to speech
-                    if messages.data[0].role == "assistant":
-                        response_text = messages.data[0].content[0].text.value
-                        st.session_state.message_box += f"🤖: {response_text}\n\n"
-                        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
-                        text_to_speech(response_text)
+            voice_input_component()
 
         with col4:
             st.write("또는 텍스트로 입력하기")
             text_input = st.text_input("텍스트 입력:", key="text_input")
             if text_input:
+                # Process text input
+                client = OpenAI()
                 message = client.beta.threads.messages.create(
                     thread_id=st.session_state.thread_id,
                     role="user",
                     content=text_input
                 )
 
-    # Clear conversation button and logout (same as original)
+                run = client.beta.threads.runs.create(
+                    thread_id=st.session_state.thread_id,
+                    assistant_id="asst_ecq1rotgT4c3by2NJBjoYcKj"
+                )
+
+                with st.spinner('응답 생성 중...'):
+                    while run.status != "completed":
+                        time.sleep(1)
+                        run = client.beta.threads.runs.retrieve(
+                            thread_id=st.session_state.thread_id,
+                            run_id=run.id
+                        )
+
+                messages = client.beta.threads.messages.list(
+                    thread_id=st.session_state.thread_id
+                )
+
+                if messages.data[0].role == "assistant":
+                    response_text = messages.data[0].content[0].text.value
+                    st.session_state.message_box += f"🤖: {response_text}\n\n"
+                    message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+                    voice_output_component(response_text)
+
+    # Handle voice input from JavaScript
+    if st.session_state.get('voice_input'):
+        user_input = st.session_state.voice_input
+        st.session_state.voice_input = None  # Clear the input
+        
+        # Process voice input (same as text input processing)
+        client = OpenAI()
+        message = client.beta.threads.messages.create(
+            thread_id=st.session_state.thread_id,
+            role="user",
+            content=user_input
+        )
+
+        run = client.beta.threads.runs.create(
+            thread_id=st.session_state.thread_id,
+            assistant_id="asst_ecq1rotgT4c3by2NJBjoYcKj"
+        )
+
+        with st.spinner('응답 생성 중...'):
+            while run.status != "completed":
+                time.sleep(1)
+                run = client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state.thread_id,
+                    run_id=run.id
+                )
+
+        messages = client.beta.threads.messages.list(
+            thread_id=st.session_state.thread_id
+        )
+
+        if messages.data[0].role == "assistant":
+            response_text = messages.data[0].content[0].text.value
+            st.session_state.message_box += f"🤖: {response_text}\n\n"
+            message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+            voice_output_component(response_text)
+
+    # Clear conversation button and logout
     st.sidebar.divider()
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
         st.session_state.thread_id = client.beta.threads.create().id
