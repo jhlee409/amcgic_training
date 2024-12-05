@@ -161,16 +161,13 @@ if st.session_state.get('logged_in'):
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
         prompt = user_input
-        
-    # prompt 변수가 비어 있는지 확인
-    if not prompt:
-        raise ValueError("prompt 변수는 비어 있을 수 없습니다.")
-
-    message = client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=prompt
-    )
+        # prompt 변수가 비어 있는지 확인
+        if prompt:
+            message = client.beta.threads.messages.create(
+                thread_id=thread_id,
+                role="user",
+                content=prompt
+            )
 
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
