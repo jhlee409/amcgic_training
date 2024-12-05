@@ -208,24 +208,16 @@ if st.session_state.get('logged_in'):
                     run_id=run.id
                 )
 
+    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id
+    )
+
     # 메시지 표시
     thread_messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread_id, 
         order="asc"
     )
-
-    # UI에 메시지 표시
-    for msg in thread_messages.data:
-        if msg.content and msg.content[0].text.value:
-            content = msg.content[0].text.value
-            if content.strip() and 'Problem-based Learning' not in content:
-                with st.chat_message(msg.role):
-                    st.write(content)
-                if msg.role == "assistant":
-                    st.session_state.message_box += f"🤖: {content}\n\n"
-                else:
-                    st.session_state.message_box += f"**{msg.role}:** {content}\n\n"
-                message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
 
@@ -241,6 +233,14 @@ if st.session_state.get('logged_in'):
         # Clear the message box in col2
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
+
+    # assistant 메시지를 메시지 창에 추가
+    if message.content and message.content[0].text.value and 'Problem-based Learning' not in message.content[0].text.value:
+        if messages.data[0].role == "assistant":
+            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+        else:
+            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
+        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
