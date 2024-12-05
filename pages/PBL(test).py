@@ -64,40 +64,46 @@ if st.session_state.get('logged_in'):
     # 대화 시작
     if st.button("대화 시작"):
         if prompt:  # 사용자가 내용을 입력했는지 확인
-            # 새로운 thread ID 생성
-            thread_response = client.beta.threads.create(
-                assistant_id=assistant_id,
-                title="New Conversation Thread"  # 필요에 따라 제목을 설정
-            )
-            thread_id = thread_response.id  # 생성된 thread ID 가져오기
+            try:
+                # 새로운 thread ID 생성
+                thread_response = client.beta.threads.create(
+                    assistant_id=assistant_id,
+                    title="New Conversation Thread"  # 필요에 따라 제목을 설정
+                )
+                thread_id = thread_response.id  # 생성된 thread ID 가져오기
 
-            # 메시지 생성
-            message = client.beta.threads.messages.create(
-                thread_id=thread_id,
-                role="user",
-                content=prompt
-            )
+                # 메시지 생성
+                message = client.beta.threads.messages.create(
+                    thread_id=thread_id,
+                    role="user",
+                    content=prompt
+                )
 
-            # RUN을 돌리는 과정
-            run = client.beta.threads.runs.create(
-                thread_id=thread_id,
-                assistant_id=assistant_id,
-            )
+                # RUN을 돌리는 과정
+                run = client.beta.threads.runs.create(
+                    thread_id=thread_id,
+                    assistant_id=assistant_id,
+                )
 
-            # 대화 결과 처리 (예: 응답 표시)
-            st.write("대화가 시작되었습니다. 새로운 thread ID:", thread_id)
+                # 대화 결과 처리 (예: 응답 표시)
+                response = run.response  # 응답을 가져옵니다.
+                st.write("대화가 시작되었습니다. 새로운 thread ID:", thread_id)
+                st.write("응답:", response)  # 응답 내용을 표시합니다.
 
-            # 로그 파일 생성
-            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+                # 로그 파일 생성
+                user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+                access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-            # 로그 내용을 문자열로 생성
-            log_entry = f"Email: {user_email}, Option: {selected_option}, Access Date: {access_date}\n"
+                # 로그 내용을 문자열로 생성
+                log_entry = f"Email: {user_email}, Option: {selected_option}, Access Date: {access_date}\n"
 
-            # Firebase Storage에 로그 파일 업로드
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'logs/{user_email}_PBL_{selected_option}_{access_date}.txt')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+                # Firebase Storage에 로그 파일 업로드
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+                log_blob = bucket.blob(f'logs/{user_email}_PBL_{selected_option}_{access_date}.txt')  # 로그 파일 경로 설정
+                log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
+            except Exception as e:
+                st.error(f"대화 처리 중 오류가 발생했습니다: {str(e)}")  # 오류 메시지 표시
         else:
             st.error("대화 내용을 입력해야 합니다.")  # 대화 내용이 비어있을 경우 오류 메시지 표시
 
