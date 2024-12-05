@@ -39,24 +39,24 @@ if selected_option == "PBL":
         if user_input:
             try:
                 # Step 1: Create a new thread
-                thread_url = "https://api.openai.com/v1/threads"  # Adjust the endpoint as necessary
+                thread_url = "https://api.openai.com/v1/threads"
                 thread_headers = {
-                    "Authorization": f"Bearer {st.secrets['OPENAI_API_KEY']}",  # Use the API key from secrets
+                    "Authorization": f"Bearer {st.secrets['OPENAI_API_KEY']}",
                     "Content-Type": "application/json",
-                    "OpenAI-Beta": "assistants=v2"  # Add the required header
+                    "OpenAI-Beta": "assistants=v2"
                 }
                 thread_data = {
-                    "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"  # Specify the assistant ID
+                    "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"
                 }
 
                 thread_response = requests.post(thread_url, headers=thread_headers, data=json.dumps(thread_data))
                 thread_response_data = thread_response.json()
 
                 if thread_response.status_code == 200:
-                    thread_id = thread_response_data['id']  # Get the new thread ID
+                    thread_id = thread_response_data['id']
 
                     # Step 2: Send a message to the new thread
-                    message_url = "https://api.openai.com/v1/threads/messages"  # Adjust the endpoint as necessary
+                    message_url = "https://api.openai.com/v1/threads/messages"
                     message_data = {
                         "thread_id": thread_id,
                         "role": "user",
@@ -89,6 +89,6 @@ if selected_option == "PBL":
                     st.error("Error creating thread: " + thread_response_data.get("error", {}).get("message", "Unknown error"))
 
             except Exception as e:
-                st.error(f"An error occurred: {str(e)}")  # Handle any other exceptions
+                st.error(f"An error occurred: {str(e)}")
         else:
             st.error("Please enter a message.")
