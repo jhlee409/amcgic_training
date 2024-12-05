@@ -175,27 +175,27 @@ if st.session_state.get('logged_in'):
 #             if messages.data[0].role == "assistant":
 #                 st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
 
-#     #RUN을 돌리는 과정
-#     run = client.beta.threads.runs.create(
-#         thread_id=thread_id,
-#         assistant_id=assistant_id,
-#     )
+    #RUN을 돌리는 과정
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+    )
 
-#     with st.spinner('열일 중...'):
-#         #RUN이 completed 되었나 1초마다 체크
-#         while run.status != "completed":
-#             time.sleep(1)
-#             run = client.beta.threads.runs.retrieve(
-#                 thread_id=thread_id,
-#                 run_id=run.id
-#             )
+    with st.spinner('열일 중...'):
+        #RUN이 completed 되었나 1초마다 체크
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run.id
+            )
 
-#     #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-#     messages = client.beta.threads.messages.list(
-#         thread_id=thread_id
-#     )
+    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id
+    )
     
-#     st.write(assistant_id)
+    st.write(assistant_id)
 
 #     #메세지 모두 불러오기
 #     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
