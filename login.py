@@ -32,7 +32,8 @@ if st.button("Login"):
 
         if response.status_code == 200:
             st.success(f"{email}님, 로그인에 성공하셨습니다. 이제 왼쪽의 메뉴를 이용하실 수 있습니다.")
-            st.session_state['logged_in'] = True 
+            st.session_state['logged_in'] = True
+            st.session_state['user_email'] = email  # 이메일 주소를 세션 상태에 저장
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
