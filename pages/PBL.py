@@ -113,7 +113,7 @@ if st.session_state.get('logged_in'):
 
     with col2:
         # Streamlit Sidebar with Dropdown for file selection
-        case_directory = "AI_patient_Hx_taking/case/"
+        case_directory = "PBL/cases/"
         case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
         selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
 
