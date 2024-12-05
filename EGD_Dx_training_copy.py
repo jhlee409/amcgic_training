@@ -7,7 +7,6 @@ import base64
 import os
 import firebase_admin
 from firebase_admin import credentials, storage
-import datetime
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Dx", layout="wide")
@@ -137,18 +136,6 @@ if st.session_state.get('logged_in'):
         docx_content_2 = '\n'.join([paragraph.text for paragraph in doc_2.paragraphs])
         
         if st.sidebar.button('진행'):
-            # 사용자 이메일과 접속 날짜 기록
-            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-            access_date = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")  # 현재 날짜 및 시간 가져오기
-            
-            # 로그 내용을 문자열로 생성
-            log_entry = f"{user_email}, {access_date}\n"
-            
-            # Firebase Storage에 로그 파일 업로드 (덮어쓰기)
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob('logs/access_log.txt')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain', overwrite=True)  # 문자열로 업로드 (덮어쓰기)
-
             st.markdown(docx_content_2)  # Show the content of _2.docx
 
     st.sidebar.divider()
