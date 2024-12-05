@@ -38,22 +38,22 @@ if selected_option == "PBL":
     if st.button("Send"):
         if user_input:
             try:
-                # Step 1: Create a new thread
+                # Step 1: Create a new thread with the assistant ID
                 thread_url = "https://api.openai.com/v1/threads"
                 thread_headers = {
                     "Authorization": f"Bearer {st.secrets['OPENAI_API_KEY']}",
                     "Content-Type": "application/json",
-                    "OpenAI-Beta": "assistants=v2"
+                    "OpenAI-Beta": "assistants=v2"  # Required header
                 }
                 thread_data = {
-                    # No assistant_id here, adjust according to API documentation
+                    "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"  # Specify the assistant ID
                 }
 
                 thread_response = requests.post(thread_url, headers=thread_headers, data=json.dumps(thread_data))
                 thread_response_data = thread_response.json()
 
                 if thread_response.status_code == 200:
-                    thread_id = thread_response_data['id']
+                    thread_id = thread_response_data['id']  # Get the new thread ID
 
                     # Step 2: Send a message to the new thread
                     message_url = "https://api.openai.com/v1/threads/messages"
