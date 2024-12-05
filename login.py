@@ -1,9 +1,6 @@
 import streamlit as st
 import requests
 import json
-import firebase_admin
-from firebase_admin import credentials, storage
-import datetime
 
 st.set_page_config(page_title="GI_training", layout="wide")
 
@@ -36,36 +33,6 @@ if st.button("Login"):
         if response.status_code == 200:
             st.success(f"{email}님, 로그인에 성공하셨습니다. 이제 왼쪽의 메뉴를 이용하실 수 있습니다.")
             st.session_state['logged_in'] = True 
-            st.session_state['user_email'] = email  # 이메일을 세션에 저장
-
-            # 사용자 이메일과 접속 날짜 기록
-            access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-            # 로그 내용을 문자열로 생성
-            log_entry = f"Email: {email}, Access Date: {access_date}\n"
-
-            # Firebase Storage에 로그 파일 업로드
-            if not firebase_admin._apps:
-                # Streamlit Secrets에서 Firebase 설정 정보 로드
-                cred = credentials.Certificate({
-                    "type": "service_account",
-                    "project_id": st.secrets["project_id"],
-                    "private_key_id": st.secrets["private_key_id"],
-                    "private_key": st.secrets["private_key"].replace('\\n', '\n'),
-                    "client_email": st.secrets["client_email"],
-                    "client_id": st.secrets["client_id"],
-                    "auth_uri": st.secrets["auth_uri"],
-                    "token_uri": st.secrets["token_uri"],
-                    "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
-                    "client_x509_cert_url": st.secrets["client_x509_cert_url"],
-                    "universe_domain": st.secrets["universe_domain"]
-                })
-                firebase_admin.initialize_app(cred)
-
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'logs/{email}_{access_date}.txt')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
