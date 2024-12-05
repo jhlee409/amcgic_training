@@ -136,14 +136,14 @@ if st.session_state.get('logged_in'):
             prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
             st.session_state['prompt'] = prompt
            
-#         # Manage thread id
-#         if 'thread_id' not in st.session_state:
-#             thread = client.beta.threads.create()
-#             st.session_state.thread_id = thread.id
+        # Manage thread id
+        if 'thread_id' not in st.session_state:
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
 
-#         thread_id = st.session_state.thread_id
+        thread_id = st.session_state.thread_id
 
-#         assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
+        assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
 
 #         # Display Form Title
 #         main_container.subheader("AMC GI:&emsp;PBL 챗봇&emsp;&emsp;&emsp")
