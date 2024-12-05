@@ -156,7 +156,7 @@ if st.session_state.get('logged_in'):
     with input_container:
         user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
 
-    print(assistant_id)
+    st.write(assistant_id)
     
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
