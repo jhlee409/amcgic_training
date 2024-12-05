@@ -147,7 +147,7 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-        # assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
+        assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
 
         # Display Form Title
         main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
