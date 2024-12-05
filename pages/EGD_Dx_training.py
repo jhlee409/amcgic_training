@@ -1,12 +1,8 @@
 import streamlit as st
-from PIL import Image
-import docx
 import io
-from io import BytesIO
-import base64
-import os
 import firebase_admin
 from firebase_admin import credentials, storage
+import datetime
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Dx", layout="wide")
@@ -31,112 +27,28 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Display Form Title_
+    # Display Form Title
     st.subheader("EGD_Dx_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 왼쪽 sidebar에서 F1용인지 F2용인지를 선택합니다.")
         st.write("- 그 아래에서 EGD 사진을 선택해서 업로드 하세요. 다음은 질문이 나옵니다. 잘 생각해 보고 결론이 났으면 왼쪽 sidebar에서 '진행' 버튼을 눌러 답과 설명을 보세요.")
         st.write("- 정리: 가 나오면 증례가 종결된 것입니다. 다음 증례를 위해 초기화를 하거나, 로그아웃을 하세요.")
-        
-    # Firebase에서 이미지를 다운로드하고 PIL 이미지 객체로 열기
-    def download_and_open_image(bucket_name, file_path):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(file_path)
-        # BytesIO 객체를 사용하여 메모리에서 이미지를 직접 열기
-        image_stream = io.BytesIO()
-        blob.download_to_file(image_stream)
-        image_stream.seek(0)
-        return Image.open(image_stream)
-        
-    # Function to list files in a specific directory in Firebase Storage
-    def png_list_files(bucket_name, directory):
-        bucket = storage.bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=directory)
-        file_names = []
-        for blob in blobs:
-            # Extracting file name from the path and adding to the list
-            file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
-                file_names.append(file_name)
-        return file_names
-    
-    # F1 or F2 selection
-    folder_selection = st.sidebar.radio("Select Folder", ["초기화", "F1", "F2", "working"])
 
-    if folder_selection == "초기화":
-        directory_images = "EGD_Dx_training/Default/images/"
-        directory_instructions = "EGD_Dx_training/Default/instructions/"
+    # EGD_Dx_training 항목 선택
+    selected_item = st.sidebar.selectbox("EGD Dx training 항목을 선택하세요", ["항목1", "항목2", "항목3"])  # 항목 목록을 적절히 수정하세요
 
-    elif folder_selection == "F1":
-        directory_images = "EGD_Dx_training/F1/images/"
-        directory_instructions = "EGD_Dx_training/F1/instructions/"
-    elif folder_selection == "F2":
-        directory_images = "EGD_Dx_training/F2/images/"
-        directory_instructions = "EGD_Dx_training/F2/instructions/"
-    else:
-        directory_images = "EGD_Dx_training/working/images/"
-        directory_instructions = "EGD_Dx_training/working/instructions/"
+    if selected_item:
+        # 사용자 이메일과 접속 날짜 기록
+        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+        access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-    st.sidebar.divider()
+        # 로그 내용을 문자열로 생성
+        log_entry = f"Email: {user_email}, Menu: {selected_item}, Access Date: {access_date}\n"
 
-    # List and select PNG files
-    file_list_images = png_list_files('amcgi-bulletin.appspot.com', directory_images)
-    selected_image_file = st.sidebar.selectbox(f"EGD 사진을 선택하세요.", file_list_images)
-
-    if selected_image_file:
-        selected_image_path = directory_images + selected_image_file
-        image = download_and_open_image('amcgi-bulletin.appspot.com', selected_image_path)
-        
-        # Open the image to check its dimensions
-        width, height = image.size
-        
-        # Determine the display width based on the width-height ratio
-        display_width = 1400 if width >= 1.6 * height else 700
-        
-        # Convert the image to base64
-        buffered = BytesIO()
-        image.save(buffered, format="PNG")
-        img_str = base64.b64encode(buffered.getvalue()).decode()
-        
-        # Create the HTML code with oncontextmenu attribute
-        html_code = f'<img src="data:image/png;base64,{img_str}" alt="Image" width="{display_width}" oncontextmenu="return false;" style="pointer-events: none;">'
-        
-        # Display the image using HTML code
-        st.markdown(html_code, unsafe_allow_html=True)
-
-        # Find the corresponding _1.docx file
-        docx_file_name_1 = os.path.splitext(selected_image_file)[0] + '_1.docx'
-        docx_file_path_1 = directory_instructions + docx_file_name_1
-        
-        # Download and read the contents of the _1.docx file
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        blob = bucket.blob(docx_file_path_1)
-        docx_stream_1 = io.BytesIO()
-        blob.download_to_file(docx_stream_1)
-        docx_stream_1.seek(0)
-        
-        doc_1 = docx.Document(docx_stream_1)
-        docx_content_1 = '\n'.join([paragraph.text for paragraph in doc_1.paragraphs])
-        
-        st.markdown(docx_content_1)
-
-        st.divider()
-
-        # Find the corresponding _2.docx file
-        docx_file_name_2 = os.path.splitext(selected_image_file)[0] + '_2.docx'
-        docx_file_path_2 = directory_instructions + docx_file_name_2
-        
-        # Download and read the contents of the _2.docx file
-        blob = bucket.blob(docx_file_path_2)
-        docx_stream_2 = io.BytesIO()
-        blob.download_to_file(docx_stream_2)
-        docx_stream_2.seek(0)
-        
-        doc_2 = docx.Document(docx_stream_2)
-        docx_content_2 = '\n'.join([paragraph.text for paragraph in doc_2.paragraphs])
-        
-        if st.sidebar.button('진행'):
-            st.markdown(docx_content_2)  # Show the content of _2.docx
+        # Firebase Storage에 로그 파일 업로드
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+        log_blob = bucket.blob(f'logs/{user_email}_{selected_item}_{access_date}.txt')  # 로그 파일 경로 설정
+        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     st.sidebar.divider()
 
@@ -147,4 +59,4 @@ if st.session_state.get('logged_in'):
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.") 
+    st.error("로그인이 필요합니다.")
