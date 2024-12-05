@@ -159,16 +159,23 @@ if st.session_state.get('logged_in'):
     input_container = st.container()
     with input_container:
         user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+
+    st.write(assistant_id)
     
-        # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-        if user_input:
-            prompt = user_input
+    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    if user_input:
+        prompt = user_input
 
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
         role="user",
         content=prompt
     )
+    
+    # # message 변수가 정의된 후에만 사용
+    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+    #     if messages.data[0].role == "assistant":
+    #         st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
 
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
@@ -190,11 +197,6 @@ if st.session_state.get('logged_in'):
         thread_id=thread_id
     )
     
-    # message 변수가 정의된 후에만 사용
-    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-    
     st.write(assistant_id)
 
     #메세지 모두 불러오기
@@ -213,18 +215,18 @@ if st.session_state.get('logged_in'):
 #         message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
 
-    # #메세지 모두 불러오기
-    # thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+    #메세지 모두 불러오기
+    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    # for msg in thread_messages.data:
-    #     # 메시지 내용 확인 및 필터링 조건 추가
-    #     if msg.content and msg.content[0].text.value:
-    #         content = msg.content[0].text.value
-    #         # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
-    #         if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
-    #             if msg.role != 'user':
-    #                 with st.chat_message(msg.role):
-    #                     st.write(content)
+    for msg in thread_messages.data:
+        # 메시지 내용 확인 및 필터링 조건 추가
+        if msg.content and msg.content[0].text.value:
+            content = msg.content[0].text.value
+            # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
+            if content.strip() not in ['', '..', '...'] and '전체 지시 사항' not in content:
+                if msg.role != 'user':
+                    with st.chat_message(msg.role):
+                        st.write(content)
                         
         # Clear button in the sidebar
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
