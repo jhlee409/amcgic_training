@@ -162,31 +162,31 @@ if st.session_state.get('logged_in'):
     if user_input:
         prompt = user_input
 
-        message = client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=prompt
-        )
-    
-        #RUN을 돌리는 과정
-        run = client.beta.threads.runs.create(
-            thread_id=thread_id,
-            assistant_id=assistant_id,
-        )
+    message = client.beta.threads.messages.create(
+        # thread_id=thread_id,
+        role="user",
+        content=prompt
+    )
 
-        with st.spinner('열일 중...'):
-            #RUN이 completed 되었나 1초마다 체크
-            while run.status != "completed":
-                time.sleep(1)
-                run = client.beta.threads.runs.retrieve(
-                    thread_id=thread_id,
-                    run_id=run.id
-                )
+    #RUN을 돌리는 과정
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+    )
 
-        #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-        messages = client.beta.threads.messages.list(
-            thread_id=thread_id
-        )
+    with st.spinner('열일 중...'):
+        #RUN이 completed 되었나 1초마다 체크
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run.id
+            )
+
+    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id
+    )
     
     st.write(assistant_id)
 
