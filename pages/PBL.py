@@ -42,17 +42,17 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # # Function to list files in a specific directory in Firebase Storage
-    # def list_files(bucket_name, directory):
-    #     bucket = storage.bucket(bucket_name)
-    #     blobs = bucket.list_blobs(prefix=directory)
-    #     file_names = []
-    #     for blob in blobs:
-    #         # Extracting file name from the path and adding to the list
-    #         file_name = blob.name[len(directory):]  # Remove directory path from file name
-    #         if file_name:  # Check to avoid adding empty strings (in case of directories)
-    #             file_names.append(file_name)
-    #     return file_names
+    # Function to list files in a specific directory in Firebase Storage
+    def list_files(bucket_name, directory):
+        bucket = storage.bucket(bucket_name)
+        blobs = bucket.list_blobs(prefix=directory)
+        file_names = []
+        for blob in blobs:
+            # Extracting file name from the path and adding to the list
+            file_name = blob.name[len(directory):]  # Remove directory path from file name
+            if file_name:  # Check to avoid adding empty strings (in case of directories)
+                file_names.append(file_name)
+        return file_names
 
     # # Function to read file content from Firebase Storage
     # def read_docx_file(bucket_name, file_name):
