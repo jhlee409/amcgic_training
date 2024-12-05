@@ -162,9 +162,9 @@ if st.session_state.get('logged_in'):
 
     # '진행' 버튼 추가
     if st.sidebar.button('진행'):
-        # # 사용자 이메일과 접속 날짜 기록
+        # 사용자 이메일과 접속 날짜 기록
         user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-        access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # 로그 내용을 문자열로 생성
         log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD Hemostasis training\n"
