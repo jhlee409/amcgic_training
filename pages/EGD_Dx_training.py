@@ -138,6 +138,18 @@ if st.session_state.get('logged_in'):
         
         if st.sidebar.button('진행'):
             st.markdown(docx_content_2)  # Show the content of _2.docx
+            
+            # 사용자 이메일과 접속 날짜 기록
+            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+            access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+            # 로그 내용을 문자열로 생성
+            log_entry = f"Email: {user_email}, Menu: EGD Dx training, Access Date: {access_date}\n"
+
+            # Firebase Storage에 로그 파일 업로드
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+            log_blob = bucket.blob(f'logs/{user_email}_EGD Dx training_{access_date}.txt')  # 로그 파일 경로 설정
+            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     st.sidebar.divider()
 
@@ -145,17 +157,7 @@ if st.session_state.get('logged_in'):
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-        # 사용자 이메일과 접속 날짜 기록
-        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-        access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-        # 로그 내용을 문자열로 생성
-        log_entry = f"Email: {user_email}, Menu: {folder_selection}, Access Date: {access_date}\n"
-
-        # Firebase Storage에 로그 파일 업로드
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-        log_blob = bucket.blob(f'logs/{user_email}_{folder_selection}_{access_date}.txt')  # 로그 파일 경로 설정
-        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+    
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
