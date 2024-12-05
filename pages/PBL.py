@@ -182,8 +182,6 @@ if st.session_state.get('logged_in'):
     input_container = st.container()
     with input_container:
         user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
-
-    st.write(assistant_id)
     
     # 사용자 입력 처리
     if user_input:
@@ -235,12 +233,25 @@ if st.session_state.get('logged_in'):
         message_container.markdown("", unsafe_allow_html=True)
 
     # assistant 메시지를 메시지 창에 추가
-    if message.content and message.content[0].text.value and 'Problem-based Learning' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-        else:
-            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+    thread_messages = client.beta.threads.messages.list(
+        thread_id=st.session_state.thread_id, 
+        order="desc",
+        limit=1
+    )
+
+    if thread_messages.data:
+        latest_message = thread_messages.data[0]
+        if latest_message.content:
+            # 텍스트 타입의 content만 처리
+            text_content = next((content.text.value for content in latest_message.content 
+                               if hasattr(content, 'text')), None)
+            
+            if text_content and 'Problem-based Learning' not in text_content:
+                if latest_message.role == "assistant":
+                    st.session_state.message_box += f"🤖: {text_content}\n\n"
+                else:
+                    st.session_state.message_box += f"**{latest_message.role}:** {text_content}\n\n"
+                message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
