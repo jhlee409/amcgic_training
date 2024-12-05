@@ -253,12 +253,12 @@ if st.session_state.get('logged_in'):
             text_content = next((content.text.value for content in latest_message.content 
                                if hasattr(content, 'text')), None)
             
-            if text_content and 'Problem-based Learning' not in text_content:
-                if latest_message.role == "assistant":
-                    st.session_state.message_box += f"🤖: {text_content}\n\n"
-                else:
-                    st.session_state.message_box += f"**{latest_message.role}:** {text_content}\n\n"
-                message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+            # if text_content and 'Problem-based Learning' not in text_content:
+            if latest_message.role == "assistant":
+                st.session_state.message_box += f"🤖: {text_content}\n\n"
+            else:
+                st.session_state.message_box += f"**{latest_message.role}:** {text_content}\n\n"
+            message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
