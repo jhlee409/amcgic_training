@@ -171,11 +171,6 @@ if st.session_state.get('logged_in'):
         role="user",
         content=prompt
     )
-    
-    # # message 변수가 정의된 후에만 사용
-    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    #     if messages.data[0].role == "assistant":
-    #         st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
 
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
@@ -196,6 +191,11 @@ if st.session_state.get('logged_in'):
     messages = client.beta.threads.messages.list(
         thread_id=thread_id
     )
+    
+    # message 변수가 정의된 후에만 사용
+    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+        if messages.data[0].role == "assistant":
+            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
     
     st.write(assistant_id)
 
