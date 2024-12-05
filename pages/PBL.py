@@ -46,7 +46,7 @@ if selected_option == "PBL":
                     "OpenAI-Beta": "assistants=v2"
                 }
                 thread_data = {
-                    "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"
+                    # No assistant_id here, adjust according to API documentation
                 }
 
                 thread_response = requests.post(thread_url, headers=thread_headers, data=json.dumps(thread_data))
