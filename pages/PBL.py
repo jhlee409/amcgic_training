@@ -201,12 +201,7 @@ if st.session_state.get('logged_in'):
     
     st.write(assistant_id)
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
-
     st.sidebar.divider()
-
-
 
     # assistant 메시지를 메시지 창에 추가
     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
