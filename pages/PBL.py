@@ -204,18 +204,7 @@ if st.session_state.get('logged_in'):
 
     st.sidebar.divider()
 
-    # Clear button in the sidebar
-    if st.sidebar.button('이전 대화기록 삭제 버튼'):
-        # Reset the prompt, create a new thread, and clear the docx_file and messages
-        prompt = []
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
-        st.session_state['messages'] = []
-        for msg in thread_messages.data:
-            msg.content[0].text.value=""
-        # Clear the message box in col2
-        st.session_state.message_box = ""
-        message_container.markdown("", unsafe_allow_html=True)
+
 
 #     # assistant 메시지를 메시지 창에 추가
 #     if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
@@ -238,6 +227,19 @@ if st.session_state.get('logged_in'):
                 if msg.role != 'user':
                     with st.chat_message(msg.role):
                         st.write(content)
+                        
+        # Clear button in the sidebar
+    if st.sidebar.button('이전 대화기록 삭제 버튼'):
+        # Reset the prompt, create a new thread, and clear the docx_file and messages
+        prompt = []
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        st.session_state['messages'] = []
+        for msg in thread_messages.data:
+            msg.content[0].text.value=""
+        # Clear the message box in col2
+        st.session_state.message_box = ""
+        message_container.markdown("", unsafe_allow_html=True)
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
