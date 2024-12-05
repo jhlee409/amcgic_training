@@ -223,12 +223,12 @@ if st.session_state.get('logged_in'):
 #             st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
 #         message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
-#     st.sidebar.divider()
-#     # 로그아웃 버튼 생성
-#     if st.sidebar.button('로그아웃'):
-#         st.session_state.logged_in = False
-#         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+    st.sidebar.divider()
+    # 로그아웃 버튼 생성
+    if st.sidebar.button('로그아웃'):
+        st.session_state.logged_in = False
+        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
 
-# else:
-#     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-#     st.error("로그인이 필요합니다.")
+else:
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
+    st.error("로그인이 필요합니다.")
