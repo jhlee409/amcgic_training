@@ -146,7 +146,7 @@ if st.session_state.get('logged_in'):
         assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
 
         # Display Form Title
-        main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
+        main_container.subheader("AMC GI:&emsp;PBL 챗봇&emsp;&emsp;&emsp")
         with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
             st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
             st.write("- case가 준비되면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
