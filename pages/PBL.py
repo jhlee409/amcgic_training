@@ -217,14 +217,14 @@ if st.session_state.get('logged_in'):
     for msg in thread_messages.data:
         if msg.content and msg.content[0].text.value:
             content = msg.content[0].text.value
-            if content.strip() and 'Problem_bsed_Learning' not in content:
+            if content.strip() and 'Problem_based_Learning' not in content:
                 with st.chat_message(msg.role):
                     st.write(content)
 
     st.sidebar.divider()
 
     # assistant 메시지를 메시지 창에 추가
-    if message.content and message.content[0].text.value and 'Problem_bsed_Learning' not in message.content[0].text.value:
+    if message.content and message.content[0].text.value and 'Problem_based_Learning' not in message.content[0].text.value:
         if messages.data[0].role == "assistant":
             st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
         else:
@@ -239,8 +239,8 @@ if st.session_state.get('logged_in'):
         # 메시지 내용 확인 및 필터링 조건 추가
         if msg.content and msg.content[0].text.value:
             content = msg.content[0].text.value
-            # 필터링 조건: 내용이 비어있지 않고, '..', '...', '전체 지시 사항'을 포함하지 않는 경우에만 UI에 표시
-            if content.strip() not in ['', '..', '...'] and 'Problem_bsed_Learning' not in content:
+            # 필터링 조건: 내용이 비어있지 않고, '..', '...', 'Problem_based_Learning'을 포함하지 않는 경우에만 UI에 표시
+            if content.strip() not in ['', '..', '...'] and 'Problem_based_Learning' not in content:
                 if msg.role != 'user':
                     with st.chat_message(msg.role):
                         st.write(content)
