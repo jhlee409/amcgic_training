@@ -42,7 +42,8 @@ if selected_option == "PBL":
                 thread_url = "https://api.openai.com/v1/threads"  # Adjust the endpoint as necessary
                 thread_headers = {
                     "Authorization": f"Bearer {st.secrets['OPENAI_API_KEY']}",  # Use the API key from secrets
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "OpenAI-Beta": "assistants=v2"  # Add the required header
                 }
                 thread_data = {
                     "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"  # Specify the assistant ID
