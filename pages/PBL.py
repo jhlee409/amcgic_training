@@ -44,7 +44,7 @@ if selected_option == "PBL":
                 "Content-Type": "application/json"
             }
             data = {
-                "model": "gpt-3.5-turbo",  # Specify the model
+                "model": "gpt-4o",  # Specify the model
                 "messages": [{"role": "user", "content": user_input}]  # Only include messages
             }
 
