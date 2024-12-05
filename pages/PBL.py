@@ -226,8 +226,13 @@ if st.session_state.get('logged_in'):
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
         st.session_state['messages'] = []
+        
+        # 메시지 내용 초기화
         for msg in thread_messages.data:
-            msg.content[0].text.value=""
+            for content in msg.content:
+                if hasattr(content, 'text'):
+                    content.text.value = ""
+        
         # Clear the message box in col2
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
