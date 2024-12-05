@@ -185,20 +185,20 @@ if st.session_state.get('logged_in'):
                     run_id=run.id
                 )
 
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
-    
-    # message 변수가 정의된 후에만 사용
-    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-    
-    st.write(assistant_id)
+        #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+        messages = client.beta.threads.messages.list(
+            thread_id=thread_id
+        )
+        
+        # message 변수가 정의된 후에만 사용
+        if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+            if messages.data[0].role == "assistant":
+                st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+        
+        st.write(assistant_id)
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+        #메세지 모두 불러오기
+        thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
     st.sidebar.divider()
 
