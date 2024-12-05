@@ -215,13 +215,13 @@ if st.session_state.get('logged_in'):
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
 
-    # # assistant 메시지를 메시지 창에 추가
-    # if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    #     if messages.data[0].role == "assistant":
-    #         st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-    #     else:
-    #         st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-    #     message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+    # assistant 메시지를 메시지 창에 추가
+    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+        if messages.data[0].role == "assistant":
+            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+        else:
+            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
+        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
