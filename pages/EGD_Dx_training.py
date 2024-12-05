@@ -147,7 +147,7 @@ if st.session_state.get('logged_in'):
             # Firebase Storage에 로그 파일 업로드 (덮어쓰기)
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
             log_blob = bucket.blob('logs/access_log.txt')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain', overwrite=True)  # 문자열로 업로드 (덮어쓰기)
+            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드 (덮어쓰기)
 
             st.markdown(docx_content_2)  # Show the content of _2.docx
 
