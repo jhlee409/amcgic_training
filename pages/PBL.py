@@ -158,16 +158,17 @@ if st.session_state.get('logged_in'):
 
     st.write(assistant_id)
     
-    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    # 사용자 입력이 있을 경우에만 메시지 생성
     if user_input:
-        prompt = user_input
-        # prompt 변수가 비어 있는지 확인
-        if prompt:
-            message = client.beta.threads.messages.create(
-                thread_id=thread_id,
-                role="user",
-                content=prompt
-            )
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=user_input
+        )
+        # message 변수가 정의된 후에만 사용
+        if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+            if messages.data[0].role == "assistant":
+                st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
 
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
