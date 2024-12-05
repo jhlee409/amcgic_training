@@ -37,38 +37,57 @@ if selected_option == "PBL":
 
     if st.button("Send"):
         if user_input:
-            # ChatGPT API call
-            url = "https://api.openai.com/v1/chat/completions"
-            headers = {
-                "Authorization": f"Bearer {st.secrets['OPENAI_API_KEY']}",  # Use the API key from secrets
-                "Content-Type": "application/json"
-            }
-            data = {
-                "model": "gpt-4o",  # Specify the model
-                "messages": [{"role": "user", "content": user_input}]  # Only include messages
-            }
+            try:
+                # Step 1: Create a new thread
+                thread_url = "https://api.openai.com/v1/threads"  # Adjust the endpoint as necessary
+                thread_headers = {
+                    "Authorization": f"Bearer {st.secrets['OPENAI_API_KEY']}",  # Use the API key from secrets
+                    "Content-Type": "application/json"
+                }
+                thread_data = {
+                    "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"  # Specify the assistant ID
+                }
 
-            response = requests.post(url, headers=headers, data=json.dumps(data))
-            response_data = response.json()
+                thread_response = requests.post(thread_url, headers=thread_headers, data=json.dumps(thread_data))
+                thread_response_data = thread_response.json()
 
-            # Handle API response
-            if response.status_code == 200:
-                chat_response = response_data['choices'][0]['message']['content']
-                st.write("ChatGPT's response:", chat_response)
+                if thread_response.status_code == 200:
+                    thread_id = thread_response_data['id']  # Get the new thread ID
 
-                # Log user email and access date
-                user_email = st.session_state.get('user_email', 'unknown')
-                access_date = datetime.now().strftime("%Y-%m-%d")
+                    # Step 2: Send a message to the new thread
+                    message_url = "https://api.openai.com/v1/threads/messages"  # Adjust the endpoint as necessary
+                    message_data = {
+                        "thread_id": thread_id,
+                        "role": "user",
+                        "content": user_input
+                    }
 
-                # Log entry creation
-                log_entry = f"Email: {user_email}, Access Date: {access_date}, User Input: {user_input}, Response: {chat_response}\n"
+                    message_response = requests.post(message_url, headers=thread_headers, data=json.dumps(message_data))
+                    message_response_data = message_response.json()
 
-                # Upload log to Firebase Storage
-                bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                log_blob = bucket.blob(f'logs/{user_email}_PBL_{access_date}.txt')
-                log_blob.upload_from_string(log_entry, content_type='text/plain')
+                    # Handle message response
+                    if message_response.status_code == 200:
+                        chat_response = message_response_data['choices'][0]['message']['content']
+                        st.write("ChatGPT's response:", chat_response)
 
-            else:
-                st.error("Error calling API: " + response_data.get("error", {}).get("message", "Unknown error"))
+                        # Log user email and access date
+                        user_email = st.session_state.get('user_email', 'unknown')
+                        access_date = datetime.now().strftime("%Y-%m-%d")
+
+                        # Log entry creation
+                        log_entry = f"Email: {user_email}, Access Date: {access_date}, User Input: {user_input}, Response: {chat_response}\n"
+
+                        # Upload log to Firebase Storage
+                        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                        log_blob = bucket.blob(f'logs/{user_email}_PBL_{access_date}.txt')
+                        log_blob.upload_from_string(log_entry, content_type='text/plain')
+
+                    else:
+                        st.error("Error sending message: " + message_response_data.get("error", {}).get("message", "Unknown error"))
+                else:
+                    st.error("Error creating thread: " + thread_response_data.get("error", {}).get("message", "Unknown error"))
+
+            except Exception as e:
+                st.error(f"An error occurred: {str(e)}")  # Handle any other exceptions
         else:
             st.error("Please enter a message.")
