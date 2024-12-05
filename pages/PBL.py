@@ -44,9 +44,8 @@ if selected_option == "PBL":
                 "Content-Type": "application/json"
             }
             data = {
-                "model": "gpt-3.5-turbo",
-                "messages": [{"role": "user", "content": user_input}],
-                "assistant_id": "asst_TSbYs8y40TmTUqwEu9eGSF6w"
+                "model": "gpt-3.5-turbo",  # Specify the model
+                "messages": [{"role": "user", "content": user_input}]  # Only include messages
             }
 
             response = requests.post(url, headers=headers, data=json.dumps(data))
