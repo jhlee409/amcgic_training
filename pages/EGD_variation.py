@@ -38,20 +38,6 @@ if st.session_state.get('logged_in'):
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
-    # 출석 확인 버튼 추가
-    if st.button("출석 확인"):
-        # 사용자 이메일과 접속 날짜 기록
-        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-        # 로그 내용을 문자열로 생성
-        log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD variation\n"
-
-        # Firebase Storage에 로그 파일 업로드
-        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
-        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
-
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
     video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
@@ -224,7 +210,20 @@ if st.session_state.get('logged_in'):
 
     # 제목과 23개 항목 출력
     st.header("EGD variation")
-    st.write("이 웹 프로그램을 이용하면 출석확인이 안됩니다. Sim Class에서 학습하세요. 이 웹페이지는 백업용으로 만든 것입니다.")
+    st.write("아래 출석 확인 버튼을 눌러야 출석이 확인됩니다.")
+    
+    # 출석 확인 버튼 추가
+    if st.button("출석 확인"):
+        # 사용자 이메일과 접속 날짜 기록
+        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+        # 로그 내용을 문자열로 생성
+        log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD variation\n"
+
+        # Firebase Storage에 로그 파일 업로드
+        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
+        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
