@@ -158,13 +158,14 @@ if st.session_state.get('logged_in'):
 
     st.write(assistant_id)
     
-    # 사용자 입력이 있을 경우에만 메시지 생성
+    # 사용자 입력이 있을 경우에만 메시지 생성 및 사용
     if user_input:
         message = client.beta.threads.messages.create(
             thread_id=thread_id,
             role="user",
             content=user_input
         )
+        
         # message 변수가 정의된 후에만 사용
         if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
             if messages.data[0].role == "assistant":
