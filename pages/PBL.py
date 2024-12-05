@@ -168,13 +168,13 @@ if st.session_state.get('logged_in'):
                 assistant_id=assistant_id,
             )
             
-            # 실행 완료 대기
-            while run.status != "completed":
-                time.sleep(1)
-                run = client.beta.threads.runs.retrieve(
-                    thread_id=st.session_state.thread_id,
-                    run_id=run.id
-                )
+            # # 실행 완료 대기
+            # while run.status != "completed":
+            #     time.sleep(1)
+            #     run = client.beta.threads.runs.retrieve(
+            #         thread_id=st.session_state.thread_id,
+            #         run_id=run.id
+            #     )
             
             st.session_state.initial_prompt_sent = True
 
