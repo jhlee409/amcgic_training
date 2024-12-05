@@ -51,7 +51,7 @@ if st.session_state.get('logged_in'):
         
         # 엑셀 파일로 변환
         excel_buffer = io.BytesIO()
-        with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+        with pd.ExcelWriter(excel_buffer, engine='openpyxl') as writer:
             df.to_excel(writer, index=False, sheet_name='Access Log')
         
         # Firebase Storage에 엑셀 파일 업로드
