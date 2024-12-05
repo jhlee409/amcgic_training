@@ -4,6 +4,7 @@ import docx
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
+from datetime import datetime
 
 # Set page to wide mode
 st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout="wide")
@@ -122,6 +123,18 @@ if st.session_state.get('logged_in'):
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
+            # 사용자 이메일과 접속 날짜 기록
+            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+            # 로그 내용을 문자열로 생성
+            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: AI Patient Hx taking\n"
+
+            # Firebase Storage에 로그 파일 업로드
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_AI Patient Hx taking.txt')  # 로그 파일 경로 설정
+            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
             # Include the directory in the path when reading the file
             case_full_path = case_directory + selected_case_file
             prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
