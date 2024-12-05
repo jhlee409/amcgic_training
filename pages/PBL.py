@@ -173,26 +173,26 @@ if st.session_state.get('logged_in'):
         assistant_id=assistant_id,
     )
 
-    with st.spinner('열일 중...'):
-        #RUN이 completed 되었나 1초마다 체크
-        while run.status != "completed":
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=thread_id,
-                run_id=run.id
-            )
+    # with st.spinner('열일 중...'):
+    #     #RUN이 completed 되었나 1초마다 체크
+    #     while run.status != "completed":
+    #         time.sleep(1)
+    #         run = client.beta.threads.runs.retrieve(
+    #             thread_id=thread_id,
+    #             run_id=run.id
+    #         )
 
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
+    # #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    # messages = client.beta.threads.messages.list(
+    #     thread_id=thread_id
+    # )
     
-    st.write(assistant_id)
+    # st.write(assistant_id)
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+    # #메세지 모두 불러오기
+    # thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-    st.sidebar.divider()
+    # st.sidebar.divider()
 
 #     # Clear button in the sidebar
 #     if st.sidebar.button('이전 대화기록 삭제 버튼'):
