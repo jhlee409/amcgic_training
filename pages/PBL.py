@@ -62,21 +62,30 @@ if st.session_state.get('logged_in'):
         
         # Download the file to a temporary location
         temp_file_path = "/tmp/tempfile.docx"
-        blob.download_to_filename(temp_file_path)
         
+        try:
+            blob.download_to_filename(temp_file_path)
+        except Exception as e:
+            print(f"Error downloading file: {e}")
+            return None  # Return None or handle the error as needed
+
         # Check if the file exists
         if os.path.exists(temp_file_path):
-            # Read the content of the DOCX file
-            doc = docx.Document(temp_file_path)
-            full_text = []
-            for para in doc.paragraphs:
-                full_text.append(para.text)
-            
-            # Join the text into a single string
-            return '\n'.join(full_text)
+            try:
+                # Read the content of the DOCX file
+                doc = docx.Document(temp_file_path)
+                full_text = []
+                for para in doc.paragraphs:
+                    full_text.append(para.text)
+                # Join the text into a single string
+                return '\n'.join(full_text)
+            except Exception as e:
+                print(f"Error reading DOCX file: {e}")
+                return None  # Return None or handle the error as needed
         else:
             print(f"File not found at {temp_file_path}. Please check if the file was created successfully.")
-    
+            return None  # Return None or handle the error as needed
+
     # Function to get file content from Firebase Storage
     def get_file_content(bucket_name, directory, file_name):
         bucket = storage.bucket(bucket_name)
