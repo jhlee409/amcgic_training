@@ -65,10 +65,9 @@ if st.session_state.get('logged_in'):
     if st.button("대화 시작"):
         if prompt:  # 사용자가 내용을 입력했는지 확인
             try:
-                # 새로운 thread ID 생성 (assistant_id를 제거)
-                thread_response = client.beta.threads.create(
-                    title="New Conversation Thread"  # 필요에 따라 제목을 설정
-                )
+                # 새로운 thread ID 생성 (title 인자를 제거)
+                thread_response = client.beta.threads.create()  # 필요한 인자 확인 후 추가
+
                 thread_id = thread_response.id  # 생성된 thread ID 가져오기
 
                 # 메시지 생성
