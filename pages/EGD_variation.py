@@ -38,6 +38,20 @@ if st.session_state.get('logged_in'):
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
+    # 출석 확인 버튼 추가
+    if st.button("출석 확인"):
+        # 사용자 이메일과 접속 날짜 기록
+        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+        # 로그 내용을 문자열로 생성
+        log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD variation\n"
+
+        # Firebase Storage에 로그 파일 업로드
+        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
+        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
+
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
     video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
@@ -138,21 +152,6 @@ if st.session_state.get('logged_in'):
     blob_r3 = bucket.blob("EGD_variation/R3.mp4")
     video_url_r3 = blob_r3.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
-
-
-
-# 출석 확인 버튼 추가
-if st.button("출석 확인"):
-    # 사용자 이메일과 접속 날짜 기록
-    user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-    access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-    # 로그 내용을 문자열로 생성
-    log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD variation\n"
-
-    # Firebase Storage에 로그 파일 업로드
-    log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
-    log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
 
     # 23개 항목의 데이터
