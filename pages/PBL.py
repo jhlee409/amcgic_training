@@ -42,41 +42,41 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Function to list files in a specific directory in Firebase Storage
-    def list_files(bucket_name, directory):
-        bucket = storage.bucket(bucket_name)
-        blobs = bucket.list_blobs(prefix=directory)
-        file_names = []
-        for blob in blobs:
-            # Extracting file name from the path and adding to the list
-            file_name = blob.name[len(directory):]  # Remove directory path from file name
-            if file_name:  # Check to avoid adding empty strings (in case of directories)
-                file_names.append(file_name)
-        return file_names
+    # # Function to list files in a specific directory in Firebase Storage
+    # def list_files(bucket_name, directory):
+    #     bucket = storage.bucket(bucket_name)
+    #     blobs = bucket.list_blobs(prefix=directory)
+    #     file_names = []
+    #     for blob in blobs:
+    #         # Extracting file name from the path and adding to the list
+    #         file_name = blob.name[len(directory):]  # Remove directory path from file name
+    #         if file_name:  # Check to avoid adding empty strings (in case of directories)
+    #             file_names.append(file_name)
+    #     return file_names
 
-    # Function to read file content from Firebase Storage
-    def read_docx_file(bucket_name, file_name):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(file_name)
+    # # Function to read file content from Firebase Storage
+    # def read_docx_file(bucket_name, file_name):
+    #     bucket = storage.bucket(bucket_name)
+    #     blob = bucket.blob(file_name)
         
-        # Download the file to a temporary location
-        temp_file_path = "/tmp/tempfile.docx"
-        blob.download_to_filename(temp_file_path)
+    #     # Download the file to a temporary location
+    #     temp_file_path = "/tmp/tempfile.docx"
+    #     blob.download_to_filename(temp_file_path)
         
-        # Read the content of the DOCX file
-        doc = docx.Document(temp_file_path)
-        full_text = []
-        for para in doc.paragraphs:
-            full_text.append(para.text)
+    #     # Read the content of the DOCX file
+    #     doc = docx.Document(temp_file_path)
+    #     full_text = []
+    #     for para in doc.paragraphs:
+    #         full_text.append(para.text)
         
-        # Join the text into a single string
-        return '\n'.join(full_text)
+    #     # Join the text into a single string
+    #     return '\n'.join(full_text)
     
-    # Function to get file content from Firebase Storage
-    def get_file_content(bucket_name, directory, file_name):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(directory + file_name)
-        return blob.download_as_bytes()
+    # # Function to get file content from Firebase Storage
+    # def get_file_content(bucket_name, directory, file_name):
+    #     bucket = storage.bucket(bucket_name)
+    #     blob = bucket.blob(directory + file_name)
+    #     return blob.download_as_bytes()
 
     # 메인 컨텐츠와 메시지 창을 위한 컨테이너 생성
     main_container = st.container()
