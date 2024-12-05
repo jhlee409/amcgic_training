@@ -149,7 +149,11 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=prompt
+        )
 
         # Display Form Title
         main_container.subheader("AMC GI C:&emsp;PBL 챗봇")
@@ -168,11 +172,6 @@ if st.session_state.get('logged_in'):
     if user_input:
         prompt = user_input
 
-    message = client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=prompt
-    )
 
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
