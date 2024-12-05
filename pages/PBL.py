@@ -4,7 +4,7 @@ import docx
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 # Set page to wide mode
 st.set_page_config(page_title="PBL", page_icon=":robot_face:", layout="wide")
@@ -125,7 +125,9 @@ if st.session_state.get('logged_in'):
         if selected_case_file:
             # 사용자 이메일과 접속 날짜 기록
             user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+            # 한국 시간대(KST) 설정
+            kst = timezone(timedelta(hours=9))
+            access_date = datetime.now(kst).strftime("%Y-%m-%d")  # 한국 시간으로 현재 날짜 가져오기
 
             # 로그 내용을 문자열로 생성
             log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
