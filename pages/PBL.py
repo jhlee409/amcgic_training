@@ -150,14 +150,14 @@ if st.session_state.get('logged_in'):
         with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
             st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
             st.write("- case가 준비되면 '어떤 환자인가요?'로 질문을 시작하세요.")
-            
-    print(assistant_id)
 
     # col1과 col2 아래에 입력창 추가
     input_container = st.container()
     with input_container:
         user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
 
+    print(assistant_id)
+    
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
         prompt = user_input
