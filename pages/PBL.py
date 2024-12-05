@@ -160,22 +160,24 @@ if st.session_state.get('logged_in'):
                 st.error("The content of the selected case file is empty or could not be read.")
             else:
                 # Proceed with the API call using the prompt
-                # Example API call
-                message_data = {
-                    "thread_id": thread_id,
-                    "role": "user",
-                    "content": prompt  # Ensure prompt is valid
-                }
+                try:
+                    message_data = {
+                        "thread_id": thread_id,
+                        "role": "user",
+                        "content": prompt  # Ensure prompt is valid
+                    }
 
-                message_response = requests.post(message_url, headers=thread_headers, data=json.dumps(message_data))
-                message_response_data = message_response.json()
+                    message_response = client.beta.threads.messages.create(**message_data)
 
-                # Handle message response
-                if message_response.status_code == 200:
-                    chat_response = message_response_data['choices'][0]['message']['content']
-                    st.write("ChatGPT's response:", chat_response)
-                else:
-                    st.error("Error sending message: " + message_response_data.get("error", {}).get("message", "Unknown error"))
+                    # Handle message response
+                    if message_response.status_code == 200:
+                        chat_response = message_response['choices'][0]['message']['content']
+                        st.write("ChatGPT's response:", chat_response)
+                    else:
+                        st.error("Error sending message: " + message_response.get("error", {}).get("message", "Unknown error"))
+                except Exception as e:
+                    st.error(f"An error occurred while sending the message: {str(e)}")
+                    print(f"Error details: {e}")  # Print the error details for debugging
 
             st.session_state['prompt'] = prompt
            
@@ -195,7 +197,7 @@ if st.session_state.get('logged_in'):
             st.write("- case가 준비되면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
             st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
             st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 좀 길게 걸릴 수 있으니, 기다려 주세요.^^")
-            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  한 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
+            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  한 번 누른 후 ��른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
             st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다운로드 하지 마시고, 마지막에 다운로드해 주세요.")
 
     # col1과 col2 아래에 입력창 추가
