@@ -128,11 +128,11 @@ if st.session_state.get('logged_in'):
             access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
             # 로그 내용을 문자열로 생성
-            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: AI Patient Hx taking\n"
+            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_AI Patient Hx taking.txt')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
             # Include the directory in the path when reading the file
