@@ -262,9 +262,12 @@ if st.session_state.get('logged_in'):
                 
                 # 이미지 처리
                 elif hasattr(content, 'image_file'):
-                    image_file = content.image_file
-                    # 이미지를 화면에 표시
-                    st.image(image_file.file_id)
+                    try:
+                        image_response = client.files.content(content.image_file.file_id)
+                        image_data = image_response.read()
+                        st.image(image_data)
+                    except Exception as e:
+                        st.error(f"이미지를 불러오는 중 오류가 발생했습니다: {str(e)}")
 
     st.sidebar.divider()
     # 로그아웃 버튼 생성
