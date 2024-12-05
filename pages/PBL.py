@@ -12,7 +12,7 @@ st.set_page_config(page_title="PBL", page_icon=":robot_face:", layout="wide")
 if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
-    #prompt = ""
+    prompt = ""
 
     client = OpenAI()
 
@@ -161,6 +161,10 @@ if st.session_state.get('logged_in'):
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
         prompt = user_input
+        
+    # prompt 변수가 비어 있는지 확인
+    if not prompt:
+        raise ValueError("prompt 변수는 비어 있을 수 없습니다.")
 
     message = client.beta.threads.messages.create(
         thread_id=thread_id,
