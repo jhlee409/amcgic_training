@@ -155,12 +155,12 @@ if st.session_state.get('logged_in'):
         #     thread = client.beta.threads.create()
         #     st.session_state.thread_id = thread.id
             
-        # 초기 프롬프트 전송
-        message = client.beta.threads.messages.create(
-            thread_id=st.session_state.thread_id,
-            role="user",
-            content="어떤 환자인가요?"
-            )
+        # # 초기 프롬프트 전송
+        # message = client.beta.threads.messages.create(
+        #     thread_id=st.session_state.thread_id,
+        #     role="user",
+        #     content="어떤 환자인가요?"
+            # )
             
         #     # 초기 실행
         #     run = client.beta.threads.runs.create(
