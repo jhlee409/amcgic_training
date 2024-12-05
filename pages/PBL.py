@@ -171,7 +171,7 @@ if st.session_state.get('logged_in'):
     # run = client.beta.threads.runs.create(
     #     thread_id=thread_id,
     #     assistant_id=assistant_id,
-    )
+    #)
 
     # with st.spinner('열일 중...'):
     #     #RUN이 completed 되었나 1초마다 체크
