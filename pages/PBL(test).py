@@ -86,12 +86,19 @@ if st.session_state.get('logged_in'):
                 # 응답을 가져오기 위해 잠시 대기
                 time.sleep(2)  # 2초 대기 (필요에 따라 조정)
 
-                # 응답을 가져오는 API 호출 (가정)
-                run_response = client.beta.threads.runs.get(run.id)  # run.id를 사용하여 응답 가져오기
+                # Run 상태를 확인하는 로직 추가
+                run_status = client.beta.threads.runs.get_status(run.id)  # 상태를 확인하는 메서드 사용
 
-                # 응답 내용 표시
-                st.write("대화가 시작되었습니다. 새로운 thread ID:", thread_id)
-                st.write("응답:", run_response)  # 응답 내용을 표시합니다.
+                # 상태가 완료되었는지 확인
+                if run_status == "completed":
+                    # 응답을 가져오는 API 호출 (가정)
+                    run_response = client.beta.threads.runs.get_result(run.id)  # 결과를 가져오는 메서드 사용
+
+                    # 응답 내용 표시
+                    st.write("대화가 시작되었습니다. 새로운 thread ID:", thread_id)
+                    st.write("응답:", run_response)  # 응답 내용을 표시합니다.
+                else:
+                    st.write("대화가 진행 중입니다. 잠시 후 다시 시도해 주세요.")
 
                 # 로그 파일 생성
                 user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
