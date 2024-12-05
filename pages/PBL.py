@@ -185,13 +185,8 @@ if st.session_state.get('logged_in'):
 
     st.write(assistant_id)
     
-    # 사용자가 처음 입력했는지 추적하는 상태 변수 추가
-    if 'first_input_received' not in st.session_state:
-        st.session_state.first_input_received = False
-
     # 사용자 입력 처리
     if user_input:
-        st.session_state.first_input_received = True  # 사용자가 입력했음을 표시
         # 사용자 메시지 전송
         message = client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
@@ -213,28 +208,43 @@ if st.session_state.get('logged_in'):
                     run_id=run.id
                 )
 
-    # 메시지 표시 (사용자가 첫 입력을 한 경우에만)
-    if st.session_state.first_input_received:
-        thread_messages = client.beta.threads.messages.list(
-            thread_id=st.session_state.thread_id, 
-            order="asc"
-        )
+    # 메시지 표시
+    thread_messages = client.beta.threads.messages.list(
+        thread_id=st.session_state.thread_id, 
+        order="asc"
+    )
 
-        # # UI에 메시지 표시
-        # for msg in thread_messages.data:
-        #     if msg.content and msg.content[0].text.value:
-        #         content = msg.content[0].text.value
-        #         if content.strip() and 'Problem-based Learning' not in content:
-        #             with st.chat_message(msg.role):
-        #                 st.write(content)
-        #             if msg.role == "assistant":
-        #                 st.session_state.message_box += f"🤖: {content}\n\n"
-        #             else:
-        #                 st.session_state.message_box += f"**{msg.role}:** {content}\n\n"
-        #             message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+    for msg in thread_messages.data:
+        if msg.content and msg.content[0].text.value:
+            content = msg.content[0].text.value
+            if content.strip() and 'Problem-based Learning' not in content:
+                with st.chat_message(msg.role):
+                    st.write(content)
 
     st.sidebar.divider()
 
+    # assistant 메시지를 메시지 창에 추가
+    if message.content and message.content[0].text.value and 'Problem-basedLearning' not in message.content[0].text.value:
+        if messages.data[0].role == "assistant":
+            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+        else:
+            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
+        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+
+
+    #메세지 모두 불러오기
+    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+
+    for msg in thread_messages.data:
+        # 메시지 내용 확인 및 필터링 조건 추가
+        if msg.content and msg.content[0].text.value:
+            content = msg.content[0].text.value
+            # 필터링 조건: 내용이 비어있지 않고, '..', '...', 'Problem-based Learning'을 포함하지 않는 경우에만 UI에 표시
+            if content.strip() not in ['', '..', '...'] and 'Problem-based Learning' not in content:
+                if msg.role != 'user':
+                    with st.chat_message(msg.role):
+                        st.write(content)
+                        
     # Clear button in the sidebar
     if st.sidebar.button('이전 대화기록 삭제 버튼'):
         # Reset the prompt, create a new thread, and clear the docx_file and messages
