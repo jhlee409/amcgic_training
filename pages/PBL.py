@@ -162,11 +162,15 @@ if st.session_state.get('logged_in'):
     if user_input:
         prompt = user_input
 
-    # message = client.beta.threads.messages.create(
-    #     thread_id=thread_id,
-    #     role="user",
-    #     content=prompt
-    # )
+    try:
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=prompt
+        )
+    except Exception as e:
+        print(f"에러 발생: {str(e)}")
+    
     #RUN을 돌리는 과정
     run = client.beta.threads.runs.create(
         thread_id=thread_id,
