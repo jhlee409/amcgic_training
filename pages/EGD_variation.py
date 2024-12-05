@@ -11,19 +11,6 @@ from firebase_admin import credentials, initialize_app, storage
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Varation", layout="wide")
 
-# 출석 확인 버튼 추가
-if st.button("출석 확인"):
-    # 사용자 이메일과 접속 날짜 기록
-    user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-    access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-    # 로그 내용을 문자열로 생성
-    log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD variation\n"
-
-    # Firebase Storage에 로그 파일 업로드
-    log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
-    log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
 
 if st.session_state.get('logged_in'):
 
@@ -153,6 +140,19 @@ if st.session_state.get('logged_in'):
 
 
 
+
+# 출석 확인 버튼 추가
+if st.button("출석 확인"):
+    # 사용자 이메일과 접속 날짜 기록
+    user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+    access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+    # 로그 내용을 문자열로 생성
+    log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD variation\n"
+
+    # Firebase Storage에 로그 파일 업로드
+    log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
+    log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
 
     # 23개 항목의 데이터
