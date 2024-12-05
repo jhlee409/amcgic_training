@@ -149,18 +149,18 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-        # # 파일이 선택되었을 때 초기 프롬프트 설정
-        # if selected_case_file and 'initial_prompt_sent' not in st.session_state:
-        #     # 새로운 thread 생성
-        #     thread = client.beta.threads.create()
-        #     st.session_state.thread_id = thread.id
+        # 파일이 선택되었을 때 초기 프롬프트 설정
+        if selected_case_file and 'initial_prompt_sent' not in st.session_state:
+            # 새로운 thread 생성
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
             
-        #     # 초기 프롬프트 전송
-        #     message = client.beta.threads.messages.create(
-        #         thread_id=st.session_state.thread_id,
-        #         role="user",
-        #         content=prompt
-        #     )
+            # 초기 프롬프트 전송
+            message = client.beta.threads.messages.create(
+                thread_id=st.session_state.thread_id,
+                role="user",
+                content=prompt
+            )
             
         #     # 초기 실행
         #     run = client.beta.threads.runs.create(
