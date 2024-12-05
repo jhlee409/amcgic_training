@@ -12,7 +12,7 @@ st.set_page_config(page_title="PBL", page_icon=":robot_face:", layout="wide")
 if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
-    prompt = ""
+    #prompt = ""
 
     client = OpenAI()
 
