@@ -123,24 +123,24 @@ if st.session_state.get('logged_in'):
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
-            # 사용자 이메일과 접속 날짜 기록
-            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+            # # 사용자 이메일과 접속 날짜 기록
+            # user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+            # access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-            # 로그 내용을 문자열로 생성
-            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
+            # # 로그 내용을 문자열로 생성
+            # log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
 
-            # Firebase Storage에 로그 파일 업로드
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+            # # Firebase Storage에 로그 파일 업로드
+            # bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+            # log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
+            # log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
-            # Include the directory in the path when reading the file
-            case_full_path = case_directory + selected_case_file
-            prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
-            st.session_state['prompt'] = prompt
+            # # Include the directory in the path when reading the file
+            # case_full_path = case_directory + selected_case_file
+            # prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
+            # st.session_state['prompt'] = prompt
         
-        assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
+            assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
            
         # Manage thread id
         if 'thread_id' not in st.session_state:
@@ -149,34 +149,34 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-        # 파일이 선택되었을 때 초기 프롬프트 설정
-        if selected_case_file and 'initial_prompt_sent' not in st.session_state:
-            # 새로운 thread 생성
-            thread = client.beta.threads.create()
-            st.session_state.thread_id = thread.id
+        # # 파일이 선택되었을 때 초기 프롬프트 설정
+        # if selected_case_file and 'initial_prompt_sent' not in st.session_state:
+        #     # 새로운 thread 생성
+        #     thread = client.beta.threads.create()
+        #     st.session_state.thread_id = thread.id
             
-            # 초기 프롬프트 전송
-            message = client.beta.threads.messages.create(
-                thread_id=st.session_state.thread_id,
-                role="user",
-                content=prompt
-            )
+        #     # 초기 프롬프트 전송
+        #     message = client.beta.threads.messages.create(
+        #         thread_id=st.session_state.thread_id,
+        #         role="user",
+        #         content=prompt
+        #     )
             
-            # 초기 실행
-            run = client.beta.threads.runs.create(
-                thread_id=st.session_state.thread_id,
-                assistant_id=assistant_id,
-            )
+        #     # 초기 실행
+        #     run = client.beta.threads.runs.create(
+        #         thread_id=st.session_state.thread_id,
+        #         assistant_id=assistant_id,
+        #     )
             
-            # 실행 완료 대기
-            while run.status != "completed":
-                time.sleep(1)
-                run = client.beta.threads.runs.retrieve(
-                    thread_id=st.session_state.thread_id,
-                    run_id=run.id
-                )
+        #     # 실행 완료 대기
+        #     while run.status != "completed":
+        #         time.sleep(1)
+        #         run = client.beta.threads.runs.retrieve(
+        #             thread_id=st.session_state.thread_id,
+        #             run_id=run.id
+        #         )
             
-            st.session_state.initial_prompt_sent = True
+        #     st.session_state.initial_prompt_sent = True
 
     # col1과 col2 아래에 입력창 추가
     input_container = st.container()
