@@ -5,9 +5,6 @@ from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime
-import os
-import requests
-import json
 
 # Set page to wide mode
 st.set_page_config(page_title="PBL", page_icon=":robot_face:", layout="wide")
@@ -64,30 +61,17 @@ if st.session_state.get('logged_in'):
         
         # Download the file to a temporary location
         temp_file_path = "/tmp/tempfile.docx"
+        blob.download_to_filename(temp_file_path)
         
-        try:
-            blob.download_to_filename(temp_file_path)
-        except Exception as e:
-            print(f"Error downloading file: {e}")
-            return None  # Return None or handle the error as needed
-
-        # Check if the file exists
-        if os.path.exists(temp_file_path):
-            try:
-                # Read the content of the DOCX file
-                doc = docx.Document(temp_file_path)
-                full_text = []
-                for para in doc.paragraphs:
-                    full_text.append(para.text)
-                # Join the text into a single string
-                return '\n'.join(full_text)
-            except Exception as e:
-                print(f"Error reading DOCX file: {e}")
-                return None  # Return None or handle the error as needed
-        else:
-            print(f"File not found at {temp_file_path}. Please check if the file was created successfully.")
-            return None  # Return None or handle the error as needed
-
+        # Read the content of the DOCX file
+        doc = docx.Document(temp_file_path)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        
+        # Join the text into a single string
+        return '\n'.join(full_text)
+    
     # Function to get file content from Firebase Storage
     def get_file_content(bucket_name, directory, file_name):
         bucket = storage.bucket(bucket_name)
@@ -133,7 +117,7 @@ if st.session_state.get('logged_in'):
 
     with col2:
         # Streamlit Sidebar with Dropdown for file selection
-        case_directory = "PBL/"
+        case_directory = "AI_patient_Hx_taking/case/"
         case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
         selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
 
@@ -143,44 +127,34 @@ if st.session_state.get('logged_in'):
             user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
             access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-            # 로그 ��용을 문자열로 생성
-            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
+            # 로그 내용을 문자열로 생성
+            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: AI Patient Hx taking\n"
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_AI Patient Hx taking.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
             # Include the directory in the path when reading the file
             case_full_path = case_directory + selected_case_file
             prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
-
-            # Check if prompt is None or empty
-            if prompt is None or prompt.strip() == "":
-                st.error("The content of the selected case file is empty or could not be read.")
-            else:
-                # Proceed with the API call using the prompt
-                try:
-                    message_data = {
-                        "thread_id": thread_id,
-                        "role": "user",
-                        "content": prompt  # Ensure prompt is valid
-                    }
-
-                    message_response = client.beta.threads.messages.create(**message_data)
-
-                    # Handle message response
-                    if message_response.status_code == 200:
-                        chat_response = message_response['choices'][0]['message']['content']
-                        st.write("ChatGPT's response:", chat_response)
-                    else:
-                        st.error("Error sending message: " + message_response.get("error", {}).get("message", "Unknown error"))
-                except Exception as e:
-                    st.error(f"An error occurred while sending the message: {str(e)}")
-                    print(f"Error details: {e}")  # Print the error details for debugging
-
             st.session_state['prompt'] = prompt
-           
+
+            # Find the corresponding Excel file in the reference directory
+            reference_directory = "AI_patient_Hx_taking/reference/"
+            reference_file_list = list_files('amcgi-bulletin.appspot.com', reference_directory)
+            excel_file = selected_case_file.replace('.docx', '.xlsx')
+            if excel_file in reference_file_list:
+                file_content = get_file_content('amcgi-bulletin.appspot.com', reference_directory, excel_file)
+                st.sidebar.download_button(
+                    label="Case 해설 자료 다운로드",
+                    data=file_content,
+                    file_name=excel_file,
+                    mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                )
+            else:
+                st.sidebar.warning("해당하는 엑셀 파일이 없습니다.")
+            
         # Manage thread id
         if 'thread_id' not in st.session_state:
             thread = client.beta.threads.create()
@@ -188,7 +162,7 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-        assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
+        assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
 
         # Display Form Title
         main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")
@@ -197,7 +171,7 @@ if st.session_state.get('logged_in'):
             st.write("- case가 준비되면 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.")
             st.write("- 문진을 마치는 질문은 '알겠습니다. 혹시 궁금한 점이 있으신가요?' 입니다.")
             st.write("- 마지막에는 선생님이 물어보지 않은 중요 항목을 보여주게 되는데, 이 과정이 좀 길게 걸릴 수 있으니, 기다려 주세요.^^")
-            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  한 번 누른 후 ��른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
+            st.write("- 다른 증례를 선택하기 전에 반드시 '이전 대화기록 삭제버튼'을  한 번 누른 후 다른 증례를 선택하세요. 안그러면 이전 증례의 기록이 남아 있게 됩니다.")
             st.write("- 증례 해설 자료가 필요하시면 다운로드 하실 수 있는데, 전체가 refresh 되므로 도중에 다운로드 하지 마시고, 마지막에 다운로드해 주세요.")
 
     # col1과 col2 아래에 입력창 추가
