@@ -186,11 +186,13 @@ if st.session_state.get('logged_in'):
     messages = client.beta.threads.messages.list(
         thread_id=thread_id
     )
+    
+    st.write(assistant_id)
 
-#     #메세지 모두 불러오기
-#     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+    #메세지 모두 불러오기
+    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-#     st.sidebar.divider()
+    st.sidebar.divider()
 
 #     # Clear button in the sidebar
 #     if st.sidebar.button('이전 대화기록 삭제 버튼'):
