@@ -65,9 +65,8 @@ if st.session_state.get('logged_in'):
     if st.button("대화 시작"):
         if prompt:  # 사용자가 내용을 입력했는지 확인
             try:
-                # 새로운 thread ID 생성 (title 인자를 제거)
+                # 새로운 thread ID 생성
                 thread_response = client.beta.threads.create()  # 필요한 인자 확인 후 추가
-
                 thread_id = thread_response.id  # 생성된 thread ID 가져오기
 
                 # 메시지 생성
@@ -83,10 +82,16 @@ if st.session_state.get('logged_in'):
                     assistant_id=assistant_id,
                 )
 
-                # 대화 결과 처리 (예: 응답 표시)
-                response = run.response  # 응답을 가져옵니다.
+                # Run ID를 사용하여 응답을 가져오는 로직 추가
+                # 응답을 가져오기 위해 잠시 대기
+                time.sleep(2)  # 2초 대기 (필요에 따라 조정)
+
+                # 응답을 가져오는 API 호출 (가정)
+                run_response = client.beta.threads.runs.get(run.id)  # run.id를 사용하여 응답 가져오기
+
+                # 응답 내용 표시
                 st.write("대화가 시작되었습니다. 새로운 thread ID:", thread_id)
-                st.write("응답:", response)  # 응답 내용을 표시합니다.
+                st.write("응답:", run_response)  # 응답 내용을 표시합니다.
 
                 # 로그 파일 생성
                 user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
