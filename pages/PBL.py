@@ -149,17 +149,34 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-        message = client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=prompt
-        )
-
-        # Display Form Title
-        main_container.subheader("AMC GI C:&emsp;PBL 챗봇")
-        with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
-            st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
-            st.write("- case가 준비되면 '어떤 환자인가요?'로 질문을 시작하세요.")
+        # 파일이 선택되었을 때 초기 프롬프트 설정
+        if selected_case_file and 'initial_prompt_sent' not in st.session_state:
+            # 새로운 thread 생성
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
+            
+            # 초기 프롬프트 전송
+            message = client.beta.threads.messages.create(
+                thread_id=st.session_state.thread_id,
+                role="user",
+                content=prompt
+            )
+            
+            # 초기 실행
+            run = client.beta.threads.runs.create(
+                thread_id=st.session_state.thread_id,
+                assistant_id=assistant_id,
+            )
+            
+            # 실행 완료 대기
+            while run.status != "completed":
+                time.sleep(1)
+                run = client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state.thread_id,
+                    run_id=run.id
+                )
+            
+            st.session_state.initial_prompt_sent = True
 
     # col1과 col2 아래에 입력창 추가
     input_container = st.container()
@@ -168,37 +185,41 @@ if st.session_state.get('logged_in'):
 
     st.write(assistant_id)
     
-    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    # 사용자 입력 처리
     if user_input:
-        prompt = user_input
-
-
-    #RUN을 돌리는 과정
-    run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id,
-    )
-
-    with st.spinner('열일 중...'):
-        #RUN이 completed 되었나 1초마다 체크
-        while run.status != "completed":
-            time.sleep(1)
-            run = client.beta.threads.runs.retrieve(
-                thread_id=thread_id,
-                run_id=run.id
-            )
-
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
+        # 사용자 메시지 전송
+        message = client.beta.threads.messages.create(
+            thread_id=st.session_state.thread_id,
+            role="user",
+            content=user_input
+        )
         
-    # message 변수가 정의된 후에만 사용
-    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-    
-    st.write(assistant_id)
+        # 실행
+        run = client.beta.threads.runs.create(
+            thread_id=st.session_state.thread_id,
+            assistant_id=assistant_id,
+        )
+        
+        with st.spinner('열일 중...'):
+            while run.status != "completed":
+                time.sleep(1)
+                run = client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state.thread_id,
+                    run_id=run.id
+                )
+
+    # 메시지 표시
+    thread_messages = client.beta.threads.messages.list(
+        thread_id=st.session_state.thread_id, 
+        order="asc"
+    )
+
+    for msg in thread_messages.data:
+        if msg.content and msg.content[0].text.value:
+            content = msg.content[0].text.value
+            if content.strip() and '전체 지시 사항' not in content:
+                with st.chat_message(msg.role):
+                    st.write(content)
 
     st.sidebar.divider()
 
