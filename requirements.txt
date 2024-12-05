@@ -5,5 +5,3 @@ python-dotenv
 pillow
 firebase-admin
 pandas
-openpyxl
-xlsxwriter
