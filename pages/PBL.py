@@ -6,6 +6,8 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime
 import os
+import requests
+import json
 
 # Set page to wide mode
 st.set_page_config(page_title="PBL", page_icon=":robot_face:", layout="wide")
@@ -141,7 +143,7 @@ if st.session_state.get('logged_in'):
             user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
             access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-            # 로그 내용을 문자열로 생성
+            # 로그 ��용을 문자열로 생성
             log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
 
             # Firebase Storage에 로그 파일 업로드
@@ -152,6 +154,29 @@ if st.session_state.get('logged_in'):
             # Include the directory in the path when reading the file
             case_full_path = case_directory + selected_case_file
             prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
+
+            # Check if prompt is None or empty
+            if prompt is None or prompt.strip() == "":
+                st.error("The content of the selected case file is empty or could not be read.")
+            else:
+                # Proceed with the API call using the prompt
+                # Example API call
+                message_data = {
+                    "thread_id": thread_id,
+                    "role": "user",
+                    "content": prompt  # Ensure prompt is valid
+                }
+
+                message_response = requests.post(message_url, headers=thread_headers, data=json.dumps(message_data))
+                message_response_data = message_response.json()
+
+                # Handle message response
+                if message_response.status_code == 200:
+                    chat_response = message_response_data['choices'][0]['message']['content']
+                    st.write("ChatGPT's response:", chat_response)
+                else:
+                    st.error("Error sending message: " + message_response_data.get("error", {}).get("message", "Unknown error"))
+
             st.session_state['prompt'] = prompt
            
         # Manage thread id
