@@ -224,13 +224,20 @@ if st.session_state.get('logged_in'):
     st.sidebar.divider()
 
     # assistant 메시지를 메시지 창에 추가
-    if message.content and message.content[0].text.value and 'Problem_bsed_Learning' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-        else:
-            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+    thread_messages = client.beta.threads.messages.list(
+        thread_id=st.session_state.thread_id, 
+        order="desc",
+        limit=1
+    )
 
+    if thread_messages.data:
+        latest_message = thread_messages.data[0]
+        if latest_message.content and latest_message.content[0].text.value and 'Problem_bsed_Learning' not in latest_message.content[0].text.value:
+            if latest_message.role == "assistant":
+                st.session_state.message_box += f"🤖: {latest_message.content[0].text.value}\n\n"
+            else:
+                st.session_state.message_box += f"**{latest_message.role}:** {latest_message.content[0].text.value}\n\n"
+            message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     #메세지 모두 불러오기
     thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
