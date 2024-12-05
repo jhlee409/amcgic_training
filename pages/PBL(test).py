@@ -58,10 +58,11 @@ if st.session_state.get('logged_in'):
     st.write(f"선택한 옵션: {selected_option}")
     st.write(f"선택된 어시스턴트 ID: {assistant_id}")
 
+    # 대화 내용을 입력하기 위한 텍스트 입력
+    prompt = st.text_input("대화 내용을 입력하세요:", "")  
+
     # 대화 시작
     if st.button("대화 시작"):
-        prompt = st.text_input("대화 내용을 입력하세요:", "")  # 사용자가 입력한 내용을 받기 위한 텍스트 입력
-
         if prompt:  # 사용자가 내용을 입력했는지 확인
             # 새로운 thread ID 생성
             thread_response = client.beta.threads.create(
@@ -97,7 +98,6 @@ if st.session_state.get('logged_in'):
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
             log_blob = bucket.blob(f'logs/{user_email}_PBL_{selected_option}_{access_date}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
         else:
             st.error("대화 내용을 입력해야 합니다.")  # 대화 내용이 비어있을 경우 오류 메시지 표시
 
