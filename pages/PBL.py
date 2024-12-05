@@ -158,15 +158,15 @@ if st.session_state.get('logged_in'):
 
     st.write(assistant_id)
     
-    # # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
-    # if user_input:
-    #     prompt = user_input
+    # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
+    if user_input:
+        prompt = user_input
 
-    # message = client.beta.threads.messages.create(
-    #     thread_id=thread_id,
-    #     role="user",
-    #     content=prompt
-    # )
+    message = client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=prompt
+    )
     # #RUN을 돌리는 과정
     # run = client.beta.threads.runs.create(
     #     thread_id=thread_id,
