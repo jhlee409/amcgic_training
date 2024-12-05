@@ -16,9 +16,9 @@ if st.session_state.get('logged_in'):
 
     client = OpenAI()
 
-    # # 세션 상태 초기화
-    # if 'messages' not in st.session_state:
-    #     st.session_state.messages = []
+    # 세션 상태 초기화
+    if 'messages' not in st.session_state:
+        st.session_state.messages = []
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
