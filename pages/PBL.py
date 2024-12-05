@@ -11,9 +11,9 @@ st.set_page_config(page_title="PBL", page_icon=":robot_face:", layout="wide")
 
 if st.session_state.get('logged_in'):
 
-    # Initialize session state variables
-    if 'messages' not in st.session_state:
-        st.session_state['messages'] = []
+    # # Initialize session state variables
+    # if 'messages' not in st.session_state:
+    #     st.session_state['messages'] = []
 
     # Initialize prompt variable
     prompt = ""
