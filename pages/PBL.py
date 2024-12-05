@@ -168,13 +168,13 @@ if st.session_state.get('logged_in'):
                 assistant_id=assistant_id,
             )
             
-            # # 실행 완료 대기
-            # while run.status != "completed":
-            #     time.sleep(1)
-            #     run = client.beta.threads.runs.retrieve(
-            #         thread_id=st.session_state.thread_id,
-            #         run_id=run.id
-            #     )
+            # 실행 완료 대기
+            while run.status != "completed":
+                time.sleep(1)
+                run = client.beta.threads.runs.retrieve(
+                    thread_id=st.session_state.thread_id,
+                    run_id=run.id
+                )
             
             st.session_state.initial_prompt_sent = True
 
@@ -220,18 +220,18 @@ if st.session_state.get('logged_in'):
             order="asc"
         )
 
-        # UI에 메시지 표시
-        for msg in thread_messages.data:
-            if msg.content and msg.content[0].text.value:
-                content = msg.content[0].text.value
-                if content.strip() and 'Problem-based Learning' not in content:
-                    with st.chat_message(msg.role):
-                        st.write(content)
-                    if msg.role == "assistant":
-                        st.session_state.message_box += f"🤖: {content}\n\n"
-                    else:
-                        st.session_state.message_box += f"**{msg.role}:** {content}\n\n"
-                    message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+        # # UI에 메시지 표시
+        # for msg in thread_messages.data:
+        #     if msg.content and msg.content[0].text.value:
+        #         content = msg.content[0].text.value
+        #         if content.strip() and 'Problem-based Learning' not in content:
+        #             with st.chat_message(msg.role):
+        #                 st.write(content)
+        #             if msg.role == "assistant":
+        #                 st.session_state.message_box += f"🤖: {content}\n\n"
+        #             else:
+        #                 st.session_state.message_box += f"**{msg.role}:** {content}\n\n"
+        #             message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
 
