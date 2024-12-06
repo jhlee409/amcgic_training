@@ -112,17 +112,11 @@ if st.session_state.get('logged_in'):
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
             log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+        
+            assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
 
-            # assistant_id 설정
-            if selected_case_file == "000.docx":
-                pass  # 아무것도 하지 않음
-            elif selected_case_file == "01.docx":
-                assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
-            elif selected_case_file == "PBL_amc_02.docx":
-                assistant_id = "asst_DUMZeiSK1m3hYbFqb6OoNbwa"
-            else:
-                assistant_id = None  # 다른 경우에 대한 기본값 설정
-
+            assistant_id = "asst_DUMZeiSK1m3hYbFqb6OoNbwa"
+           
         # Manage thread id
         if 'thread_id' not in st.session_state:
             thread = client.beta.threads.create()
