@@ -71,7 +71,7 @@ if st.session_state.get('logged_in'):
         return '\n'.join(full_text)
     
     # esophagus or stomach selection
-    folder_selection = st.sidebar.radio("선택 버튼", ["Default", "'Hemostasis 일반' 강의", "esophagus 증례(예정)", "stomach 증례", "duodenum 증례"])
+    folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis 일반 강의", "esophagus 증례(예정)", "stomach 증례", "duodenum 증례"])
     
     directory_videos = "EGD_Hemostasis_training/videos/"
 
@@ -82,7 +82,7 @@ if st.session_state.get('logged_in'):
     if folder_selection == "Default":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-    elif folder_selection == "'Hemostasis 일반' 강의":
+    elif folder_selection == "Hemostasis 일반 강의":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
         directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
     elif folder_selection == "esophagus 증례(예정)":
