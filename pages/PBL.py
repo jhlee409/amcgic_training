@@ -113,9 +113,9 @@ if st.session_state.get('logged_in'):
             log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
-            # assistant_id 설정
+            # assistant_id 설정 및 메시지 처리
             if selected_case_file == "000.docx":
-                pass  # 아무것도 하지 않음
+                st.write("🤖: 왼쪽 메뉴에서 증례 파일을 선택해 주세요.")  # assistant 메시지 출력
             elif selected_case_file == "01.docx":
                 assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
             elif selected_case_file == "PBL_amc_02.docx":
