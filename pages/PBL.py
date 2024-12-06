@@ -99,32 +99,34 @@ if st.session_state.get('logged_in'):
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
-            # 사용자 이메일과 접속 날짜 기록
-            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
-            # 한국 시간대(KST) 설정
-            kst = timezone(timedelta(hours=9))
-            access_date = datetime.now(kst).strftime("%Y-%m-%d")  # 한국 시간으로 현재 날짜 가져오기
-
-            # 로그 내용을 문자열로 생성
-            log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
-
-            # Firebase Storage에 로그 파일 업로드
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
             # assistant_id 설정 및 메시지 처리
             if selected_case_file == "000.docx":
                 assistant_id = None
                 st.write("🤖: 왼쪽 메뉴에서 증례 파일을 선택해 주세요.")  # assistant 메시지 출력
-            elif selected_case_file == "PBL_amc_01.docx":
-                assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
-            elif selected_case_file == "PBL_amc_02.docx":
-                assistant_id = "asst_DUMZeiSK1m3hYbFqb6OoNbwa"
             else:
-                assistant_id = None  # 다른 경우에 대한 기본값 설정
+                # 사용자 이메일과 접속 날짜 기록
+                user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+                # 한국 시간대(KST) 설정
+                kst = timezone(timedelta(hours=9))
+                access_date = datetime.now(kst).strftime("%Y-%m-%d")  # 한국 시간으로 현재 날짜 가져오기
 
-                # Display Form Title
+                # 로그 내용을 문자열로 생성
+                log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
+
+                # Firebase Storage에 로그 파일 업로드
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+                log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
+                log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
+                # assistant_id 설정
+                if selected_case_file == "PBL_amc_01.docx":
+                    assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
+                elif selected_case_file == "PBL_amc_02.docx":
+                    assistant_id = "asst_DUMZeiSK1m3hYbFqb6OoNbwa"
+                else:
+                    assistant_id = None  # 다른 경우에 대한 기본값 설정
+
+        # Display Form Title
         main_container.subheader("AMC GI 상부:&emsp;PBL 훈련 챗봇&emsp;&emsp;v 1.0")
         with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
             st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
