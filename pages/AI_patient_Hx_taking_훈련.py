@@ -123,6 +123,7 @@ if st.session_state.get('logged_in'):
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
+            st.write(selected_case_file)
             # 사용자 이메일과 접속 날짜 기록
             user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
             access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
