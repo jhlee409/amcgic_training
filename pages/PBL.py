@@ -117,7 +117,7 @@ if st.session_state.get('logged_in'):
             if selected_case_file == "000.docx":
                 assistant_id = None
                 st.write("🤖: 왼쪽 메뉴에서 증례 파일을 선택해 주세요.")  # assistant 메시지 출력
-            elif selected_case_file == "01.docx":
+            elif selected_case_file == "PBL_amc_01.docx":
                 assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
             elif selected_case_file == "PBL_amc_02.docx":
                 assistant_id = "asst_DUMZeiSK1m3hYbFqb6OoNbwa"
