@@ -125,7 +125,7 @@ if st.session_state.get('logged_in'):
                 assistant_id = None  # 다른 경우에 대한 기본값 설정
 
                 # Display Form Title
-        main_container.subheader("AMC GI 상부:&emsp;PBL 훈련 챗봇&emsp;&emsp;&emsp;v 1.0")
+        main_container.subheader("AMC GI 상부:&emsp;PBL 훈련 챗봇&emsp;&emsp;v 1.0")
         with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
             st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
             st.write("- case가 준비되면 맨 처음은 입력창에 '로딩'을 입력하세요. 관련 자료를 로딩해야 하고, 좀 오래 걸립니다 ^^;")
