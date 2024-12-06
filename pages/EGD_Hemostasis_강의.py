@@ -33,7 +33,7 @@ if st.session_state.get('logged_in'):
     # Display Form Title
     st.subheader("EGD_Hemostasis_training")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 가장 먼저 왼쪽 sidebar에서 default는 '초기화'입니다. Hemostasis 강의, esophagus, stomach, duodenum 중 한 가지를 선택합니다.")
+        st.write("- 가장 먼저 왼쪽 sidebar에서 default는 'Default'입니다. Hemostasis 강의, esophagus, stomach, duodenum 중 한 가지를 선택합니다.")
         st.write("- 우선 EGD 지혈술의 overview 강의를 시청하고 싶으면, Hemostasis 강의를 선택하고 '진행' 버튼을 누르면 강의 화면이 나타납니다. 클릭해서 시청하세요.")
         st.write("- EGD 지혈술 case를 시청하고 싶으면 우선 각 장기를 선택합니다. esophagus는 아직 증례가 올려져 있지 않아 오류납니다. 그냥 지나가세요.")
         st.write("- 다음으로, 그 아래에서 pre_video를 선택하면 치료전 case 동영상과 질문이 나타납니다.")
@@ -71,7 +71,7 @@ if st.session_state.get('logged_in'):
         return '\n'.join(full_text)
     
     # esophagus or stomach selection
-    folder_selection = st.sidebar.radio("선택 버튼", ["초기화", "'Hemostasis 일반' 강의", "esophagus 증례(예정)", "stomach 증례", "duodenum 증례"])
+    folder_selection = st.sidebar.radio("선택 버튼", ["Default", "'Hemostasis 일반' 강의", "esophagus 증례(예정)", "stomach 증례", "duodenum 증례"])
     
     directory_videos = "EGD_Hemostasis_training/videos/"
 
@@ -79,7 +79,7 @@ if st.session_state.get('logged_in'):
     pre_video_container = st.container()
     video_player_container = st.container()
 
-    if folder_selection == "초기화":
+    if folder_selection == "Default":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
     elif folder_selection == "'Hemostasis 일반' 강의":
@@ -111,7 +111,7 @@ if st.session_state.get('logged_in'):
         st.session_state.previous_folder_selection = folder_selection
         pre_video_container.empty()
         video_player_container.empty()
-        folder_selection == "초기화"
+        folder_selection == "Default"
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     pre_video_container = st.container()
@@ -154,7 +154,7 @@ if st.session_state.get('logged_in'):
             video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
-        if folder_selection == "초기화":
+        if folder_selection == "Default":
             st.empty()  # 동영상 플레이어 제거
 
     instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
@@ -186,7 +186,7 @@ if st.session_state.get('logged_in'):
                 video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
 
-        if folder_selection == "초기화":
+        if folder_selection == "Default":
             st.empty()  # 동영상 플레이어 제거
                 
         st.sidebar.divider()
