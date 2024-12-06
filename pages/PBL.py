@@ -54,30 +54,6 @@ if st.session_state.get('logged_in'):
                 file_names.append(file_name)
         return file_names
 
-    # # Function to read file content from Firebase Storage
-    # def read_docx_file(bucket_name, file_name):
-    #     bucket = storage.bucket(bucket_name)
-    #     blob = bucket.blob(file_name)
-        
-    #     # Download the file to a temporary location
-    #     temp_file_path = "/tmp/tempfile.docx"
-    #     blob.download_to_filename(temp_file_path)
-        
-    #     # Read the content of the DOCX file
-    #     doc = docx.Document(temp_file_path)
-    #     full_text = []
-    #     for para in doc.paragraphs:
-    #         full_text.append(para.text)
-        
-    #     # Join the text into a single string
-    #     return '\n'.join(full_text)
-    
-    # # Function to get file content from Firebase Storage
-    # def get_file_content(bucket_name, directory, file_name):
-    #     bucket = storage.bucket(bucket_name)
-    #     blob = bucket.blob(directory + file_name)
-    #     return blob.download_as_bytes()
-
     # 메인 컨텐츠와 메시지 창을 위한 컨테이너 생성
     main_container = st.container()
     message_container = st.container()
@@ -136,11 +112,6 @@ if st.session_state.get('logged_in'):
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
             log_blob = bucket.blob(f'logs/{user_email}_{access_date}_{selected_case_file}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
-            # # Include the directory in the path when reading the file
-            # case_full_path = case_directory + selected_case_file
-            # prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
-            # st.session_state['prompt'] = prompt
         
             assistant_id = "asst_MPsBiEOCzmgElfGwHf757F1b"
            
@@ -151,34 +122,13 @@ if st.session_state.get('logged_in'):
 
         thread_id = st.session_state.thread_id
 
-        # # 파일이 선택되었을 때 초기 프롬프트 설정
-        # if selected_case_file and 'initial_prompt_sent' not in st.session_state:
-        #     # 새로운 thread 생성
-        #     thread = client.beta.threads.create()
-        #     st.session_state.thread_id = thread.id
-            
         # 초기 프롬프트 전송
         message = client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
             role="assistant",
             content="준비되었습니다."
             )
-            
-        #     # 초기 실행
-        #     run = client.beta.threads.runs.create(
-        #         thread_id=st.session_state.thread_id,
-        #         assistant_id=assistant_id,
-        #     )
-            
-        #     # 실행 완료 대기
-        #     while run.status != "completed":
-        #         time.sleep(1)
-        #         run = client.beta.threads.runs.retrieve(
-        #             thread_id=st.session_state.thread_id,
-        #             run_id=run.id
-        #         )
-            
-        #     st.session_state.initial_prompt_sent = True
+
 
     # col1과 col2 아래에 입력창 추가
     input_container = st.container()
