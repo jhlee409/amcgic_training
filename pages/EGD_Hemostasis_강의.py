@@ -167,11 +167,11 @@ if st.session_state.get('logged_in'):
         access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # 로그 내용을 문자열로 생성
-        log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: EGD Hemostasis training\n"
+        log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {folder_selection}\n"
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-        log_blob = bucket.blob(f'logs/{user_email}_{access_date}_EGD Hemostasis training.txt')  # 로그 파일 경로 설정
+        log_blob = bucket.blob(f'logs/{user_email}_Hemostasis_{folder_selection}.txt')  # 로그 파일 경로 설정
         log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
         if st.session_state.get('selected_video_file'):
