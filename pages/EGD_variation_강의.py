@@ -7,7 +7,6 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
-from flask import Flask, request, jsonify
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Varation", layout="wide")
@@ -213,6 +212,19 @@ if st.session_state.get('logged_in'):
     st.header("EGD variation")
     st.write("아래 출석 확인 버튼을 눌러야 출석이 확인됩니다.")
     
+    # 출석 확인 버튼 추가
+    if st.button("출석 확인"):
+        # 사용자 이메일과 접속 날짜 기록
+        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+        # 로그 내용을 문자열로 생성
+        log_entry = f"Email: {user_email}, Menu: EGD variation, Access Date: {access_date}\n"
+
+        # Firebase Storage에 로그 파일 업로드
+        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
+        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
         st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
@@ -226,7 +238,7 @@ if st.session_state.get('logged_in'):
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
 
-    # 로그아웃 버튼 생성.
+    # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
