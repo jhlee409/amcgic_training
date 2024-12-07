@@ -38,6 +38,18 @@ if st.session_state.get('logged_in'):
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
+    # 각 blob에서 파일 이�을 추출하는 함수 추가
+    def get_filename_from_blob(blob_path):
+        return blob_path.split('/')[-1]
+
+    # blob 정의 부분에서 �일 이름 저장
+    video_files = {
+        'a1': get_filename_from_blob("EGD_variation/맨_처음_보세요.mp4"),
+        'b1': get_filename_from_blob("EGD_variation/B1.mp4"),
+        'b2': get_filename_from_blob("EGD_variation/B2.mp4"),
+        # ... 기존 blob 정의는 �지
+    }
+
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
     video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
@@ -169,13 +181,24 @@ if st.session_state.get('logged_in'):
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
+        f'''
+        <a href="{video_url_a1}" 
+           onclick="trackVideoClick('{video_files['a1']}'); return true;" 
+           target="_blank">Link 1</a>
+        ''',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
+        f'''
+        <a href="{video_url_b1}" 
+           onclick="trackVideoClick('{video_files['b1']}'); return true;" 
+           target="_blank">Link 1</a>, 
+        <a href="{video_url_b2}" 
+           onclick="trackVideoClick('{video_files['b2']}'); return true;" 
+           target="_blank">Link 2</a>
+        ''',
         f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
         f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
         f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
@@ -228,8 +251,26 @@ if st.session_state.get('logged_in'):
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
-        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+        st.rerun()  # 페이지를 새로���침하여 로그인 화면으로 돌아감
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
+
+# JavaScript 코드 수정
+st.markdown("""
+<script>
+function trackVideoClick(videoFileName) {
+    const email = localStorage.getItem('userEmail');
+    const timestamp = new Date().toISOString();
+    const fileName = `${email}_EGD_variation_${videoFileName}.txt`;
+    
+    // Firebase Storage에 파일 저장
+    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef.child(fileName);
+    fileRef.putString(timestamp)
+        .then(() => console.log('Video click tracked'))
+        .catch((error) => console.error('Error tracking video:', error));
+}
+</script>
+""", unsafe_allow_html=True)
