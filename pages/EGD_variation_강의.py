@@ -167,45 +167,31 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
     ]
 
-    def create_video_link(video_url, video_path):
-        """비디오 링�를 생성하고 클릭 시 로그를 저장하는 함수"""
-        if st.link_button("Link", video_url):
-            user_email = st.session_state.get('user_email', 'unknown')
-            access_date = datetime.now().strftime("%Y-%m-%d")
-            video_filename = video_path.split('/')[-1]
-            
-            log_entry = f"Email: {user_email}, Menu: EGD variation, Video: {video_filename}, Access Date: {access_date}\n"
-            log_blob = bucket.blob(f'logs/{user_email}_EGD_variation_{video_filename}.txt')
-            log_blob.upload_from_string(log_entry, content_type='text/plain')
-            
-            return True
-        return False
-
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        create_video_link(video_url_a1, "EGD_variation/맨_처음_보세요.mp4"),
+        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'{create_video_link(video_url_b1, "EGD_variation/B1.mp4")}, {create_video_link(video_url_b2, "EGD_variation/B2.mp4")}',
-        f'{create_video_link(video_url_c1, "EGD_variation/C1.mp4")}, {create_video_link(video_url_c2, "EGD_variation/C2.mp4")}',
-        f'{create_video_link(video_url_d1, "EGD_variation/D1.mp4")}, {create_video_link(video_url_d2, "EGD_variation/D2.mp4")}',
-        f'{create_video_link(video_url_e1, "EGD_variation/E1.mp4")}, {create_video_link(video_url_e2, "EGD_variation/E2.mp4")}, {create_video_link(video_url_e3, "EGD_variation/E3.mp4")}, {create_video_link(video_url_e4, "EGD_variation/E4.mp4")}',
-        f'{create_video_link(video_url_f1, "EGD_variation/F1.mp4")}, {create_video_link(video_url_f2, "EGD_variation/F2.mp4")}, {create_video_link(video_url_f3, "EGD_variation/F3.mp4")}',
-        f'{create_video_link(video_url_g1, "EGD_variation/G1.mp4")}',
-        f'{create_video_link(video_url_h1, "EGD_variation/H1.mp4")}, {create_video_link(video_url_h2, "EGD_variation/H2.mp4")}',
-        f'{create_video_link(video_url_i1, "EGD_variation/I1.mp4")}, {create_video_link(video_url_i2, "EGD_variation/I2.mp4")}',
-        f'{create_video_link(video_url_j1, "EGD_variation/J1.mp4")}, {create_video_link(video_url_j2, "EGD_variation/J2.mp4")}, {create_video_link(video_url_j3, "EGD_variation/J3.mp4")}, {create_video_link(video_url_j4, "EGD_variation/J4.mp4")}, {create_video_link(video_url_j5, "EGD_variation/J5.mp4")}',
-        f'{create_video_link(video_url_k1, "EGD_variation/K1.mp4")}',
-        f'{create_video_link(video_url_l1, "EGD_variation/L1.mp4")}',
-        f'{create_video_link(video_url_m1, "EGD_variation/M1.mp4")}',
-        f'{create_video_link(video_url_n1, "EGD_variation/N1.mp4")}, {create_video_link(video_url_n2, "EGD_variation/N2.mp4")}, {create_video_link(video_url_n3, "EGD_variation/N3.mp4")}',
-        f'{create_video_link(video_url_o1, "EGD_variation/O1.mp4")}, {create_video_link(video_url_o2, "EGD_variation/O2.mp4")}, {create_video_link(video_url_o3, "EGD_variation/O3.mp4")}',
-        f'{create_video_link(video_url_p1, "EGD_variation/P1.mp4")}, {create_video_link(video_url_p2, "EGD_variation/P2.mp4")}',
-        f'{create_video_link(video_url_q1, "EGD_variation/Q1.mp4")}, {create_video_link(video_url_q2, "EGD_variation/Q2.mp4")}, {create_video_link(video_url_q3, "EGD_variation/Q3.mp4")}',
-        f'{create_video_link(video_url_r1, "EGD_variation/R1.mp4")}, {create_video_link(video_url_r2, "EGD_variation/R2.mp4")}, {create_video_link(video_url_r3, "EGD_variation/R3.mp4")}',
+        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
+        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
+        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
+        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
+        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
+        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
+        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
+        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
+        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
+        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
+        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
+        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
+        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
+        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
+        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
+        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
+        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
     ]
 
     # Add custom CSS styles
@@ -224,14 +210,30 @@ if st.session_state.get('logged_in'):
 
     # 제목과 23개 항목 출력
     st.header("EGD variation")
-    st.write("각 상황에 맞는 동영상 링크를 클릭하시면 됩니다.")
+    st.write("아래 출석 확인 버튼을 눌러야 출석이 확인됩니다.")
+    
+    # 출석 확인 버튼 추가
+    if st.button("출석 확인"):
+        # 사용자 이메일과 접속 날짜 기록
+        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-    # 데이터 표시
+        # 로그 내용을 문자열로 생성
+        log_entry = f"Email: {user_email}, Menu: EGD variation, Access Date: {access_date}\n"
+
+        # Firebase Storage에 로그 파일 업로드
+        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
+        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
+    with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
+        st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
+        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
+
     for idx, item in enumerate(data):
         cols = st.columns([2, 3])
         cols[0].write(item)
         if idx < len(markdown_texts):
-            cols[1].write(markdown_texts[idx])
+            cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
