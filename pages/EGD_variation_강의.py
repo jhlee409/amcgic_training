@@ -170,39 +170,60 @@ if st.session_state.get('logged_in'):
     # JavaScript 함수를 포함한 HTML 코드 추가
     st.markdown("""
     <script>
-    async function logVideoAccess(videoName) {
-        const userEmail = sessionStorage.getItem('user_email');
+    function logVideoAccess(videoName) {
+        // 현재 세션의 user_email 가져오기
+        const userEmail = window.sessionStorage.getItem('user_email');
         const date = new Date().toISOString().split('T')[0];
-        const logEntry = `Email: ${userEmail}, Menu: EGD variation, Video: ${videoName}, Access Date: ${date}`;
         
-        try {
-            const response = await fetch('/_stcore/upload_log', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    email: userEmail,
-                    video: videoName,
-                    date: date
-                })
-            });
-        } catch (error) {
-            console.error('Error logging video access:', error);
-        }
+        // Python 함수 호출을 위한 커스텀 이벤트 발생
+        const event = new CustomEvent('streamlit:logVideo', {
+            detail: {
+                email: userEmail,
+                video: videoName,
+                date: date
+            }
+        });
+        window.dispatchEvent(event);
+        
+        return true;
     }
     </script>
     """, unsafe_allow_html=True)
 
+    # Python 쪽에서 로그 저장 함수 추가
+    def save_video_log(user_email, video_name):
+        try:
+            access_date = datetime.now().strftime("%Y-%m-%d")
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            
+            # 로그 파일 경로 설정
+            log_path = f'logs/{user_email}_EGD_variation_{video_name}_{access_date}.txt'
+            log_blob = bucket.blob(log_path)
+            
+            # 로그 내용 생�
+            log_content = f"Email: {user_email}, Menu: EGD variation, Video: {video_name}, Access Date: {access_date}"
+            
+            # 로그 파일 업로드
+            log_blob.upload_from_string(log_content, content_type='text/plain')
+            
+            return True
+        except Exception as e:
+            st.error(f"로그 저장 중 오류 발생: {str(e)}")
+            return False
+
     # markdown_texts 리스트 수�
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank" onclick="logVideoAccess(\'A1\')">Link 1</a>',
+        f'''<a href="{video_url_a1}" target="_blank" 
+            onclick="logVideoAccess('A1'); save_video_log('{st.session_state.get('user_email')}', 'A1');">Link 1</a>''',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank" onclick="logVideoAccess(\'B1\')">Link 1</a>, <a href="{video_url_b2}" target="_blank" onclick="logVideoAccess(\'B2\')">Link 2</a>',
+        f'''<a href="{video_url_b1}" target="_blank" 
+            onclick="logVideoAccess('B1'); save_video_log('{st.session_state.get('user_email')}', 'B1');">Link 1</a>,
+            <a href="{video_url_b2}" target="_blank" 
+            onclick="logVideoAccess('B2'); save_video_log('{st.session_state.get('user_email')}', 'B2');">Link 2</a>''',
         f'<a href="{video_url_c1}" target="_blank" onclick="logVideoAccess(\'C1\')">Link 1</a>, <a href="{video_url_c2}" target="_blank" onclick="logVideoAccess(\'C2\')">Link 2</a>',
         f'<a href="{video_url_d1}" target="_blank" onclick="logVideoAccess(\'D1\')">Link 1</a>, <a href="{video_url_d2}" target="_blank" onclick="logVideoAccess(\'D2\')">Link 1</a>',
         f'<a href="{video_url_e1}" target="_blank" onclick="logVideoAccess(\'E1\')">Link 1</a>, <a href="{video_url_e2}" target="_blank" onclick="logVideoAccess(\'E2\')">Link 2</a>, <a href="{video_url_e3}" target="_blank" onclick="logVideoAccess(\'E3\')">Link 3</a>, <a href="{video_url_e4}" target="_blank" onclick="logVideoAccess(\'E4\')">Link 4</a>',
@@ -267,6 +288,18 @@ if st.session_state.get('logged_in'):
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+
+    # 페이지가 로드될 �� 실행될 JavaScript 이벤트 리스너 추가
+    st.markdown("""
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('streamlit:logVideo', function(e) {
+            const detail = e.detail;
+            save_video_log(detail.email, detail.video);
+        });
+    });
+    </script>
+    """, unsafe_allow_html=True)
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
