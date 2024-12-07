@@ -167,44 +167,45 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
     ]
 
-    def log_video_access(video_path):
-        """비디오 접� 로그를 저장하는 함수"""
-        user_email = st.session_state.get('user_email', 'unknown')
-        access_date = datetime.now().strftime("%Y-%m-%d")
-        
-        # EGD_variation/B1.mp4 형태에서 파일명만 추출
-        video_filename = video_path.split('/')[-1]
-        
-        log_entry = f"Email: {user_email}, Menu: EGD variation, Video: {video_filename}, Access Date: {access_date}\n"
-        log_blob = bucket.blob(f'logs/{user_email}_EGD_variation_{video_filename}.txt')
-        log_blob.upload_from_string(log_entry, content_type='text/plain')
+    def create_video_link(video_url, video_path):
+        """비디오 링�를 생성하고 클릭 시 로그를 저장하는 함수"""
+        if st.link_button("Link", video_url):
+            user_email = st.session_state.get('user_email', 'unknown')
+            access_date = datetime.now().strftime("%Y-%m-%d")
+            video_filename = video_path.split('/')[-1]
+            
+            log_entry = f"Email: {user_email}, Menu: EGD variation, Video: {video_filename}, Access Date: {access_date}\n"
+            log_blob = bucket.blob(f'logs/{user_email}_EGD_variation_{video_filename}.txt')
+            log_blob.upload_from_string(log_entry, content_type='text/plain')
+            
+            return True
+        return False
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/맨_처음_보세요.mp4\'); return true;">Link 1</a>',
+        create_video_link(video_url_a1, "EGD_variation/맨_처음_보세요.mp4"),
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/B1.mp4\'); return true;">Link 1</a>, ' +
-        f'<a href="{video_url_b2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/B2.mp4\'); return true;">Link 2</a>',
-        f'<a href="{video_url_c1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/C1.mp4\'); return true;">Link 1</a>, <a href="{video_url_c2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/C2.mp4\'); return true;">Link 2</a>',
-        f'<a href="{video_url_d1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/D1.mp4\'); return true;">Link 1</a>, <a href="{video_url_d2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/D2.mp4\'); return true;">Link 1</a>',
-        f'<a href="{video_url_e1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/E1.mp4\'); return true;">Link 1</a>, <a href="{video_url_e2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/E2.mp4\'); return true;">Link 2</a>, <a href="{video_url_e3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/E3.mp4\'); return true;">Link 3</a>, <a href="{video_url_e4}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/E4.mp4\'); return true;">Link 4</a>',
-        f'<a href="{video_url_f1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/F1.mp4\'); return true;">Link 1</a>, <a href="{video_url_f2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/F2.mp4\'); return true;">Link 2</a>, <a href="{video_url_f3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/F3.mp4\'); return true;">Link 3</a>',
-        f'<a href="{video_url_g1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/G1.mp4\'); return true;">Link 1</a>',
-        f'<a href="{video_url_h1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/H1.mp4\'); return true;">Link 1</a>, <a href="{video_url_h2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/H2.mp4\'); return true;">Link 2</a>',
-        f'<a href="{video_url_i1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/I1.mp4\'); return true;">Link 1</a>, <a href="{video_url_i2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/I2.mp4\'); return true;">Link 2</a>',
-        f'<a href="{video_url_j1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/J1.mp4\'); return true;">Link 1</a>, <a href="{video_url_j2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/J2.mp4\'); return true;">Link 2</a>, <a href="{video_url_j3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/J3.mp4\'); return true;">Link 3</a>, <a href="{video_url_j4}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/J4.mp4\'); return true;">Link 4</a>, <a href="{video_url_j5}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/J5.mp4\'); return true;">Link 5</a>',
-        f'<a href="{video_url_k1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/K1.mp4\'); return true;">Link 1</a>',
-        f'<a href="{video_url_l1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/L1.mp4\'); return true;">Link 1</a>',
-        f'<a href="{video_url_m1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/M1.mp4\'); return true;">Link 1</a>',
-        f'<a href="{video_url_n1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/N1.mp4\'); return true;">Link 1</a>, <a href="{video_url_n2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/N2.mp4\'); return true;">Link 2</a>, <a href="{video_url_n3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/N3.mp4\'); return true;">Link 3</a>',
-        f'<a href="{video_url_o1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/O1.mp4\'); return true;">Link 1</a>, <a href="{video_url_o2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/O2.mp4\'); return true;">Link 2</a>, <a href="{video_url_o3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/O3.mp4\'); return true;">Link 3</a>',
-        f'<a href="{video_url_p1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/P1.mp4\'); return true;">Link 1</a>, <a href="{video_url_p2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/P2.mp4\'); return true;">Link 2</a>',
-        f'<a href="{video_url_q1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/Q1.mp4\'); return true;">Link 1</a>, <a href="{video_url_q2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/Q2.mp4\'); return true;">Link 2</a>, <a href="{video_url_q3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/Q3.mp4\'); return true;">Link 3</a>',
-        f'<a href="{video_url_r1}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/R1.mp4\'); return true;">Link 1</a>, <a href="{video_url_r2}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/R2.mp4\'); return true;">Link 2</a>, <a href="{video_url_r3}" target="_blank" onclick="fetch(\'/?log_video=EGD_variation/R3.mp4\'); return true;">Link 3</a>',
+        f'{create_video_link(video_url_b1, "EGD_variation/B1.mp4")}, {create_video_link(video_url_b2, "EGD_variation/B2.mp4")}',
+        f'{create_video_link(video_url_c1, "EGD_variation/C1.mp4")}, {create_video_link(video_url_c2, "EGD_variation/C2.mp4")}',
+        f'{create_video_link(video_url_d1, "EGD_variation/D1.mp4")}, {create_video_link(video_url_d2, "EGD_variation/D2.mp4")}',
+        f'{create_video_link(video_url_e1, "EGD_variation/E1.mp4")}, {create_video_link(video_url_e2, "EGD_variation/E2.mp4")}, {create_video_link(video_url_e3, "EGD_variation/E3.mp4")}, {create_video_link(video_url_e4, "EGD_variation/E4.mp4")}',
+        f'{create_video_link(video_url_f1, "EGD_variation/F1.mp4")}, {create_video_link(video_url_f2, "EGD_variation/F2.mp4")}, {create_video_link(video_url_f3, "EGD_variation/F3.mp4")}',
+        f'{create_video_link(video_url_g1, "EGD_variation/G1.mp4")}',
+        f'{create_video_link(video_url_h1, "EGD_variation/H1.mp4")}, {create_video_link(video_url_h2, "EGD_variation/H2.mp4")}',
+        f'{create_video_link(video_url_i1, "EGD_variation/I1.mp4")}, {create_video_link(video_url_i2, "EGD_variation/I2.mp4")}',
+        f'{create_video_link(video_url_j1, "EGD_variation/J1.mp4")}, {create_video_link(video_url_j2, "EGD_variation/J2.mp4")}, {create_video_link(video_url_j3, "EGD_variation/J3.mp4")}, {create_video_link(video_url_j4, "EGD_variation/J4.mp4")}, {create_video_link(video_url_j5, "EGD_variation/J5.mp4")}',
+        f'{create_video_link(video_url_k1, "EGD_variation/K1.mp4")}',
+        f'{create_video_link(video_url_l1, "EGD_variation/L1.mp4")}',
+        f'{create_video_link(video_url_m1, "EGD_variation/M1.mp4")}',
+        f'{create_video_link(video_url_n1, "EGD_variation/N1.mp4")}, {create_video_link(video_url_n2, "EGD_variation/N2.mp4")}, {create_video_link(video_url_n3, "EGD_variation/N3.mp4")}',
+        f'{create_video_link(video_url_o1, "EGD_variation/O1.mp4")}, {create_video_link(video_url_o2, "EGD_variation/O2.mp4")}, {create_video_link(video_url_o3, "EGD_variation/O3.mp4")}',
+        f'{create_video_link(video_url_p1, "EGD_variation/P1.mp4")}, {create_video_link(video_url_p2, "EGD_variation/P2.mp4")}',
+        f'{create_video_link(video_url_q1, "EGD_variation/Q1.mp4")}, {create_video_link(video_url_q2, "EGD_variation/Q2.mp4")}, {create_video_link(video_url_q3, "EGD_variation/Q3.mp4")}',
+        f'{create_video_link(video_url_r1, "EGD_variation/R1.mp4")}, {create_video_link(video_url_r2, "EGD_variation/R2.mp4")}, {create_video_link(video_url_r3, "EGD_variation/R3.mp4")}',
     ]
 
     # Add custom CSS styles
@@ -225,16 +226,12 @@ if st.session_state.get('logged_in'):
     st.header("EGD variation")
     st.write("각 상황에 맞는 동영상 링크를 클릭하시면 됩니다.")
 
-    # 쿼리 파라�터 확인
-    query_params = st.experimental_get_query_params()
-    if 'log_video' in query_params:
-        log_video_access(query_params['log_video'][0])
-
+    # 데이터 표시
     for idx, item in enumerate(data):
         cols = st.columns([2, 3])
         cols[0].write(item)
         if idx < len(markdown_texts):
-            cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
+            cols[1].write(markdown_texts[idx])
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
