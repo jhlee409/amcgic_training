@@ -182,8 +182,8 @@ if st.session_state.get('logged_in'):
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
         f'''
-        <a href="{video_url_a1}" 
-           onclick="return trackVideoClick('{video_files['a1']}', '{video_url_a1}');" 
+        <a href="#" 
+           onclick="handleVideoClick('{video_files['a1']}', '{video_url_a1}', '{st.session_state.get('user_email', 'unknown')}'); return false;" 
            target="_blank">Link 1</a>
         ''',
         '-',
@@ -192,11 +192,11 @@ if st.session_state.get('logged_in'):
         '-',
         '-',
         f'''
-        <a href="{video_url_b1}" 
-           onclick="return trackVideoClick('{video_files['b1']}', '{video_url_b1}');" 
+        <a href="#" 
+           onclick="handleVideoClick('{video_files['b1']}', '{video_url_b1}', '{st.session_state.get('user_email', 'unknown')}'); return false;" 
            target="_blank">Link 1</a>, 
-        <a href="{video_url_b2}" 
-           onclick="return trackVideoClick('{video_files['b2']}', '{video_url_b2}');" 
+        <a href="#" 
+           onclick="handleVideoClick('{video_files['b2']}', '{video_url_b2}', '{st.session_state.get('user_email', 'unknown')}'); return false;" 
            target="_blank">Link 2</a>
         ''',
         f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
@@ -257,7 +257,7 @@ else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
 
-# Firebase 초기화 스��립트와 JavaScript 코드 수정
+# Firebase 초기화 스립트와 JavaScript 코드 수정
 st.markdown(f"""
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js"></script>
@@ -275,28 +275,54 @@ const firebaseConfig = {{
 // Firebase 초기화
 firebase.initializeApp(firebaseConfig);
 
-function trackVideoClick(videoFileName, videoUrl) {{
-    const email = localStorage.getItem('userEmail');
-    const timestamp = new Date().toISOString();
-    const fileName = `${{email}}_EGD_variation_${{videoFileName}}.txt`;
-    
-    // Firebase Storage 참조 생성
-    const storage = firebase.storage();
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(fileName);
-    
-    // 파일 업로드
-    fileRef.putString(timestamp)
-        .then(() => {{
-            console.log('Video click tracked successfully');
+function handleVideoClick(videoFileName, videoUrl, userEmail) {
+    // 서버에 로그 저장 요청
+    fetch('/_stcore/upload_log', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: userEmail,
+            video_file: videoFileName,
+            timestamp: new Date().toISOString()
+        })
+    })
+    .then(response => {
+        if (response.ok) {
             window.open(videoUrl, '_blank');
-        }})
-        .catch((error) => {{
-            console.error('Error tracking video:', error);
-            window.open(videoUrl, '_blank');
-        }});
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        window.open(videoUrl, '_blank');
+    });
     
     return false;
-}}
+}
 </script>
 """, unsafe_allow_html=True)
+
+# 로그 저장을 위한 Streamlit 핸들러 추가
+def save_video_log():
+    try:
+        data = st.experimental_get_query_params()
+        user_email = data.get('email', ['unknown'])[0]
+        video_file = data.get('video_file', ['unknown'])[0]
+        timestamp = data.get('timestamp', [datetime.now().isoformat()])[0]
+        
+        log_entry = f"Email: {user_email}, Timestamp: {timestamp}\n"
+        
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        log_blob = bucket.blob(f'logs/{user_email}_EGD_variation_{video_file}.txt')
+        log_blob.upload_from_string(log_entry, content_type='text/plain')
+        
+        return {"status": "success"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# 핸들러 등록
+if 'logged_in' in st.session_state and st.session_state.logged_in:
+    st.experimental_set_query_params(
+        _stcore_upload_log=save_video_log
+    )
