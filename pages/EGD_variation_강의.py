@@ -7,6 +7,7 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
+import streamlit.components.v1 as components
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Varation", layout="wide")
@@ -35,7 +36,7 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
+    # Firebase Storage��서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
     # 각 blob에서 파일 이름을 추출하는 함수 추가
@@ -170,7 +171,7 @@ if st.session_state.get('logged_in'):
         'fundus, HB 경계부위가 심하게 꺽어져 있어, antrum 쪽으로 진입이 안된다 I',
         'pyloric ring이 계속 닫혀있고 움직여서 scope의 통과가 어렵다 J',
         '십이지장 벽에 닿기만 하고, SDA의 위치를 찾지 못하겠다 K',
-        'bulb에 들어가 보니, SDA가 사진 상 우측이 아니라 좌측에 있다 L',
+        'bulb에 들어가 보니, SDA가 사�� 상 우측이 아니라 좌측에 있다 L',
         '제2부에서 scope를 당기면 전진해야 하는데, 전진하지 않고 그냥 빠진다 M',
         '십이지장 2nd portion인데, ampulla가 안보이는데 prox 쪽에 있는 것 같다 N',
         'minor papilla를 AOP로 착각하지 않으려면 O',
@@ -233,7 +234,7 @@ if st.session_state.get('logged_in'):
 
     # 제목과 23개 항목 출력
     st.header("EGD variation")
-    st.write("아래 출석 확인 버튼을 눌러야 출석이 확인됩니다.")
+    st.write("아래 출��� 확인 버튼을 눌러야 출석이 확인됩니다.")
     
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
@@ -257,12 +258,11 @@ else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
 
-# Firebase 초기화 스립트와 JavaScript 코드 수정
-st.markdown(f"""
+# Firebase 초기화 스��립트와 JavaScript 코드 수정
+components.html(f"""
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js"></script>
 <script>
-// Firebase 초기화
 const firebaseConfig = {{
     apiKey: "{st.secrets['firebase_api_key']}",
     authDomain: "{st.secrets['firebase_auth_domain']}",
@@ -272,36 +272,34 @@ const firebaseConfig = {{
     appId: "{st.secrets['firebase_app_id']}"
 }};
 
-// Firebase 초기화
 firebase.initializeApp(firebaseConfig);
 
-function handleVideoClick(videoFileName, videoUrl, userEmail) {
-    // 서버에 로그 저장 요청
-    fetch('/_stcore/upload_log', {
+function handleVideoClick(videoFileName, videoUrl, userEmail) {{
+    fetch('/_stcore/upload_log', {{
         method: 'POST',
-        headers: {
+        headers: {{
             'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+        }},
+        body: JSON.stringify({{
             email: userEmail,
             video_file: videoFileName,
             timestamp: new Date().toISOString()
-        })
-    })
-    .then(response => {
-        if (response.ok) {
+        }})
+    }})
+    .then(response => {{
+        if (response.ok) {{
             window.open(videoUrl, '_blank');
-        }
-    })
-    .catch(error => {
+        }}
+    }})
+    .catch(error => {{
         console.error('Error:', error);
         window.open(videoUrl, '_blank');
-    });
+    }});
     
     return false;
-}
+}}
 </script>
-""", unsafe_allow_html=True)
+""", height=0)
 
 # 로그 저장을 위한 Streamlit 핸들러 추가
 def save_video_log():
