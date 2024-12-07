@@ -210,7 +210,6 @@ if st.session_state.get('logged_in'):
 
     # 제목과 23개 항목 출력
     st.header("EGD variation")
-    st.write("아래 출석 확인 버튼을 눌러야 출석이 확인됩니다.")
     
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
