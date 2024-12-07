@@ -238,7 +238,7 @@ if st.session_state.get('logged_in'):
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
 
-    # 로그아웃 버튼 생성
+    # 로그아웃 버튼 생성.
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
