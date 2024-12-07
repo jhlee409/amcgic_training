@@ -145,7 +145,7 @@ if st.session_state.get('logged_in'):
         '가장 먼저 보세요: 전체 과정 해설 A',
         '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
         '- 환자가 과도한 retching을 해서 검사의 진행이 어려워요',
-        '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
+        '- 진정 내시경 시 환자가 너무 irritable���서 검사의 진행이 어려워요',
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
         '정상 위에서 Expert의 검사 전과정 B',
@@ -167,6 +167,27 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
     ]
 
+    # Firebase Storage에 비디오 �근 로그를 저장하는 함수
+    def save_video_access_log(video_url, user_email=None):
+        try:
+            if user_email is None:
+                user_email = st.session_state.get('user_email', 'unknown')
+            
+            # URL에서 파일 이름 추출
+            video_name = video_url.split('EGD_variation/')[-1].split('?')[0]
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            log_content = f"User: {user_email}\nAccessed video: {video_name}\nTime: {current_time}"
+            
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            log_blob = bucket.blob(f'logs/EGD_variation_{video_name}.txt')
+            log_blob.upload_from_string(log_content)
+            
+            return True
+        except Exception as e:
+            st.error(f"로그 저장 중 오류 발생: {str(e)}")
+            return False
+
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
         f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
@@ -175,23 +196,23 @@ if st.session_state.get('logged_in'):
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
-        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
-        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
-        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
-        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
-        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
-        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
-        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
-        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
-        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
-        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
-        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
-        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
-        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
-        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
-        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
-        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
+        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>',
+        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>',
+        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>',
+        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>',
+        f'<a href="{video_url_g1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>',
+        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>',
+        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>',
+        f'<a href="{video_url_k1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_l1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_m1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>',
+        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>',
+        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>',
+        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>',
+        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>',
     ]
 
     # Add custom CSS styles
@@ -246,3 +267,11 @@ if st.session_state.get('logged_in'):
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
+
+# Streamlit 앱에 엔드��인트 추가
+if 'logged_in' in st.session_state and st.session_state.logged_in:
+    # URL 파라미터 처리
+    query_params = st.experimental_get_query_params()
+    if 'video_url' in query_params:
+        video_url = query_params['video_url'][0]
+        save_video_access_log(video_url)
