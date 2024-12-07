@@ -7,7 +7,6 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
-import streamlit.components.v1 as components
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Varation", layout="wide")
@@ -36,20 +35,8 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Firebase Storage��서 MP4 파일의 URL을 검색합니다.
+    # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
-
-    # 각 blob에서 파일 이름을 추출하는 함수 추가
-    def get_filename_from_blob(blob_path):
-        return blob_path.split('/')[-1]
-
-    # blob 정의 부분에서 파일 이름 저장
-    video_files = {
-        'a1': get_filename_from_blob("EGD_variation/맨_처음_보세요.mp4"),
-        'b1': get_filename_from_blob("EGD_variation/B1.mp4"),
-        'b2': get_filename_from_blob("EGD_variation/B2.mp4"),
-        # ... 기존 blob 정의는 그대로
-    }
 
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
     video_url_a1 = blob_a1.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
@@ -157,7 +144,7 @@ if st.session_state.get('logged_in'):
     data = [
         '가장 먼저 보세요: 전체 과정 해설 A',
         '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
-        '- 환자가 과도한 retching을 해서 검의 진행이 어려워요',
+        '- 환자가 과도한 retching을 해서 검사의 진행이 어려워요',
         '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
@@ -171,7 +158,7 @@ if st.session_state.get('logged_in'):
         'fundus, HB 경계부위가 심하게 꺽어져 있어, antrum 쪽으로 진입이 안된다 I',
         'pyloric ring이 계속 닫혀있고 움직여서 scope의 통과가 어렵다 J',
         '십이지장 벽에 닿기만 하고, SDA의 위치를 찾지 못하겠다 K',
-        'bulb에 들어가 보니, SDA가 사�� 상 우측이 아니라 좌측에 있다 L',
+        'bulb에 들어가 보니, SDA가 사진 상 우측이 아니라 좌측에 있다 L',
         '제2부에서 scope를 당기면 전진해야 하는데, 전진하지 않고 그냥 빠진다 M',
         '십이지장 2nd portion인데, ampulla가 안보이는데 prox 쪽에 있는 것 같다 N',
         'minor papilla를 AOP로 착각하지 않으려면 O',
@@ -182,24 +169,13 @@ if st.session_state.get('logged_in'):
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'''
-        <a href="#" 
-           onclick="handleVideoClick('{video_files['a1']}', '{video_url_a1}', '{st.session_state.get('user_email', 'unknown')}'); return false;" 
-           target="_blank">Link 1</a>
-        ''',
+        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'''
-        <a href="#" 
-           onclick="handleVideoClick('{video_files['b1']}', '{video_url_b1}', '{st.session_state.get('user_email', 'unknown')}'); return false;" 
-           target="_blank">Link 1</a>, 
-        <a href="#" 
-           onclick="handleVideoClick('{video_files['b2']}', '{video_url_b2}', '{st.session_state.get('user_email', 'unknown')}'); return false;" 
-           target="_blank">Link 2</a>
-        ''',
+        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
         f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
         f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
         f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
@@ -234,11 +210,24 @@ if st.session_state.get('logged_in'):
 
     # 제목과 23개 항목 출력
     st.header("EGD variation")
-    st.write("아래 출��� 확인 버튼을 눌러야 출석이 확인됩니다.")
+    st.write("아래 출석 확인 버튼을 눌러야 출석이 확인됩니다.")
     
+    # 출석 확인 버튼 추가
+    if st.button("출석 확인"):
+        # 사용자 이메일과 접속 날짜 기록
+        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+        # 로그 내용을 문자열로 생성
+        log_entry = f"Email: {user_email}, Menu: EGD variation, Access Date: {access_date}\n"
+
+        # Firebase Storage에 로그 파일 업로드
+        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_{access_date}.txt')  # 로그 파일 경로 설정
+        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
-        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
+        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
 
     for idx, item in enumerate(data):
         cols = st.columns([2, 3])
@@ -252,75 +241,8 @@ if st.session_state.get('logged_in'):
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
-        st.rerun()  # 페이지를 새로 새침하여 로그인 화면으로 돌아감
+        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
-
-# Firebase 초기화 스��립트와 JavaScript 코드 수정
-components.html(f"""
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js"></script>
-<script>
-const firebaseConfig = {{
-    apiKey: "{st.secrets['firebase_api_key']}",
-    authDomain: "{st.secrets['firebase_auth_domain']}",
-    projectId: "{st.secrets['project_id']}",
-    storageBucket: "amcgi-bulletin.appspot.com",
-    messagingSenderId: "{st.secrets['firebase_messaging_sender_id']}",
-    appId: "{st.secrets['firebase_app_id']}"
-}};
-
-firebase.initializeApp(firebaseConfig);
-
-function handleVideoClick(videoFileName, videoUrl, userEmail) {{
-    fetch('/_stcore/upload_log', {{
-        method: 'POST',
-        headers: {{
-            'Content-Type': 'application/json',
-        }},
-        body: JSON.stringify({{
-            email: userEmail,
-            video_file: videoFileName,
-            timestamp: new Date().toISOString()
-        }})
-    }})
-    .then(response => {{
-        if (response.ok) {{
-            window.open(videoUrl, '_blank');
-        }}
-    }})
-    .catch(error => {{
-        console.error('Error:', error);
-        window.open(videoUrl, '_blank');
-    }});
-    
-    return false;
-}}
-</script>
-""", height=0)
-
-# 로그 저장을 위한 Streamlit 핸들러 추가
-def save_video_log():
-    try:
-        data = st.experimental_get_query_params()
-        user_email = data.get('email', ['unknown'])[0]
-        video_file = data.get('video_file', ['unknown'])[0]
-        timestamp = data.get('timestamp', [datetime.now().isoformat()])[0]
-        
-        log_entry = f"Email: {user_email}, Timestamp: {timestamp}\n"
-        
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        log_blob = bucket.blob(f'logs/{user_email}_EGD_variation_{video_file}.txt')
-        log_blob.upload_from_string(log_entry, content_type='text/plain')
-        
-        return {"status": "success"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-# 핸들러 등록
-if 'logged_in' in st.session_state and st.session_state.logged_in:
-    st.experimental_set_query_params(
-        _stcore_upload_log=save_video_log
-    )
