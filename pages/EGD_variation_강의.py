@@ -169,29 +169,29 @@ if st.session_state.get('logged_in'):
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="#" onclick="alert(\'EGD_variation/맨_처음_보세요.mp4\'); return false;">Link 1</a>',
+        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="#" onclick="alert(\'EGD_variation/B1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/B2.mp4\'); return false;">Link 2</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/C1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/C2.mp4\'); return false;">Link 2</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/D1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/D2.mp4\'); return false;">Link 2</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/E1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/E2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/E3.mp4\'); return false;">Link 3</a>, <a href="#" onclick="alert(\'EGD_variation/E4.mp4\'); return false;">Link 4</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/F1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/F2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/F3.mp4\'); return false;">Link 3</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/G1.mp4\'); return false;">Link 1</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/H1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/H2.mp4\'); return false;">Link 2</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/I1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/I2.mp4\'); return false;">Link 2</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/J1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/J2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/J3.mp4\'); return false;">Link 3</a>, <a href="#" onclick="alert(\'EGD_variation/J4.mp4\'); return false;">Link 4</a>, <a href="#" onclick="alert(\'EGD_variation/J5.mp4\'); return false;">Link 5</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/K1.mp4\'); return false;">Link 1</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/L1.mp4\'); return false;">Link 1</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/M1.mp4\'); return false;">Link 1</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/N1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/N2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/N3.mp4\'); return false;">Link 3</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/O1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/O2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/O3.mp4\'); return false;">Link 3</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/P1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/P2.mp4\'); return false;">Link 2</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/Q1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/Q2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/Q3.mp4\'); return false;">Link 3</a>',
-        f'<a href="#" onclick="alert(\'EGD_variation/R1.mp4\'); return false;">Link 1</a>, <a href="#" onclick="alert(\'EGD_variation/R2.mp4\'); return false;">Link 2</a>, <a href="#" onclick="alert(\'EGD_variation/R3.mp4\'); return false;">Link 3</a>',
+        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
+        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
+        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
+        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
+        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
+        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
+        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
+        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
+        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
+        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
+        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
+        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
+        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
+        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
+        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
+        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
+        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
     ]
 
     # Add custom CSS styles
