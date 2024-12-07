@@ -167,32 +167,68 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
     ]
 
+    # URL에서 파일 이름을 추출하는 함수 추가
+    def extract_filename_from_url(url):
+        # Firebase Storage URL에서 파일 이� 추출
+        # URL 예시: https://.../EGD_variation/filename.mp4?token=...
+        try:
+            # URL에서 EGD_variation/ 이후의 문자열을 찾음
+            start_idx = url.find('EGD_variation/')
+            if start_idx == -1:
+                return None
+            
+            # .mp4 확장자까지의 문자열을 추출
+            start_idx += len('EGD_variation/')
+            end_idx = url.find('.mp4', start_idx) + 4
+            return url[start_idx:end_idx]
+        except:
+            return None
+
+    # 파일 이름을 Firebase Storage에 저장하는 함수
+    def save_filename_to_storage(filename, bucket):
+        if filename:
+            current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
+            log_content = f"Accessed file: {filename} at {current_time}\n"
+            log_filename = f"EGD_variation_{filename}"
+            
+            # Firebase Storage에 저장
+            log_blob = bucket.blob(f'logs/{log_filename}.txt')
+            log_blob.upload_from_string(log_content)
+
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_a1}" onclick="fetch(\'/save_filename?url={video_url_a1}\'); return true;">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
-        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
-        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
-        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
-        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
-        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
-        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
-        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
-        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
-        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
-        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
-        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
-        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
-        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
-        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
-        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
-        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
+        f'<a href="{video_url_b1}" onclick="fetch(\'/save_filename?url={video_url_b1}\'); return true;">Link 1</a>, <a href="{video_url_b2}" onclick="fetch(\'/save_filename?url={video_url_b2}\'); return true;">Link 2</a>', #B
+        f'<a href="{video_url_c1}" onclick="fetch(\'/save_filename?url={video_url_c1}\'); return true;">Link 1</a>, <a href="{video_url_c2}" onclick="fetch(\'/save_filename?url={video_url_c2}\'); return true;">Link 2</a>', #C
+        f'<a href="{video_url_d1}" onclick="fetch(\'/save_filename?url={video_url_d1}\'); return true;">Link 1</a>, <a href="{video_url_d2}" onclick="fetch(\'/save_filename?url={video_url_d2}\'); return true;">Link 1</a>', #D
+        f'<a href="{video_url_e1}" onclick="fetch(\'/save_filename?url={video_url_e1}\'); return true;">Link 1</a>, <a href="{video_url_e2}" onclick="fetch(\'/save_filename?url={video_url_e2}\'); return true;">Link 2</a>, <a href="{video_url_e3}" onclick="fetch(\'/save_filename?url={video_url_e3}\'); return true;">Link 3</a>, <a href="{video_url_e4}" onclick="fetch(\'/save_filename?url={video_url_e4}\'); return true;">Link 4</a>', #E
+        f'<a href="{video_url_f1}" onclick="fetch(\'/save_filename?url={video_url_f1}\'); return true;">Link 1</a>, <a href="{video_url_f2}" onclick="fetch(\'/save_filename?url={video_url_f2}\'); return true;">Link 2</a>, <a href="{video_url_f3}" onclick="fetch(\'/save_filename?url={video_url_f3}\'); return true;">Link 3</a>', #F
+        f'<a href="{video_url_g1}" onclick="fetch(\'/save_filename?url={video_url_g1}\'); return true;">Link 1</a>', #G
+        f'<a href="{video_url_h1}" onclick="fetch(\'/save_filename?url={video_url_h1}\'); return true;">Link 1</a>, <a href="{video_url_h2}" onclick="fetch(\'/save_filename?url={video_url_h2}\'); return true;">Link 2</a>', #H
+        f'<a href="{video_url_i1}" onclick="fetch(\'/save_filename?url={video_url_i1}\'); return true;">Link 1</a>, <a href="{video_url_i2}" onclick="fetch(\'/save_filename?url={video_url_i2}\'); return true;">Link 2</a>', #I
+        f'<a href="{video_url_j1}" onclick="fetch(\'/save_filename?url={video_url_j1}\'); return true;">Link 1</a>, <a href="{video_url_j2}" onclick="fetch(\'/save_filename?url={video_url_j2}\'); return true;">Link 2</a>, <a href="{video_url_j3}" onclick="fetch(\'/save_filename?url={video_url_j3}\'); return true;">Link 3</a>, <a href="{video_url_j4}" onclick="fetch(\'/save_filename?url={video_url_j4}\'); return true;">Link 4</a>, <a href="{video_url_j5}" onclick="fetch(\'/save_filename?url={video_url_j5}\'); return true;">Link 5</a>', #J
+        f'<a href="{video_url_k1}" onclick="fetch(\'/save_filename?url={video_url_k1}\'); return true;">Link 1</a>', #K
+        f'<a href="{video_url_l1}" onclick="fetch(\'/save_filename?url={video_url_l1}\'); return true;">Link 1</a>', #L
+        f'<a href="{video_url_m1}" onclick="fetch(\'/save_filename?url={video_url_m1}\'); return true;">Link 1</a>', #M
+        f'<a href="{video_url_n1}" onclick="fetch(\'/save_filename?url={video_url_n1}\'); return true;">Link 1</a>, <a href="{video_url_n2}" onclick="fetch(\'/save_filename?url={video_url_n2}\'); return true;">Link 2</a>, <a href="{video_url_n3}" onclick="fetch(\'/save_filename?url={video_url_n3}\'); return true;">Link 3</a>', #N
+        f'<a href="{video_url_o1}" onclick="fetch(\'/save_filename?url={video_url_o1}\'); return true;">Link 1</a>, <a href="{video_url_o2}" onclick="fetch(\'/save_filename?url={video_url_o2}\'); return true;">Link 2</a>, <a href="{video_url_o3}" onclick="fetch(\'/save_filename?url={video_url_o3}\'); return true;">Link 3</a>', #O
+        f'<a href="{video_url_p1}" onclick="fetch(\'/save_filename?url={video_url_p1}\'); return true;">Link 1</a>, <a href="{video_url_p2}" onclick="fetch(\'/save_filename?url={video_url_p2}\'); return true;">Link 2</a>', #P
+        f'<a href="{video_url_q1}" onclick="fetch(\'/save_filename?url={video_url_q1}\'); return true;">Link 1</a>, <a href="{video_url_q2}" onclick="fetch(\'/save_filename?url={video_url_q2}\'); return true;">Link 2</a>, <a href="{video_url_q3}" onclick="fetch(\'/save_filename?url={video_url_q3}\'); return true;">Link 3</a>', #Q
+        f'<a href="{video_url_r1}" onclick="fetch(\'/save_filename?url={video_url_r1}\'); return true;">Link 1</a>, <a href="{video_url_r2}" onclick="fetch(\'/save_filename?url={video_url_r2}\'); return true;">Link 2</a>, <a href="{video_url_r3}" onclick="fetch(\'/save_filename?url={video_url_r3}\'); return true;">Link 3</a>', #R
     ]
+
+    # Streamlit 앱에 URL 처리 �드포인트 추가
+    def handle_url_click(url):
+        filename = extract_filename_from_url(url)
+        if filename:
+            save_filename_to_storage(filename, bucket)
+            return True
+        return False
 
     # Add custom CSS styles
     st.markdown("""
