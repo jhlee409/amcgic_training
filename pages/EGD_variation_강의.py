@@ -145,7 +145,7 @@ if st.session_state.get('logged_in'):
         '가장 먼저 보세요: 전체 과정 해설 A',
         '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
         '- 환자가 과도한 retching을 해서 검사의 진행이 어려워요',
-        '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
+        '- 진정 내시경 시 환자가 너무 irritable��서 검사의 진행이 어려워요',
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
         '정상 위에서 Expert의 검사 전과정 B',
@@ -169,7 +169,7 @@ if st.session_state.get('logged_in'):
 
     # URL에서 파일 이름을 추출하는 함수 추가
     def extract_filename_from_url(url):
-        # Firebase Storage URL에서 파일 이� 추출
+        # Firebase Storage URL에서 파일 이름 ��출
         # URL 예시: https://.../EGD_variation/filename.mp4?token=...
         try:
             # URL에서 EGD_variation/ 이후의 문자열을 찾음
@@ -184,51 +184,251 @@ if st.session_state.get('logged_in'):
         except:
             return None
 
-    # 파일 이름을 Firebase Storage에 저장하는 함수
-    def save_filename_to_storage(filename, bucket):
-        if filename:
-            current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-            log_content = f"Accessed file: {filename} at {current_time}\n"
-            log_filename = f"EGD_variation_{filename}"
-            
-            # Firebase Storage에 저장
-            log_blob = bucket.blob(f'logs/{log_filename}.txt')
-            log_blob.upload_from_string(log_content)
-
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="{video_url_a1}" onclick="fetch(\'/save_filename?url={video_url_a1}\'); return true;">Link 1</a>',
+        f'''<a href="{video_url_a1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>''',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" onclick="fetch(\'/save_filename?url={video_url_b1}\'); return true;">Link 1</a>, <a href="{video_url_b2}" onclick="fetch(\'/save_filename?url={video_url_b2}\'); return true;">Link 2</a>', #B
-        f'<a href="{video_url_c1}" onclick="fetch(\'/save_filename?url={video_url_c1}\'); return true;">Link 1</a>, <a href="{video_url_c2}" onclick="fetch(\'/save_filename?url={video_url_c2}\'); return true;">Link 2</a>', #C
-        f'<a href="{video_url_d1}" onclick="fetch(\'/save_filename?url={video_url_d1}\'); return true;">Link 1</a>, <a href="{video_url_d2}" onclick="fetch(\'/save_filename?url={video_url_d2}\'); return true;">Link 1</a>', #D
-        f'<a href="{video_url_e1}" onclick="fetch(\'/save_filename?url={video_url_e1}\'); return true;">Link 1</a>, <a href="{video_url_e2}" onclick="fetch(\'/save_filename?url={video_url_e2}\'); return true;">Link 2</a>, <a href="{video_url_e3}" onclick="fetch(\'/save_filename?url={video_url_e3}\'); return true;">Link 3</a>, <a href="{video_url_e4}" onclick="fetch(\'/save_filename?url={video_url_e4}\'); return true;">Link 4</a>', #E
-        f'<a href="{video_url_f1}" onclick="fetch(\'/save_filename?url={video_url_f1}\'); return true;">Link 1</a>, <a href="{video_url_f2}" onclick="fetch(\'/save_filename?url={video_url_f2}\'); return true;">Link 2</a>, <a href="{video_url_f3}" onclick="fetch(\'/save_filename?url={video_url_f3}\'); return true;">Link 3</a>', #F
-        f'<a href="{video_url_g1}" onclick="fetch(\'/save_filename?url={video_url_g1}\'); return true;">Link 1</a>', #G
-        f'<a href="{video_url_h1}" onclick="fetch(\'/save_filename?url={video_url_h1}\'); return true;">Link 1</a>, <a href="{video_url_h2}" onclick="fetch(\'/save_filename?url={video_url_h2}\'); return true;">Link 2</a>', #H
-        f'<a href="{video_url_i1}" onclick="fetch(\'/save_filename?url={video_url_i1}\'); return true;">Link 1</a>, <a href="{video_url_i2}" onclick="fetch(\'/save_filename?url={video_url_i2}\'); return true;">Link 2</a>', #I
-        f'<a href="{video_url_j1}" onclick="fetch(\'/save_filename?url={video_url_j1}\'); return true;">Link 1</a>, <a href="{video_url_j2}" onclick="fetch(\'/save_filename?url={video_url_j2}\'); return true;">Link 2</a>, <a href="{video_url_j3}" onclick="fetch(\'/save_filename?url={video_url_j3}\'); return true;">Link 3</a>, <a href="{video_url_j4}" onclick="fetch(\'/save_filename?url={video_url_j4}\'); return true;">Link 4</a>, <a href="{video_url_j5}" onclick="fetch(\'/save_filename?url={video_url_j5}\'); return true;">Link 5</a>', #J
-        f'<a href="{video_url_k1}" onclick="fetch(\'/save_filename?url={video_url_k1}\'); return true;">Link 1</a>', #K
-        f'<a href="{video_url_l1}" onclick="fetch(\'/save_filename?url={video_url_l1}\'); return true;">Link 1</a>', #L
-        f'<a href="{video_url_m1}" onclick="fetch(\'/save_filename?url={video_url_m1}\'); return true;">Link 1</a>', #M
-        f'<a href="{video_url_n1}" onclick="fetch(\'/save_filename?url={video_url_n1}\'); return true;">Link 1</a>, <a href="{video_url_n2}" onclick="fetch(\'/save_filename?url={video_url_n2}\'); return true;">Link 2</a>, <a href="{video_url_n3}" onclick="fetch(\'/save_filename?url={video_url_n3}\'); return true;">Link 3</a>', #N
-        f'<a href="{video_url_o1}" onclick="fetch(\'/save_filename?url={video_url_o1}\'); return true;">Link 1</a>, <a href="{video_url_o2}" onclick="fetch(\'/save_filename?url={video_url_o2}\'); return true;">Link 2</a>, <a href="{video_url_o3}" onclick="fetch(\'/save_filename?url={video_url_o3}\'); return true;">Link 3</a>', #O
-        f'<a href="{video_url_p1}" onclick="fetch(\'/save_filename?url={video_url_p1}\'); return true;">Link 1</a>, <a href="{video_url_p2}" onclick="fetch(\'/save_filename?url={video_url_p2}\'); return true;">Link 2</a>', #P
-        f'<a href="{video_url_q1}" onclick="fetch(\'/save_filename?url={video_url_q1}\'); return true;">Link 1</a>, <a href="{video_url_q2}" onclick="fetch(\'/save_filename?url={video_url_q2}\'); return true;">Link 2</a>, <a href="{video_url_q3}" onclick="fetch(\'/save_filename?url={video_url_q3}\'); return true;">Link 3</a>', #Q
-        f'<a href="{video_url_r1}" onclick="fetch(\'/save_filename?url={video_url_r1}\'); return true;">Link 1</a>, <a href="{video_url_r2}" onclick="fetch(\'/save_filename?url={video_url_r2}\'); return true;">Link 2</a>, <a href="{video_url_r3}" onclick="fetch(\'/save_filename?url={video_url_r3}\'); return true;">Link 3</a>', #R
+        f'''<a href="{video_url_b1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_b2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>''',
+        f'''<a href="{video_url_c1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_c2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>''',
+        f'''<a href="{video_url_d1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_d2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>''',
+        f'''<a href="{video_url_e1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_e2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_e3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>,
+            <a href="{video_url_e4}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 4</a>''',
+        f'''<a href="{video_url_f1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_f2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_f3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>''',
+        f'''<a href="{video_url_g1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>''',
+        f'''<a href="{video_url_h1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_h2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>''',
+        f'''<a href="{video_url_i1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_i2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>''',
+        f'''<a href="{video_url_j1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_j2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_j3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>,
+            <a href="{video_url_j4}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 4</a>,
+            <a href="{video_url_j5}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 5</a>''',
+        f'''<a href="{video_url_k1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>''',
+        f'''<a href="{video_url_l1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>''',
+        f'''<a href="{video_url_m1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>''',
+        f'''<a href="{video_url_n1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_n2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_n3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>''',
+        f'''<a href="{video_url_o1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_o2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_o3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>''',
+        f'''<a href="{video_url_p1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_p2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>''',
+        f'''<a href="{video_url_q1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_q2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_q3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>''',
+        f'''<a href="{video_url_r1}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 1</a>,
+            <a href="{video_url_r2}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 2</a>,
+            <a href="{video_url_r3}" onclick="
+            let filename = new URL(this.href).pathname.split('/').pop().split('?')[0];
+            let blob = bucket.blob('logs/EGD_variation_' + filename + '.txt');
+            blob.upload_from_string('Accessed at: ' + new Date().toISOString());
+            return true;">Link 3</a>''',
     ]
 
-    # Streamlit 앱에 URL 처리 �드포인트 추가
-    def handle_url_click(url):
-        filename = extract_filename_from_url(url)
-        if filename:
-            save_filename_to_storage(filename, bucket)
+    # 링크 클릭 핸들러 함수
+    def handle_link_click(url):
+        try:
+            filename = url.split('/')[-1].split('?')[0]  # URL에서 파일 이름 추출
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            log_content = f"Accessed at: {current_time}"
+            
+            # Firebase Storage에 로그 저장
+            log_blob = bucket.blob(f'logs/EGD_variation_{filename}.txt')
+            log_blob.upload_from_string(log_content)
+            
             return True
-        return False
+        except Exception as e:
+            st.error(f"Error saving log: {str(e)}")
+            return False
+
+    # Streamlit 컴포넌트에 JavaScript 이벤트 핸들러 추가
+    st.markdown("""
+    <script>
+    function handleLinkClick(url) {
+        fetch('/handle_link_click', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({url: url})
+        });
+        return true;
+    }
+    </script>
+    """, unsafe_allow_html=True)
 
     # Add custom CSS styles
     st.markdown("""
