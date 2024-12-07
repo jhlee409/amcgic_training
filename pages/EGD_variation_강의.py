@@ -145,7 +145,7 @@ if st.session_state.get('logged_in'):
         '가장 먼저 보세요: 전체 과정 해설 A',
         '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
         '- 환자가 과도한 retching을 해서 검사의 진행이 어려워요',
-        '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
+        '- 진정 내시경 시 환자가 너무 irritable��서 검사의 진행이 어려워요',
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
         '정상 위에서 Expert의 검사 전과정 B',
@@ -169,29 +169,29 @@ if st.session_state.get('logged_in'):
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_a1}" target="_blank" onclick="save_video_filename(\'{video_url_a1}\')">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
-        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
-        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
-        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
-        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
-        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
-        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
-        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
-        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
-        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
-        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
-        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
-        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
-        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
-        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
-        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
-        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
+        f'<a href="{video_url_b1}" target="_blank" onclick="save_video_filename(\'{video_url_b1}\')">Link 1</a>, <a href="{video_url_b2}" target="_blank" onclick="save_video_filename(\'{video_url_b2}\')">Link 2</a>', #B
+        f'<a href="{video_url_c1}" target="_blank" onclick="save_video_filename(\'{video_url_c1}\')">Link 1</a>, <a href="{video_url_c2}" target="_blank" onclick="save_video_filename(\'{video_url_c2}\')">Link 2</a>', #C
+        f'<a href="{video_url_d1}" target="_blank" onclick="save_video_filename(\'{video_url_d1}\')">Link 1</a>, <a href="{video_url_d2}" target="_blank" onclick="save_video_filename(\'{video_url_d2}\')">Link 1</a>', #D
+        f'<a href="{video_url_e1}" target="_blank" onclick="save_video_filename(\'{video_url_e1}\')">Link 1</a>, <a href="{video_url_e2}" target="_blank" onclick="save_video_filename(\'{video_url_e2}\')">Link 2</a>, <a href="{video_url_e3}" target="_blank" onclick="save_video_filename(\'{video_url_e3}\')">Link 3</a>, <a href="{video_url_e4}" target="_blank" onclick="save_video_filename(\'{video_url_e4}\')">Link 4</a>', #E
+        f'<a href="{video_url_f1}" target="_blank" onclick="save_video_filename(\'{video_url_f1}\')">Link 1</a>, <a href="{video_url_f2}" target="_blank" onclick="save_video_filename(\'{video_url_f2}\')">Link 2</a>, <a href="{video_url_f3}" target="_blank" onclick="save_video_filename(\'{video_url_f3}\')">Link 3</a>', #F
+        f'<a href="{video_url_g1}" target="_blank" onclick="save_video_filename(\'{video_url_g1}\')">Link 1</a>', #G
+        f'<a href="{video_url_h1}" target="_blank" onclick="save_video_filename(\'{video_url_h1}\')">Link 1</a>, <a href="{video_url_h2}" target="_blank" onclick="save_video_filename(\'{video_url_h2}\')">Link 2</a>', #H
+        f'<a href="{video_url_i1}" target="_blank" onclick="save_video_filename(\'{video_url_i1}\')">Link 1</a>, <a href="{video_url_i2}" target="_blank" onclick="save_video_filename(\'{video_url_i2}\')">Link 2</a>', #I
+        f'<a href="{video_url_j1}" target="_blank" onclick="save_video_filename(\'{video_url_j1}\')">Link 1</a>, <a href="{video_url_j2}" target="_blank" onclick="save_video_filename(\'{video_url_j2}\')">Link 2</a>, <a href="{video_url_j3}" target="_blank" onclick="save_video_filename(\'{video_url_j3}\')">Link 3</a>, <a href="{video_url_j4}" target="_blank" onclick="save_video_filename(\'{video_url_j4}\')">Link 4</a>, <a href="{video_url_j5}" target="_blank" onclick="save_video_filename(\'{video_url_j5}\')">Link 5</a>', #J
+        f'<a href="{video_url_k1}" target="_blank" onclick="save_video_filename(\'{video_url_k1}\')">Link 1</a>', #K
+        f'<a href="{video_url_l1}" target="_blank" onclick="save_video_filename(\'{video_url_l1}\')">Link 1</a>', #L
+        f'<a href="{video_url_m1}" target="_blank" onclick="save_video_filename(\'{video_url_m1}\')">Link 1</a>', #M
+        f'<a href="{video_url_n1}" target="_blank" onclick="save_video_filename(\'{video_url_n1}\')">Link 1</a>, <a href="{video_url_n2}" target="_blank" onclick="save_video_filename(\'{video_url_n2}\')">Link 2</a>, <a href="{video_url_n3}" target="_blank" onclick="save_video_filename(\'{video_url_n3}\')">Link 3</a>', #N
+        f'<a href="{video_url_o1}" target="_blank" onclick="save_video_filename(\'{video_url_o1}\')">Link 1</a>, <a href="{video_url_o2}" target="_blank" onclick="save_video_filename(\'{video_url_o2}\')">Link 2</a>, <a href="{video_url_o3}" target="_blank" onclick="save_video_filename(\'{video_url_o3}\')">Link 3</a>', #O
+        f'<a href="{video_url_p1}" target="_blank" onclick="save_video_filename(\'{video_url_p1}\')">Link 1</a>, <a href="{video_url_p2}" target="_blank" onclick="save_video_filename(\'{video_url_p2}\')">Link 2</a>', #P
+        f'<a href="{video_url_q1}" target="_blank" onclick="save_video_filename(\'{video_url_q1}\')">Link 1</a>, <a href="{video_url_q2}" target="_blank" onclick="save_video_filename(\'{video_url_q2}\')">Link 2</a>, <a href="{video_url_q3}" target="_blank" onclick="save_video_filename(\'{video_url_q3}\')">Link 3</a>', #Q
+        f'<a href="{video_url_r1}" target="_blank" onclick="save_video_filename(\'{video_url_r1}\')">Link 1</a>, <a href="{video_url_r2}" target="_blank" onclick="save_video_filename(\'{video_url_r2}\')">Link 2</a>, <a href="{video_url_r3}" target="_blank" onclick="save_video_filename(\'{video_url_r3}\')">Link 3</a>', #R
     ]
 
     # Add custom CSS styles
@@ -246,3 +246,17 @@ if st.session_state.get('logged_in'):
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
+
+# 동영상 링�� 클릭 시 URL을 추출하고 파일 이름을 저장하는 함수
+def save_video_filename(video_url):
+    # URL에서 mp4 파일 이름 추출
+    file_name = video_url.split("/")[-1]  # URL의 마지막 부분이 파일 이름
+    user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+    access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
+
+    # 로그 내용을 문자열로 생성
+    log_entry = f"Email: {user_email}, Video File: {file_name}, Access Date: {access_date}\n"
+
+    # Firebase Storage에 로그 파일 업로드
+    log_blob = bucket.blob(f'logs/{user_email}_{file_name}.txt')  # 로그 파일 경로 설정
+    log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
