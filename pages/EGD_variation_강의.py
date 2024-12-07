@@ -156,7 +156,7 @@ if st.session_state.get('logged_in'):
     data = [
         '가장 먼저 보세요: 전체 과정 해설 A',
         '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
-        '- 환자가 과도한 retching을 해서 검���의 진행이 어려워요',
+        '- 환자가 과도한 retching을 해서 검의 진행이 어려워요',
         '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
@@ -237,7 +237,7 @@ if st.session_state.get('logged_in'):
     
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
-        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
+        st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 ���설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
 
     for idx, item in enumerate(data):
         cols = st.columns([2, 3])
@@ -257,26 +257,46 @@ else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
 
-# JavaScript 코드 수정
-st.markdown("""
+# Firebase 초기화 스��립트와 JavaScript 코드 수정
+st.markdown(f"""
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage.js"></script>
 <script>
-function trackVideoClick(videoFileName, videoUrl) {
+// Firebase 초기화
+const firebaseConfig = {{
+    apiKey: "{st.secrets['firebase_api_key']}",
+    authDomain: "{st.secrets['firebase_auth_domain']}",
+    projectId: "{st.secrets['project_id']}",
+    storageBucket: "amcgi-bulletin.appspot.com",
+    messagingSenderId: "{st.secrets['firebase_messaging_sender_id']}",
+    appId: "{st.secrets['firebase_app_id']}"
+}};
+
+// Firebase 초기화
+firebase.initializeApp(firebaseConfig);
+
+function trackVideoClick(videoFileName, videoUrl) {{
     const email = localStorage.getItem('userEmail');
     const timestamp = new Date().toISOString();
-    const fileName = `${email}_EGD_variation_${videoFileName}.txt`;
+    const fileName = `${{email}}_EGD_variation_${{videoFileName}}.txt`;
     
-    // Firebase Storage에 파일 저장
-    const storageRef = firebase.storage().ref();
+    // Firebase Storage 참조 생성
+    const storage = firebase.storage();
+    const storageRef = storage.ref();
     const fileRef = storageRef.child(fileName);
     
+    // 파일 업로드
     fileRef.putString(timestamp)
-        .then(() => {
-            console.log('Video click tracked');
-            window.open(videoUrl, '_blank'); // 로그 저장 후 비디오 URL 열기
-        })
-        .catch((error) => console.error('Error tracking video:', error));
+        .then(() => {{
+            console.log('Video click tracked successfully');
+            window.open(videoUrl, '_blank');
+        }})
+        .catch((error) => {{
+            console.error('Error tracking video:', error);
+            window.open(videoUrl, '_blank');
+        }});
     
-    return false; // 기본 링크 동작 방지
-}
+    return false;
+}}
 </script>
 """, unsafe_allow_html=True)
