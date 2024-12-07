@@ -7,7 +7,7 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
-import uuid  # UUID 모듈 �가
+import uuid  # UUID 모듈 사용
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Varation", layout="wide")
@@ -36,7 +36,7 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
-    # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
+    # Firebase Storage��서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
     blob_a1 = bucket.blob("EGD_variation/맨_처음_보세요.mp4")
@@ -150,7 +150,7 @@ if st.session_state.get('logged_in'):
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
         '정상 위에서 Expert의 검사 전과정 B',
-        'STG with Bilroth II reconstruction state애�� 검사 전과정 C',
+        'STG with Bilroth II reconstruction state에서 검사 전과정 C',
         'STG with Bilroth I reconstruction state에서 검사 전과정 D',
         '후두부 접근 시 구역이 심해 후두를 관찰할 수 없다 E',
         'epiglotis가 닫혀서 후부두 전체가 보이는 사진을 찍을 수가 없다 F',
@@ -163,9 +163,9 @@ if st.session_state.get('logged_in'):
         '제2부에서 scope를 당기면 전진해야 하는데, 전진하지 않고 그냥 빠진다 M',
         '십이지장 2nd portion인데, ampulla가 안보이는데 prox 쪽에 있는 것 같다 N',
         'minor papilla를 AOP로 착각하지 않으려면 O',
-        'antrum GC에 transverse fold가 있어 그 distal part 부분이 가려져 있다 P',
+        'antrum GC에 transverse fold가 있어 그 distal part 부분�� 가려져 있다 P',
         '전정부에서 노브를 up을 했는데도, antrum에 붙어서, angle을 관찰할 수 없다 Q',
-        '환자의 belcing이 너무 심해 공��가 빠져 fold가 펴지지 않는다 R' 
+        '환자의 belcing이 너무 심해 공가 빠져 fold가 펴지지 않는다 R' 
     ]
 
     # 각 항목에 해당하는 markdown 텍스트 리스트
@@ -217,9 +217,9 @@ if st.session_state.get('logged_in'):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
         st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
 
-    # 링크 클릭 시 로그 ��일 생성 및 Firebase에 저장하는 함수
+    # 링크 클릭 시 로그 기록 및 Firebase에 저장하는 함수
     def log_click(email):
-        unique_id = str(uuid.uuid4())  # ��복되지 않는 일련번호 생성
+        unique_id = str(uuid.uuid4())  # 중복되지 않는 일련번호 생성
         log_filename = f"{email}_EGD variation_{unique_id}.txt"
         log_content = "링크가 클릭되었습니다."  # 로그 내용
 
@@ -232,7 +232,7 @@ if st.session_state.get('logged_in'):
         cols[0].write(item)
         if idx < len(markdown_texts):
             # 링크 클릭 시 로그 기록
-            cols[1].markdown(f'<a href="{video_url_a1}" target="_blank" onclick="log_click(\'{st.session_state.get('email')}\')">Link 1</a>', unsafe_allow_html=True)
+            cols[1].markdown(f'<a href="{video_url_a1}" target="_blank" onclick="log_click(\'{st.session_state.get("email")}\')">Link 1</a>', unsafe_allow_html=True)
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
 
