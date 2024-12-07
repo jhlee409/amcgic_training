@@ -145,7 +145,7 @@ if st.session_state.get('logged_in'):
         '가장 먼저 보세요: 전체 과정 해설 A',
         '- EGD 사진이 흔들려서 찍히는 경우가 많아요',
         '- 환자가 과도한 retching을 해서 검사의 진행이 어려워요',
-        '- 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요',
+        '- 진정 내시경 시 환자가 너무 irritable��서 검사의 진행이 어려워요',
         '- 장기의 좌우가 바뀌어 있다(situs inversus)',
         '- 위로 진입해 보니, 위안에 음식물이 남아있다',
         '정상 위에서 Expert의 검사 전과정 B',
@@ -167,31 +167,58 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
     ]
 
-    # 각 항목에 해당하는 markdown 텍스트 리스트
+    # JavaScript 함수를 포함한 HTML 코드 추가
+    st.markdown("""
+    <script>
+    async function logVideoAccess(videoName) {
+        const userEmail = sessionStorage.getItem('user_email');
+        const date = new Date().toISOString().split('T')[0];
+        const logEntry = `Email: ${userEmail}, Menu: EGD variation, Video: ${videoName}, Access Date: ${date}`;
+        
+        try {
+            const response = await fetch('/_stcore/upload_log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: userEmail,
+                    video: videoName,
+                    date: date
+                })
+            });
+        } catch (error) {
+            console.error('Error logging video access:', error);
+        }
+    }
+    </script>
+    """, unsafe_allow_html=True)
+
+    # markdown_texts 리스트 수�
     markdown_texts = [
-        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
+        f'<a href="{video_url_a1}" target="_blank" onclick="logVideoAccess(\'A1\')">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
-        f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
-        f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
-        f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
-        f'<a href="{video_url_f1}" target="_blank">Link 1</a>, <a href="{video_url_f2}" target="_blank">Link 2</a>, <a href="{video_url_f3}" target="_blank">Link 3</a>', #F
-        f'<a href="{video_url_g1}" target="_blank">Link 1</a>', #G
-        f'<a href="{video_url_h1}" target="_blank">Link 1</a>, <a href="{video_url_h2}" target="_blank">Link 2</a>', #H
-        f'<a href="{video_url_i1}" target="_blank">Link 1</a>, <a href="{video_url_i2}" target="_blank">Link 2</a>', #I
-        f'<a href="{video_url_j1}" target="_blank">Link 1</a>, <a href="{video_url_j2}" target="_blank">Link 2</a>, <a href="{video_url_j3}" target="_blank">Link 3</a>, <a href="{video_url_j4}" target="_blank">Link 4</a>, <a href="{video_url_j5}" target="_blank">Link 5</a>', #J
-        f'<a href="{video_url_k1}" target="_blank">Link 1</a>', #K
-        f'<a href="{video_url_l1}" target="_blank">Link 1</a>', #L
-        f'<a href="{video_url_m1}" target="_blank">Link 1</a>', #M
-        f'<a href="{video_url_n1}" target="_blank">Link 1</a>, <a href="{video_url_n2}" target="_blank">Link 2</a>, <a href="{video_url_n3}" target="_blank">Link 3</a>', #N
-        f'<a href="{video_url_o1}" target="_blank">Link 1</a>, <a href="{video_url_o2}" target="_blank">Link 2</a>, <a href="{video_url_o3}" target="_blank">Link 3</a>', #O
-        f'<a href="{video_url_p1}" target="_blank">Link 1</a>, <a href="{video_url_p2}" target="_blank">Link 2</a>', #P
-        f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
-        f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
+        f'<a href="{video_url_b1}" target="_blank" onclick="logVideoAccess(\'B1\')">Link 1</a>, <a href="{video_url_b2}" target="_blank" onclick="logVideoAccess(\'B2\')">Link 2</a>',
+        f'<a href="{video_url_c1}" target="_blank" onclick="logVideoAccess(\'C1\')">Link 1</a>, <a href="{video_url_c2}" target="_blank" onclick="logVideoAccess(\'C2\')">Link 2</a>',
+        f'<a href="{video_url_d1}" target="_blank" onclick="logVideoAccess(\'D1\')">Link 1</a>, <a href="{video_url_d2}" target="_blank" onclick="logVideoAccess(\'D2\')">Link 1</a>',
+        f'<a href="{video_url_e1}" target="_blank" onclick="logVideoAccess(\'E1\')">Link 1</a>, <a href="{video_url_e2}" target="_blank" onclick="logVideoAccess(\'E2\')">Link 2</a>, <a href="{video_url_e3}" target="_blank" onclick="logVideoAccess(\'E3\')">Link 3</a>, <a href="{video_url_e4}" target="_blank" onclick="logVideoAccess(\'E4\')">Link 4</a>',
+        f'<a href="{video_url_f1}" target="_blank" onclick="logVideoAccess(\'F1\')">Link 1</a>, <a href="{video_url_f2}" target="_blank" onclick="logVideoAccess(\'F2\')">Link 2</a>, <a href="{video_url_f3}" target="_blank" onclick="logVideoAccess(\'F3\')">Link 3</a>',
+        f'<a href="{video_url_g1}" target="_blank" onclick="logVideoAccess(\'G1\')">Link 1</a>',
+        f'<a href="{video_url_h1}" target="_blank" onclick="logVideoAccess(\'H1\')">Link 1</a>, <a href="{video_url_h2}" target="_blank" onclick="logVideoAccess(\'H2\')">Link 2</a>',
+        f'<a href="{video_url_i1}" target="_blank" onclick="logVideoAccess(\'I1\')">Link 1</a>, <a href="{video_url_i2}" target="_blank" onclick="logVideoAccess(\'I2\')">Link 2</a>',
+        f'<a href="{video_url_j1}" target="_blank" onclick="logVideoAccess(\'J1\')">Link 1</a>, <a href="{video_url_j2}" target="_blank" onclick="logVideoAccess(\'J2\')">Link 2</a>, <a href="{video_url_j3}" target="_blank" onclick="logVideoAccess(\'J3\')">Link 3</a>, <a href="{video_url_j4}" target="_blank" onclick="logVideoAccess(\'J4\')">Link 4</a>, <a href="{video_url_j5}" target="_blank" onclick="logVideoAccess(\'J5\')">Link 5</a>',
+        f'<a href="{video_url_k1}" target="_blank" onclick="logVideoAccess(\'K1\')">Link 1</a>',
+        f'<a href="{video_url_l1}" target="_blank" onclick="logVideoAccess(\'L1\')">Link 1</a>',
+        f'<a href="{video_url_m1}" target="_blank" onclick="logVideoAccess(\'M1\')">Link 1</a>',
+        f'<a href="{video_url_n1}" target="_blank" onclick="logVideoAccess(\'N1\')">Link 1</a>, <a href="{video_url_n2}" target="_blank" onclick="logVideoAccess(\'N2\')">Link 2</a>, <a href="{video_url_n3}" target="_blank" onclick="logVideoAccess(\'N3\')">Link 3</a>',
+        f'<a href="{video_url_o1}" target="_blank" onclick="logVideoAccess(\'O1\')">Link 1</a>, <a href="{video_url_o2}" target="_blank" onclick="logVideoAccess(\'O2\')">Link 2</a>, <a href="{video_url_o3}" target="_blank" onclick="logVideoAccess(\'O3\')">Link 3</a>',
+        f'<a href="{video_url_p1}" target="_blank" onclick="logVideoAccess(\'P1\')">Link 1</a>, <a href="{video_url_p2}" target="_blank" onclick="logVideoAccess(\'P2\')">Link 2</a>',
+        f'<a href="{video_url_q1}" target="_blank" onclick="logVideoAccess(\'Q1\')">Link 1</a>, <a href="{video_url_q2}" target="_blank" onclick="logVideoAccess(\'Q2\')">Link 2</a>, <a href="{video_url_q3}" target="_blank" onclick="logVideoAccess(\'Q3\')">Link 3</a>',
+        f'<a href="{video_url_r1}" target="_blank" onclick="logVideoAccess(\'R1\')">Link 1</a>, <a href="{video_url_r2}" target="_blank" onclick="logVideoAccess(\'R2\')">Link 2</a>, <a href="{video_url_r3}" target="_blank" onclick="logVideoAccess(\'R3\')">Link 3</a>',
     ]
 
     # Add custom CSS styles
@@ -214,6 +241,18 @@ if st.session_state.get('logged_in'):
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 '가장 먼저 보세요: 전체과정 해설' 오른쪽에 있는 Link1을 눌러, 이 동영상을 시청하세요.")
         st.write("- 다음 그 아래에 있는 상황에 따른, 전문가의 해설 동영상이 오른쪽에 링크되어 있습니다. 필요한 상황만 골라서 보면 됩니다.")
+
+    # Streamlit 핸들러 추가
+    def handle_log_upload():
+        data = st.experimental_get_query_params()
+        email = data.get('email')[0]
+        video = data.get('video')[0]
+        date = data.get('date')[0]
+        
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        log_blob = bucket.blob(f'logs/{email}_EGD variation_{video}_{date}.txt')
+        log_entry = f"Email: {email}, Menu: EGD variation, Video: {video}, Access Date: {date}"
+        log_blob.upload_from_string(log_entry, content_type='text/plain')
 
     for idx, item in enumerate(data):
         cols = st.columns([2, 3])
