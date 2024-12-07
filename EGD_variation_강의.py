@@ -167,32 +167,15 @@ if st.session_state.get('logged_in'):
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
     ]
 
-    def log_video_access(video_url_key):
-        user_email = st.session_state.get('user_email', 'unknown')
-        access_date = datetime.now().strftime("%Y-%m-%d")
-        log_entry = f"Email: {user_email}, Menu: EGD variation, Video: {video_url_key}, Access Date: {access_date}\n"
-        log_blob = bucket.blob(f'logs/{user_email}_EGD variation_video_{video_url_key}_{access_date}.txt')
-        log_blob.upload_from_string(log_entry, content_type='text/plain')
-        return eval(video_url_key)  # video_url_b1 등의 변수 값을 반환
-
     # 각 항목에 해당하는 markdown 텍스트 리스트
     markdown_texts = [
-        st.column_config.Column(
-            "Link 1" if st.button("Link 1", key=f"btn_a1") else "",
-            help=log_video_access("video_url_a1") if st.session_state.get(f"btn_a1") else None
-        ),
+        f'<a href="{video_url_a1}" target="_blank">Link 1</a>',
         '-',
         '-',
         '-',
         '-',
         '-',
-        # B 섹션 예시
-        ", ".join([
-            st.column_config.Column(
-                f"Link {i}" if st.button(f"Link {i}", key=f"btn_b{i}") else "",
-                help=log_video_access(f"video_url_b{i}") if st.session_state.get(f"btn_b{i}") else None
-            ) for i in range(1, 3)
-        ]),
+        f'<a href="{video_url_b1}" target="_blank">Link 1</a>, <a href="{video_url_b2}" target="_blank">Link 2</a>', #B
         f'<a href="{video_url_c1}" target="_blank">Link 1</a>, <a href="{video_url_c2}" target="_blank">Link 2</a>', #C
         f'<a href="{video_url_d1}" target="_blank">Link 1</a>, <a href="{video_url_d2}" target="_blank">Link 1</a>', #D
         f'<a href="{video_url_e1}" target="_blank">Link 1</a>, <a href="{video_url_e2}" target="_blank">Link 2</a>, <a href="{video_url_e3}" target="_blank">Link 3</a>, <a href="{video_url_e4}" target="_blank">Link 4</a>', #E
