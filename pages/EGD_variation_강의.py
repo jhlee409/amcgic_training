@@ -87,10 +87,10 @@ if st.session_state.get('logged_in'):
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 해당 주제에 대해 여러 증례를 대상으로 해설하는 동양상의 버튼이 오른쪽이 있습니다. 버튼을 눌러 동영상을 시청하세요.")
 
-    # 각 그룹을 7개의 열에 배치
+    # 각 그룹을 10개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 4, 나머지 열 너비 1
-        cols = st.columns([4, 1, 1, 1, 1, 1, 1])
+        cols = st.columns([6, 1, 1, 1, 1, 1, 1, 1, 1, 1])
 
         # 첫 번째 열에 data 항목 추가
         data_index = ord(letter.upper()) - ord('A')  # letter에 맞는 data 리스트의 인덱스
