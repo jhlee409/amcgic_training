@@ -236,27 +236,6 @@ if st.session_state.get('logged_in'):
             cols[1].markdown(markdown_texts[idx], unsafe_allow_html=True)
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
-            
-    # Firebase Storage에서 동영상 파일 목록 가져오기
-    def get_video_files_from_folder(bucket, folder_path):
-        return [blob.name for blob in bucket.list_blobs(prefix=folder_path) if blob.name.endswith('.mp4')]
-    
-    # 동영상 파일 목록 가져오기
-    folder_path = "EGD_variation/"
-    video_files = get_video_files_from_folder(bucket, folder_path)
-
-    st.header("EGD Variation Video Player")
-    st.write("아래 버튼을 눌러 동영상을 시청하세요:")
-
-    for video_file in video_files:
-        video_name = video_file.replace(folder_path, "")  # Remove folder path for display
-        if st.button(f"Play {video_name}"):
-            # 동영상 URL 생성
-            blob = bucket.blob(video_file)
-            video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-            # Streamlit에서 동영상 재생
-            st.video(video_url)
 
 
     # 로그아웃 버튼 생성
