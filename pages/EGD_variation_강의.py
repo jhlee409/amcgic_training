@@ -81,11 +81,6 @@ if st.session_state.get('logged_in'):
         if st.button(f"Play {video_name}"):
             blob = bucket.blob(video_file)
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-
-            # Debugging: URL 출력
-            st.write(f"Playing: {video_name}")
-            st.write(f"URL: {video_url}")
-
             # 동영상 재생
             st.video(video_url, format="video/mp4")
 
