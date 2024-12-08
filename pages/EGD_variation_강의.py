@@ -98,7 +98,7 @@ if st.session_state.get('logged_in'):
             with cols[0]:
                 st.markdown(
                     f"""
-                    <div style="display: flex; justify-content: center; align-items: center; height: 100%; text-align: center;">
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100%; text-align: right;">
                         {data[data_index]}
                     </div>
                     """,
