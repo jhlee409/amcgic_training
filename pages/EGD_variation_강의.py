@@ -99,18 +99,18 @@ if st.session_state.get('logged_in'):
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
             st.video(video_url, format="video/mp4")
             
-            # CSS 스타일 적용
+            # HTML로 동영상 삽입
             st.markdown(
-                """
-                <style>
-                .stVideo > video {
-                    width: 500px;
-                    height: auto; /* 세로 비율 유지 */
-                }
-                </style>
+                f"""
+                <div style="display: flex; justify-content: center; align-items: center;">
+                    <video controls style="width: 300%; height: auto;">
+                        <source src="{video_url}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
                 """,
                 unsafe_allow_html=True
-                )
+    )
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
