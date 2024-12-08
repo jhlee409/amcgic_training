@@ -193,20 +193,15 @@ if st.session_state.get('logged_in'):
     #     f'<a href="{video_url_q1}" target="_blank">Link 1</a>, <a href="{video_url_q2}" target="_blank">Link 2</a>, <a href="{video_url_q3}" target="_blank">Link 3</a>', #Q
     #     f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
     # ]
-    
-    import streamlit as st
-from datetime import datetime, timedelta
-import firebase_admin
-from firebase_admin import credentials, initialize_app, storage
 
-# Set page to wide mode
-st.set_page_config(page_title="EGD_Variation", layout="wide")
+    # Set page to wide mode
+    st.set_page_config(page_title="EGD_Variation", layout="wide")
 
 
-# Generate video URLs
-def generate_video_url(file_path):
-    blob = bucket.blob(file_path)
-    return blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+    # Generate video URLs
+    def generate_video_url(file_path):
+        blob = bucket.blob(file_path)
+        return blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
     # Data and video mapping
     data = [
