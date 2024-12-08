@@ -146,9 +146,12 @@ if st.session_state.get('logged_in'):
             # 로그 내용을 문자열로 생성
             log_entry = f"Email: {user_email}, Menu: EGD Dx training, Access Date: {access_date}\n"
 
+            # '.png' 확장자를 제거한 파일 이름
+            selected_image_file_without_extension = selected_image_file.replace('.png', '')
+
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{user_email}_{folder_selection}_{selected_image_file}.txt')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{user_email}_{folder_selection}_{selected_image_file_without_extension}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     st.sidebar.divider()
