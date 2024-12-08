@@ -194,27 +194,6 @@ if st.session_state.get('logged_in'):
         f'<a href="{video_url_r1}" target="_blank">Link 1</a>, <a href="{video_url_r2}" target="_blank">Link 2</a>, <a href="{video_url_r3}" target="_blank">Link 3</a>', #R
     ]
 
-    # 동영상 파일 이름과 URL 매핑 데이터 생성
-    video_data = [
-        {"name": "맨_처음_보세요.mp4", "url": video_url_a1},
-        {"name": "B1.mp4", "url": video_url_b1},
-        {"name": "B2.mp4", "url": video_url_b2},
-        {"name": "C1.mp4", "url": video_url_c1},
-        {"name": "C2.mp4", "url": video_url_c2},
-        # 나머지 항목도 추가...
-    ]
-
-    # 데이터와 링크를 보여주는 UI 생성
-    for video in video_data:
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.write(video["name"])  # 동영상 이름 표시
-        with col2:
-            if st.button(f"Play {video['name']}"):
-                # 동영상 이름 출력
-                st.write(f"선택한 동영상: {video['name']}")
-                st.video(video["url"])
-
     # Add custom CSS styles
     st.markdown("""
     <style>
