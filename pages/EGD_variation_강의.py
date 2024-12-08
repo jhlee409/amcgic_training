@@ -62,37 +62,41 @@ if st.session_state.get('logged_in'):
     st.header("EGD Variation Video Player")
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
-    # 각 그룹을 행으로 배치
+    # 각 그룹을 6개의 열에 배치
     for letter, videos in grouped_videos.items():
-        cols = st.columns(len(videos))  # 동영상 수만큼 열 생성
+        # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
+        cols = st.columns([5, 1, 1, 1, 1, 1])
+
+        # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
-            video_name = video_file.replace(folder_path, "").replace('.mp4', "")  # 확장자 제거
+            if idx < 5:  # 버튼은 최대 5개까지만 표시
+                with cols[idx + 1]:  # 두 번째 열부터 버튼 추가
+                    video_name = video_file.replace(folder_path, "").replace('.mp4', "")  # 확장자 제거
 
-            with cols[idx]:  # 각 열에 버튼과 동영상 추가
-                # 각 동영상의 상태 초기화
-                if video_name not in st.session_state.video_states:
-                    st.session_state.video_states[video_name] = False
+                    # 각 동영상의 상태 초기화
+                    if video_name not in st.session_state.video_states:
+                        st.session_state.video_states[video_name] = False
 
-                # 버튼 생성 및 클릭 처리
-                if st.button(f"{video_name}"):
-                    # 상태 반전
-                    st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
+                    # 버튼 생성 및 클릭 처리
+                    if st.button(f"Play {video_name}"):
+                        # 상태 반전
+                        st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
-                # 동영상 재생 창
-                if st.session_state.video_states[video_name]:
-                    blob = bucket.blob(video_file)
-                    video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-                    st.markdown(
-                        f"""
-                        <div style="display: flex; justify-content: center; align-items: center;">
-                            <video controls style="width: 300%; height: auto;">
-                                <source src="{video_url}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    # 동영상 재생 창
+                    if st.session_state.video_states[video_name]:
+                        blob = bucket.blob(video_file)
+                        video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+                        st.markdown(
+                            f"""
+                            <div style="display: flex; justify-content: center; align-items: center;">
+                                <video controls style="width: 100%; height: auto;">
+                                    <source src="{video_url}" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                            """,
+                            unsafe_allow_html=True
+                        )
 
 
     # 로그아웃 버튼
