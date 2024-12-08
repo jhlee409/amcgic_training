@@ -65,7 +65,7 @@ if st.session_state.get('logged_in'):
     # 각 그룹을 8개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
-        cols = st.columns([5, 1, 1, 1, 1, 1, 1, 1])
+        cols = st.columns([7, 1, 1, 1, 1, 1, 1, 1])
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
