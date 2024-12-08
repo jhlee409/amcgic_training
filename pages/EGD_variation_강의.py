@@ -133,7 +133,7 @@ if st.session_state.get('logged_in'):
                         log_entry = f"Email: {user_email}, Menu: EGD variation, Access Date: {access_date}\n"
 
                         # Firebase Storage에 로그 파일 업로드
-                        log_blob = bucket.blob(f'log_EGD_varation/{user_email}_EGD variation_{video_name}.txt')  # 로그 파일 경로 설정
+                        log_blob = bucket.blob(f'log_EGD_varation/{user_email}_{video_name}.txt')  # 로그 파일 경로 설정
                         log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
                         
                         # 상태 반전
