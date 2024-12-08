@@ -237,6 +237,11 @@ if st.session_state.get('logged_in'):
         else:
             cols[1].write("Link 1, Link 2, Link 3, Link 4, Link 5")
             
+    # Streamlit 세션 상태 초기화
+    if "video_visibility" not in st.session_state:
+        st.session_state.video_visibility = False
+        st.session_state.current_video_url = ""
+            
     # Firebase Storage에서 동영상 파일 목록 가져오기
     def get_video_files_from_folder(bucket, folder_path):
         return [blob.name for blob in bucket.list_blobs(prefix=folder_path) if blob.name.endswith('.mp4')]
@@ -248,6 +253,7 @@ if st.session_state.get('logged_in'):
     st.header("EGD Variation Video Player")
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
+ # 동영상 파일별 버튼 생성
     for video_file in video_files:
         video_name = video_file.replace(folder_path, "")  # Remove folder path for display
         if st.button(f"Play {video_name}"):
@@ -255,8 +261,18 @@ if st.session_state.get('logged_in'):
             blob = bucket.blob(video_file)
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
 
-            # Streamlit에서 동영상 재생
-            st.video(video_url)
+            # 동영상 URL과 가시성 설정
+            st.session_state.current_video_url = video_url
+            st.session_state.video_visibility = True
+
+    # 동영상 재생 창
+    if st.session_state.video_visibility:
+        st.write("### 동영상 재생")
+        st.video(st.session_state.current_video_url, format="video/mp4", start_time=0)
+
+        # 닫기 버튼
+        if st.button("닫기"):
+            st.session_state.video_visibility = False
 
 
     # 로그아웃 버튼 생성
