@@ -113,10 +113,14 @@ if st.session_state.get('logged_in'):
                 # 로그 내용을 문자열로 생성
                 log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
 
+                # '.docx' 확장자를 제거한 파일 이름
+                case_file_without_extension = selected_case_file.replace('.docx', '')
+
                 # Firebase Storage에 로그 파일 업로드
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-                log_blob = bucket.blob(f'log_PBL/{user_email}_{selected_case_file}.txt')  # 로그 파일 경로 설정
+                log_blob = bucket.blob(f'log_PBL/{user_email}_{case_file_without_extension}.txt')  # 로그 파일 경로 설정
                 log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
 
                 # assistant_id 설정
                 if selected_case_file == "PBL_amc_01.docx":
