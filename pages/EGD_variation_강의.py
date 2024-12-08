@@ -61,11 +61,10 @@ if st.session_state.get('logged_in'):
         grouped_videos[first_letter].append(video)
 
     st.header("EGD variation 강의")
-    st.write("아래 버튼을 눌러 동영상을 시청하세요:")
     
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 해당 주제에 대해 여러 증례를 대상으로 해설하는 동양상의 버튼이 오른쪽이 있습니다. 버튼을 눌러 동영상을 시청하세요.")
-        st.sidebar.divider()
+    st.divider()
         
     # 각 그룹을 8개의 열에 배치
     for letter, videos in grouped_videos.items():
