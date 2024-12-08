@@ -117,6 +117,17 @@ if st.session_state.get('logged_in'):
 
                     # 버튼 생성 및 클릭 처리
                     if st.button(f"{video_name}"):
+                        # 사용자 이메일과 접속 날짜 기록
+                        user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+                        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+                        # 로그 내용을 문자열로 생성
+                        log_entry = f"Email: {user_email}, Menu: EGD variation, Access Date: {access_date}\n"
+
+                        # Firebase Storage에 로그 파일 업로드
+                        log_blob = bucket.blob(f'log_EGD_varation/{user_email}_EGD variation_{video_name}.txt')  # 로그 파일 경로 설정
+                        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+                        
                         # 상태 반전
                         st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
