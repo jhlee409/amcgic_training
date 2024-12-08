@@ -91,6 +91,14 @@ if st.session_state.get('logged_in'):
             # 상태 반전
             st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
             
+
+
+        # 동영상 재생 창
+        if st.session_state.video_states[video_name]:
+            blob = bucket.blob(video_file)
+            video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+            st.video(video_url, format="video/mp4")
+            
             # CSS 스타일 적용
             st.markdown(
                 """
@@ -103,12 +111,6 @@ if st.session_state.get('logged_in'):
                 """,
                 unsafe_allow_html=True
                 )
-
-        # 동영상 재생 창
-        if st.session_state.video_states[video_name]:
-            blob = bucket.blob(video_file)
-            video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-            st.video(video_url, format="video/mp4")
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
