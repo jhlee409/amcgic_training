@@ -37,11 +37,14 @@ if st.session_state.get('logged_in'):
 
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
-
+    
 # Streamlit 세션 상태 초기화
-if "video_visibility" not in st.session_state:
-    st.session_state.video_visibility = False
-    st.session_state.current_video_url = ""
+if "video_states" not in st.session_state:
+    st.session_state.video_states = {}
+
+# 동영상 파일 목록 가져오기 함수
+def get_video_files_from_folder(bucket, folder_path):
+    return [blob.name for blob in bucket.list_blobs(prefix=folder_path) if blob.name.endswith('.mp4')]
 
 # 동영상 파일 목록 가져오기 함수
 def get_video_files_from_folder(bucket, folder_path):
