@@ -256,5 +256,5 @@ def generate_video_url(file_path):
         st.session_state.logged_in = False
         st.rerun()  # 페이지 새로고침
 
-else:
-    st.error("로그인이 필요합니다.")
+    else:
+        st.error("로그인이 필요합니다.")
