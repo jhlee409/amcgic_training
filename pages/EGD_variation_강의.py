@@ -69,34 +69,25 @@ if st.session_state.get('logged_in'):
     # Firebase Storage bucket reference
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
-    # 동영상 파일 목록 가져오기
+    # 동영상 목록 가져오기
     folder_path = "EGD_variation/"
-    video_files = get_video_files_from_folder(bucket, folder_path)
+    video_files = [blob.name for blob in bucket.list_blobs(prefix=folder_path) if blob.name.endswith('.mp4')]
 
     st.header("EGD Variation Video Player")
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
-    # 동영상 파일별 버튼 생성
     for video_file in video_files:
-        video_name = video_file.replace(folder_path, "")  # Remove folder path for display
+        video_name = video_file.replace(folder_path, "")
         if st.button(f"Play {video_name}"):
-            # Test: Signed URL 생성 확인
-            blob = bucket.blob("EGD_variation/sample_video.mp4")  # 실제 존재하는 동영상 파일 이름으로 테스트
+            blob = bucket.blob(video_file)
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-            st.write(video_url)  # URL 출력
 
-            # 동영상 URL과 가시성 설정
-            st.session_state.current_video_url = video_url
-            st.session_state.video_visibility = True
+            # Debugging: URL 출력
+            st.write(f"Playing: {video_name}")
+            st.write(f"URL: {video_url}")
 
-    # 동영상 재생 창
-    if st.session_state.video_visibility:
-        st.write("### 동영상 재생")
-        st.video(video_url, format="video/mp4")  # URL이 HTTPS로 시작해야 정상 작동
-
-        # 닫기 버튼
-        if st.button("닫기"):
-            st.session_state.video_visibility = False
+            # 동영상 재생
+            st.video(video_url, format="video/mp4")
 
 
     # 로그아웃 버튼 생성
