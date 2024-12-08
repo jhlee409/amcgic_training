@@ -65,7 +65,7 @@ if st.session_state.get('logged_in'):
     # 각 그룹을 6개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
-        cols = st.columns([4, 1, 1, 1, 1, 1])
+        cols = st.columns([5, 1, 1, 1, 1, 1])
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
@@ -89,7 +89,7 @@ if st.session_state.get('logged_in'):
                         st.markdown(
                             f"""
                             <div style="display: flex; justify-content: center; align-items: center;">
-                                <video controls style="width: 100%; height: auto;">
+                                <video controls style="width: 300%; height: auto;">
                                     <source src="{video_url}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
