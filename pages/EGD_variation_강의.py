@@ -89,7 +89,7 @@ if st.session_state.get('logged_in'):
                         st.markdown(
                             f"""
                             <div style="display: flex; justify-content: center; align-items: center;">
-                                <video controls style="width: 300%; height: auto;">
+                                <video controls style="width: 100%; height: auto;">
                                     <source src="{video_url}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
