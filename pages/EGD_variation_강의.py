@@ -80,9 +80,10 @@ if st.session_state.get('logged_in'):
     for video_file in video_files:
         video_name = video_file.replace(folder_path, "")  # Remove folder path for display
         if st.button(f"Play {video_name}"):
-            # 동영상 URL 생성
-            blob = bucket.blob(video_file)
+            # Test: Signed URL 생성 확인
+            blob = bucket.blob("EGD_variation/sample_video.mp4")  # 실제 존재하는 동영상 파일 이름으로 테스트
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+            st.write(video_url)  # URL 출력
 
             # 동영상 URL과 가시성 설정
             st.session_state.current_video_url = video_url
@@ -91,7 +92,7 @@ if st.session_state.get('logged_in'):
     # 동영상 재생 창
     if st.session_state.video_visibility:
         st.write("### 동영상 재생")
-        st.video(st.session_state.current_video_url, format="video/mp4", start_time=0)
+        st.video(video_url, format="video/mp4")  # URL이 HTTPS로 시작해야 정상 작동
 
         # 닫기 버튼
         if st.button("닫기"):
