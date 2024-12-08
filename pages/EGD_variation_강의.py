@@ -105,6 +105,7 @@ if st.session_state.get('logged_in'):
 
     # 로그아웃 버튼
     if st.sidebar.button('로그아웃'):
+        st.session_state.video_states[key] = False
         st.session_state.logged_in = False
         st.rerun()
 
