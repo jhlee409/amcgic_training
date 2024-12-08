@@ -62,10 +62,10 @@ if st.session_state.get('logged_in'):
     st.header("EGD Variation Video Player")
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
-    # 각 그룹을 8개의 열에 배치
+    # 각 그룹을 6개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
-        cols = st.columns([5, 1, 1, 1, 1, 1, 1, 1])
+        cols = st.columns([5, 1, 1, 1, 1, 1, 1,])
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
@@ -79,12 +79,8 @@ if st.session_state.get('logged_in'):
 
                     # 버튼 생성 및 클릭 처리
                     if st.button(f"{video_name}"):
-                         # 모든 동영상 상태를 False로 설정
-                        for key in st.session_state.video_states.keys():
-                            st.session_state.video_states[key] = False
-                        
-                        # 선택한 동영상만 활성화
-                        st.session_state.video_states[video_name] = True
+                        # 상태 반전
+                        st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
                     # 동영상 재생 창
                     if st.session_state.video_states[video_name]:
@@ -93,7 +89,7 @@ if st.session_state.get('logged_in'):
                         st.markdown(
                             f"""
                             <div style="display: flex; justify-content: center; align-items: center;">
-                                <video controls style="width: 600%; height: auto;">
+                                <video controls style="width: 400%; height: auto;">
                                     <source src="{video_url}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
