@@ -123,7 +123,7 @@ if st.session_state.get('logged_in'):
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
-             # 000.docx 파일은 로그를 생성하지 않음
+            # 000.docx 파일은 로그를 생성하지 않음
             if selected_case_file != "000.docx":
                 # 사용자 이메일과 접속 날짜 기록
                 user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
@@ -132,9 +132,12 @@ if st.session_state.get('logged_in'):
                 # 로그 내용을 문자열로 생성
                 log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
 
+                # '.docx' 확장자를 제거한 파일 이름
+                file_name_without_extension = selected_case_file.replace('.docx', '')
+
                 # Firebase Storage에 로그 파일 업로드
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_email}_Hx_{selected_case_file}.txt')  # 로그 파일 경로 설정
+                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_email}_Hx_{file_name_without_extension}.txt')  # 로그 파일 경로 설정
                 log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
             # Include the directory in the path when reading the file
