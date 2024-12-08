@@ -65,7 +65,7 @@ if st.session_state.get('logged_in'):
     # 각 그룹을 8개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
-        cols = st.columns([7, 1, 1, 1, 1, 1, 1, 1])
+        cols = st.columns([5, 1, 1, 1, 1, 1, 1, 1])
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
@@ -73,17 +73,17 @@ if st.session_state.get('logged_in'):
                 with cols[idx + 1]:  # 두 번째 열부터 버튼 추가
                     video_name = video_file.replace(folder_path, "").replace('.mp4', "")  # 확장자 제거
 
+                    # 각 동영상의 상태 초기화
+                    if video_name not in st.session_state.video_states:
+                        st.session_state.video_states[video_name] = False
+
                     # 버튼 생성 및 클릭 처리
                     if st.button(f"{video_name}"):
-                        # 모든 동영상 상태를 False로 설정
-                        for key in st.session_state.video_states.keys():
-                            st.session_state.video_states[key] = False
-                        
-                        # 선택한 동영상만 활성화
-                        st.session_state.video_states[video_name] = True
+                        # 상태 반전
+                        st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
                     # 동영상 재생 창
-                    if st.session_state.video_states.get(video_name):
+                    if st.session_state.video_states[video_name]:
                         blob = bucket.blob(video_file)
                         video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
                         st.markdown(
