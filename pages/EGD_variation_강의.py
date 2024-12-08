@@ -62,10 +62,10 @@ if st.session_state.get('logged_in'):
     st.header("EGD Variation Video Player")
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
-    # 각 그룹을 6개의 열에 배치
+    # 각 그룹을 8개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
-        cols = st.columns([5, 1, 1, 1, 1, 1])
+        cols = st.columns([5, 1, 1, 1, 1, 1, 1, 1])
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
