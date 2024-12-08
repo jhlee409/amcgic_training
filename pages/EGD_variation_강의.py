@@ -97,7 +97,7 @@ if st.session_state.get('logged_in'):
         if st.session_state.video_states[video_name]:
             blob = bucket.blob(video_file)
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-            st.video(video_url, format="video/mp4")
+            # st.video(video_url, format="video/mp4")
             
             # HTML로 동영상 삽입
             st.markdown(
