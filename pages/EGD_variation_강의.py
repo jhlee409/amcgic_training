@@ -47,7 +47,7 @@ if st.session_state.get('logged_in'):
         """
         <style>
         .video-player iframe {
-            width: 180vw;
+            width: 66vw;
             height: auto;
         }
         </style>
