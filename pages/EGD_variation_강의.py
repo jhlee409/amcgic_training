@@ -96,7 +96,14 @@ if st.session_state.get('logged_in'):
         data_index = ord(letter.upper()) - ord('A')  # letter에 맞는 data 리스트의 인덱스
         if 0 <= data_index < len(data):  # data 인덱스 범위 체크
             with cols[0]:
-                st.write(data[data_index])
+                st.markdown(
+                    f"""
+                    <div style="display: flex; justify-content: center; align-items: center; height: 100%; text-align: center;">
+                        {data[data_index]}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
