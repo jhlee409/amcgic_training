@@ -64,18 +64,18 @@ if st.session_state.get('logged_in'):
 
     # 각 그룹을 행으로 배치
     for letter, videos in grouped_videos.items():
-        # st.write(f"### Group {letter}")  # 그룹 이름 출력
+        st.write(f"### Group {letter}")  # 그룹 이름 출력
         cols = st.columns(len(videos))  # 동영상 수만큼 열 생성
         for idx, video_file in enumerate(videos):
-            with cols[idx]:  # 각 열에 버튼과 동영상 추가
-                video_name = video_file.replace(folder_path, "")  # Remove folder path for display
+            video_name = video_file.replace(folder_path, "").replace('.mp4', "")  # 확장자 제거
 
+            with cols[idx]:  # 각 열에 버튼과 동영상 추가
                 # 각 동영상의 상태 초기화
                 if video_name not in st.session_state.video_states:
                     st.session_state.video_states[video_name] = False
 
                 # 버튼 생성 및 클릭 처리
-                if st.button(f"{video_name}"):
+                if st.button(f"Play {video_name}"):
                     # 상태 반전
                     st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
@@ -94,6 +94,7 @@ if st.session_state.get('logged_in'):
                         """,
                         unsafe_allow_html=True
                     )
+
 
     # 로그아웃 버튼
     if st.sidebar.button('로그아웃'):
