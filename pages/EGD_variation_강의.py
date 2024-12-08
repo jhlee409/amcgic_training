@@ -47,7 +47,7 @@ if st.session_state.get('logged_in'):
         """
         <style>
         .video-player iframe {
-            width: 66vw; /* 화면 가로 길이의 2/3 */
+            width: 180vw;
             height: auto;
         }
         </style>
