@@ -89,8 +89,8 @@ if st.session_state.get('logged_in'):
 
     # 각 그룹을 8개의 열에 배치
     for letter, videos in grouped_videos.items():
-        # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
-        cols = st.columns([5, 1, 1, 1, 1, 1, 1, 1])
+        # 열 생성: 첫 번째 열 너비 4, 나머지 열 너비 1
+        cols = st.columns([4, 1, 1, 1, 1, 1, 1, 1])
 
         # 첫 번째 열에 data 항목 추가
         data_index = ord(letter.upper()) - ord('A')  # letter에 맞는 data 리스트의 인덱스
