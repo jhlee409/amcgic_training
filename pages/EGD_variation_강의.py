@@ -96,7 +96,7 @@ if st.session_state.get('logged_in'):
             """
             <style>
             .stVideo > video {
-                width: 200%; /* 현재 크기의 3배 */
+                width: 500px; /* 현재 크기의 3배 */
                 height: auto; /* 세로 비율 유지 */
             }
             </style>
