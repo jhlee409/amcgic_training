@@ -45,8 +45,8 @@ if st.session_state.get('logged_in'):
     # 동영상 파일 목록 가져오기 함수
     def get_video_files_from_folder(bucket, folder_path):
         return [blob.name for blob in bucket.list_blobs(prefix=folder_path) if blob.name.endswith('.mp4')]
-
-    # 동영상 목록 가져오기
+    
+     # 동영상 목록 가져오기
     folder_path = "EGD_variation/"
     video_files = get_video_files_from_folder(bucket, folder_path)
 
@@ -62,12 +62,12 @@ if st.session_state.get('logged_in'):
     st.header("EGD Variation Video Player")
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
-    # 열과 행을 동적으로 생성
-    columns = st.columns(len(grouped_videos))  # 그룹 수만큼 열 생성
-    for idx, (letter, videos) in enumerate(grouped_videos.items()):
-        with columns[idx]:  # 각 열에 동영상 그룹 표시
-            st.subheader(f"Group {letter}")
-            for video_file in videos:
+    # 각 그룹을 행으로 배치
+    for letter, videos in grouped_videos.items():
+        st.write(f"### Group {letter}")  # 그룹 이름 출력
+        cols = st.columns(len(videos))  # 동영상 수만큼 열 생성
+        for idx, video_file in enumerate(videos):
+            with cols[idx]:  # 각 열에 버튼과 동영상 추가
                 video_name = video_file.replace(folder_path, "")  # Remove folder path for display
 
                 # 각 동영상의 상태 초기화
@@ -75,7 +75,7 @@ if st.session_state.get('logged_in'):
                     st.session_state.video_states[video_name] = False
 
                 # 버튼 생성 및 클릭 처리
-                if st.button(f"Play/Close {video_name}"):
+                if st.button(f"Play {video_name}"):
                     # 상태 반전
                     st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
