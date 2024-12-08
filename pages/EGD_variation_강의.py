@@ -81,6 +81,12 @@ if st.session_state.get('logged_in'):
                     if st.button(f"{video_name}"):
                         # 상태 반전
                         st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
+                         # 모든 동영상 상태를 False로 설정
+                        for key in st.session_state.video_states.keys():
+                            st.session_state.video_states[key] = False
+                        
+                        # 선택한 동영상만 활성화
+                        st.session_state.video_states[video_name] = True
 
                     # 동영상 재생 창
                     if st.session_state.video_states[video_name]:
