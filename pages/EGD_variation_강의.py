@@ -90,6 +90,19 @@ if st.session_state.get('logged_in'):
         if st.button(f"Play/Close {video_name}"):
             # 상태 반전
             st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
+            
+        # CSS 스타일 적용
+        st.markdown(
+            """
+            <style>
+            .stVideo > video {
+                width: 300%; /* 현재 크기의 3배 */
+                height: auto; /* 세로 비율 유지 */
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+            )
 
         # 동영상 재생 창
         if st.session_state.video_states[video_name]:
