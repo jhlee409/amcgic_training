@@ -77,13 +77,22 @@ if st.session_state.get('logged_in'):
     st.write("아래 버튼을 눌러 동영상을 시청하세요:")
 
     for video_file in video_files:
-        video_name = video_file.replace(folder_path, "")
-        if st.button(f"Play {video_name}"):
+        video_name = video_file.replace(folder_path, "")  # Remove folder path for display
+
+        # 각 동영상의 상태 초기화
+        if video_name not in st.session_state.video_states:
+            st.session_state.video_states[video_name] = False
+
+        # 버튼 생성 및 클릭 처리
+        if st.button(f"Play/Close {video_name}"):
+            # 상태 반전
+            st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
+
+        # 동영상 재생 창
+        if st.session_state.video_states[video_name]:
             blob = bucket.blob(video_file)
             video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-            # 동영상 재생
             st.video(video_url, format="video/mp4")
-
 
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
