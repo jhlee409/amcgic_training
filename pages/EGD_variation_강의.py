@@ -9,7 +9,7 @@ import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD_Varation", layout="wide")
+st.set_page_config(page_title="EGD_Varation 강의", layout="wide")
 
 
 if st.session_state.get('logged_in'):
