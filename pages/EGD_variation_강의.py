@@ -38,6 +38,28 @@ if st.session_state.get('logged_in'):
     # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
     
+    # 23개 항목의 데이터
+    data = [
+        '가장 먼저 보세요: 전체 과정 해설 A',
+        '정상 위에서 Expert의 검사 전과정 B',
+        'STG with Bilroth II reconstruction state애서 검사 전과정 C',
+        'STG with Bilroth I reconstruction state에서 검사 전과정 D',
+        '후두부 접근 시 구역이 심해 후두를 관찰할 수 없다 E',
+        'epiglotis가 닫혀서 후부두 전체가 보이는 사진을 찍을 수가 없다 F',
+        '식도가 너무 tortuous 해서 화면 중앙에 놓고 전진하기 힘든다 G',
+        'z line이 stomach 쪽으로 내려가 있어 z line이 보이지 않는다 H',
+        'fundus, HB 경계부위가 심하게 꺽어져 있어, antrum 쪽으로 진입이 안된다 I',
+        'pyloric ring이 계속 닫혀있고 움직여서 scope의 통과가 어렵다 J',
+        '십이지장 벽에 닿기만 하고, SDA의 위치를 찾지 못하겠다 K',
+        'bulb에 들어가 보니, SDA가 사진 상 우측이 아니라 좌측에 있다 L',
+        '제2부에서 scope를 당기면 전진해야 하는데, 전진하지 않고 그냥 빠진다 M',
+        '십이지장 2nd portion인데, ampulla가 안보이는데 prox 쪽에 있는 것 같다 N',
+        'minor papilla를 AOP로 착각하지 않으려면 O',
+        'antrum GC에 transverse fold가 있어 그 distal part 부분이 가려져 있다 P',
+        '전정부에서 노브를 up을 했는데도, antrum에 붙어서, angle을 관찰할 수 없다 Q',
+        '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R' 
+    ]
+    
     st.session_state.video_states = {}
     # Streamlit 세션 상태 초기화
     if "video_states" not in st.session_state:
@@ -64,12 +86,17 @@ if st.session_state.get('logged_in'):
     
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 해당 주제에 대해 여러 증례를 대상으로 해설하는 동양상의 버튼이 오른쪽이 있습니다. 버튼을 눌러 동영상을 시청하세요.")
-    st.divider()
-        
+
     # 각 그룹을 8개의 열에 배치
     for letter, videos in grouped_videos.items():
         # 열 생성: 첫 번째 열 너비 5, 나머지 열 너비 1
         cols = st.columns([5, 1, 1, 1, 1, 1, 1, 1])
+
+        # 첫 번째 열에 data 항목 추가
+        data_index = ord(letter.upper()) - ord('A')  # letter에 맞는 data 리스트의 인덱스
+        if 0 <= data_index < len(data):  # data 인덱스 범위 체크
+            with cols[0]:
+                st.write(data[data_index])
 
         # 두 번째 열부터 버튼 채우기
         for idx, video_file in enumerate(videos):
