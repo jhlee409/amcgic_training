@@ -58,17 +58,30 @@ def handle_login(email, password, name, position):
         if response.status_code == 200:
             # Firebase Authentication 성공 후 사용자 정보 가져오기
             user_id = response_data['localId']
+            id_token = response_data['idToken']  # ID 토큰 저장
             
+            # Authentication 사용자 정보 업데이트
             try:
-                # Authentication 사용자 정보 업데이트
                 user = auth.update_user(
                     user_id,
                     display_name=name,
                     custom_claims={'position': position}
                 )
             except auth.UserNotFoundError:
-                st.error("사용자를 찾을 수 없습니다.")
-                return
+                # 사용자가 없는 경우, 새로운 사용자 생성
+                try:
+                    user = auth.create_user(
+                        uid=user_id,
+                        email=email,
+                        password=password,
+                        display_name=name
+                    )
+                    # 생성된 사용자에 대한 custom claims 설정
+                    auth.set_custom_user_claims(user_id, {'position': position})
+                    st.success("새로운 사용자가 생성되었습니다.")
+                except Exception as e:
+                    st.error(f"사용자 생성 중 오류 발생: {str(e)}")
+                    return
             
             # Realtime Database에도 정보 저장
             user_ref = db.reference(f'users/{user_id}')
@@ -79,7 +92,8 @@ def handle_login(email, password, name, position):
                 user_ref.set({
                     'email': email,
                     'name': name,
-                    'position': position
+                    'position': position,
+                    'created_at': {'.sv': 'timestamp'}  # 서버 타임스탬프 사용
                 })
                 user_data = {'name': name, 'position': position}
             
@@ -88,6 +102,7 @@ def handle_login(email, password, name, position):
             st.session_state['user_email'] = email
             st.session_state['user_name'] = user_data.get('name')
             st.session_state['user_position'] = user_data.get('position')
+            st.session_state['user_id'] = user_id
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
