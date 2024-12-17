@@ -1,6 +1,16 @@
 import streamlit as st
 import requests
 import json
+import firebase_admin
+from firebase_admin import credentials, db
+import os
+
+# Firebase 초기화 (아직 초기화되지 않은 경우에만)
+if not firebase_admin._apps:
+    cred = credentials.Certificate(st.secrets["FIREBASE_SERVICE_ACCOUNT"])
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+    })
 
 st.set_page_config(page_title="GI_training", layout="wide")
 
@@ -17,6 +27,8 @@ st.divider()
 # 사용자 인풋
 email = st.text_input("Email")
 password = st.text_input("Password", type="password")
+name = st.text_input("Name")  # 이름 입력 필드 추가
+position = st.selectbox("Position", ["Select Position", "Professor", "Fellow", "Resident", "Student"])  # 직책 선택 필드 추가
 
 # 로그인 버튼
 if st.button("Login"):
@@ -31,9 +43,25 @@ if st.button("Login"):
         response_data = response.json()
 
         if response.status_code == 200:
-            st.success(f"{email}님, 로그인에 성공하셨습니다. 이제 왼쪽의 메뉴를 이용하실 수 있습니다.")
+            # Firebase Authentication 성공 후 사용자 정보 가져오기
+            user_id = response_data['localId']
+            user_ref = db.reference(f'users/{user_id}')
+            user_data = user_ref.get()
+
+            if user_data is None:
+                # 새 사용자인 경우 정보 저장
+                user_ref.set({
+                    'email': email,
+                    'name': name,
+                    'position': position
+                })
+                user_data = {'name': name, 'position': position}
+            
+            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
             st.session_state['logged_in'] = True
-            st.session_state['user_email'] = email  # 이메일 주소를 세션 상태에 저장
+            st.session_state['user_email'] = email
+            st.session_state['user_name'] = user_data.get('name')
+            st.session_state['user_position'] = user_data.get('position')
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
@@ -42,10 +70,13 @@ if st.button("Login"):
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
     
+    # 로그인된 사용자 정보 표시
+    st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
+    st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
+    
     if st.sidebar.button("Logout"):
-        st.session_state['logged_in'] = False
+        st.session_state.clear()
         st.success("로그아웃 되었습니다.")
-        # 필요시 추가적인 세션 상태 초기화 코드
-        # 예: del st.session_state['logged_in']
+        st.experimental_rerun()
 
 user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
