@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 import firebase_admin
-from firebase_admin import credentials, db
+from firebase_admin import credentials, db, auth
 import os
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
@@ -59,6 +59,19 @@ if st.button("Login"):
         if response.status_code == 200:
             # Firebase Authentication 성공 후 사용자 정보 가져오기
             user_id = response_data['localId']
+            
+            try:
+                # Authentication 사용자 정보 업데이트
+                user = auth.update_user(
+                    user_id,
+                    display_name=name,
+                    custom_claims={'position': position}
+                )
+            except auth.UserNotFoundError:
+                st.error("사용자를 찾을 수 없습니다.")
+                return
+            
+            # Realtime Database에도 정보 저장
             user_ref = db.reference(f'users/{user_id}')
             user_data = user_ref.get()
 
@@ -79,7 +92,7 @@ if st.button("Login"):
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
-        st.error("An error occurred: " + str(e))
+        st.error(f"An error occurred: {str(e)}")
 
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
