@@ -44,8 +44,7 @@ password = st.text_input("Password", type="password")
 name = st.text_input("Name")  # 이름 입력 필드 추가
 position = st.selectbox("Position", ["Select Position", "Staff", "Fellow", "Resident", "Student"])  # 직책 선택 필드 추가
 
-# 로그인 버튼
-if st.button("Login"):
+def handle_login(email, password, name, position):
     try:
         # Streamlit secret에서 Firebase API 키 가져오기
         api_key = st.secrets["FIREBASE_API_KEY"]
@@ -93,6 +92,10 @@ if st.button("Login"):
             st.error(response_data["error"]["message"])
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
+
+# 로그인 버튼
+if st.button("Login"):
+    handle_login(email, password, name, position)
 
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
