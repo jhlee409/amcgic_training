@@ -139,19 +139,21 @@ if st.session_state.get('logged_in'):
         if st.sidebar.button('진행'):
             st.markdown(docx_content_2)  # Show the content of _2.docx
             
-            # 사용자 이메일과 접속 날짜 기록
-            user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+            # 사용자 이름과 직책, 접속 날짜 기록
+            user_name = st.session_state.get('user_name', 'unknown')
+            user_position = st.session_state.get('user_position', 'unknown')
+            position_name = f"{user_position}_{user_name}"  # 직책_이름 형식으로 저장
             access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
             # 로그 내용을 문자열로 생성
-            log_entry = f"Email: {user_email}, Menu: EGD Dx training, Access Date: {access_date}\n"
+            log_entry = f"User: {position_name}, Menu: EGD Dx training, Access Date: {access_date}\n"
 
             # '.png' 확장자를 제거한 파일 이름
             selected_image_file_without_extension = selected_image_file.replace('.png', '')
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{user_email}_{folder_selection}_{selected_image_file_without_extension}.txt')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{position_name}_{folder_selection}_{selected_image_file_without_extension}.txt')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     st.sidebar.divider()
@@ -164,4 +166,4 @@ if st.session_state.get('logged_in'):
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
-    st.error("로그인이 필요합니다.") 
+    st.error("로그인이 필요합니다.")

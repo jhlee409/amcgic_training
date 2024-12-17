@@ -126,18 +126,20 @@ if st.session_state.get('logged_in'):
             # 000.docx 파일은 로그를 생성하지 않음
             if selected_case_file != "000.docx":
                 # 사용자 이메일과 접속 날짜 기록
-                user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
+                user_name = st.session_state.get('user_name', 'unknown')
+                user_position = st.session_state.get('user_position', 'unknown')
+                position_name = f"{user_position}_{user_name}"  # 직책_이름 형식으로 저장
                 access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
                 # 로그 내용을 문자열로 생성
-                log_entry = f"Email: {user_email}, Access Date: {access_date}, Menu: {selected_case_file}\n"
+                log_entry = f"User: {position_name}, Access Date: {access_date}, Menu: {selected_case_file}\n"
 
                 # '.docx' 확장자를 제거한 파일 이름
                 file_name_without_extension = selected_case_file.replace('.docx', '')
 
                 # Firebase Storage에 로그 파일 업로드
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_email}_{file_name_without_extension}.txt')  # 로그 파일 경로 설정
+                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{position_name}_{file_name_without_extension}.txt')  # 로그 파일 경로 설정
                 log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
             # Include the directory in the path when reading the file
