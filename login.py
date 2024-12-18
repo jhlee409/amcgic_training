@@ -42,7 +42,7 @@ st.divider()
 email = st.text_input("Email")
 password = st.text_input("Password", type="password")
 name = st.text_input("Name")  # 이름 입력 필드 추가
-position = st.selectbox("Position", ["","Select Position", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
+position = st.selectbox("Position", ["Select Position", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
 
 def handle_login(email, password, name, position):
     try:
