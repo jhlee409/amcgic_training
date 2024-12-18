@@ -153,7 +153,7 @@ if st.session_state.get('logged_in'):
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{position_name}*{folder_selection}*{selected_image_file_without_extension}')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{position_name}*{folder_selection}_{selected_image_file_without_extension}')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     st.sidebar.divider()
