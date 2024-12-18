@@ -50,7 +50,7 @@ position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Stud
 
 # 유효성 검사 및 로그인 버튼
 login_disabled = False
-if position == "Select Position":
+if position == "":
     st.error("position을 선택해 주세요")
     login_disabled = True
 if not name:
