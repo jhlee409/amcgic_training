@@ -107,7 +107,7 @@ if st.session_state.get('logged_in'):
                 # 사용자 이메일과 접속 날짜 기록
                 user_name = st.session_state.get('user_name', 'unknown')
                 user_position = st.session_state.get('user_position', 'unknown')
-                position_name = f"{user_position}_{user_name}"  # 직책_이름 형식으로 저장
+                position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
                 
                 # 한국 시간대(KST) 설정
                 kst = timezone(timedelta(hours=9))
@@ -121,7 +121,7 @@ if st.session_state.get('logged_in'):
 
                 # Firebase Storage에 로그 파일 업로드
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-                log_blob = bucket.blob(f'log_PBL/{position_name}_{case_file_without_extension}')  # 로그 파일 경로 설정
+                log_blob = bucket.blob(f'log_PBL/{position_name}*{case_file_without_extension}')  # 로그 파일 경로 설정
                 log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
 

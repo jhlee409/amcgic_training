@@ -64,7 +64,7 @@ if st.session_state.get('logged_in'):
         if selected_lecture != "Default":
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
-            position_name = f"{user_position}_{user_name}"  # 직책_이름 형식으로 저장
+            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
             access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
             # 로그 내용을 문자열로 생성
@@ -72,7 +72,7 @@ if st.session_state.get('logged_in'):
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'log_PEG_EUS/{position_name}_{selected_lecture}')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'log_PEG_EUS/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
 
