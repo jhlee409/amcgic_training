@@ -26,7 +26,7 @@ if not firebase_admin._apps:
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
 
-st.set_page_config(page_title="GI_training", layout="wide")
+st.set_page_config(page_title="GI_training")
 
 # 제목 및 서브헤딩 설정
 st.title("GI training programs")
@@ -34,15 +34,28 @@ st.title("GI training programs")
 # 설명 텍스트
 with st.expander("**이 프로그램 사용 방법**"):
     st.write("* 로그인이 제대로 안되면 왼쪽 증례 페이지에 접근할 수 없습니다.")
-    st.write("* 알려드린 id와 pw로 로그인 하신 후 왼쪽 sidebar에서 원하는 프로그램을 선택하면 그 페이지로 이동합니다.")
+    st.write("* 등록된  이메일 주소와 PW, 한글이름, postion으로 로그인 하신 후 왼쪽 sidebar에서 원하는 프로그램을 선택하면 그 페이지로 이동합니다.")
     st.write("* 이 프로그램은 울산의대 서울아산병원 이진혁과 의대 관계자 및 다른 서울아산병원 소화기 선생님들의 참여에 의해 제작되었습니다.")
 st.divider()
+
+# 한글 이름 확인 함수
+def is_korean_name(name):
+    return any('\u3131' <= char <= '\u3163' or '\uac00' <= char <= '\ud7a3' for char in name)
 
 # 사용자 인풋
 email = st.text_input("Email")
 password = st.text_input("Password", type="password")
 name = st.text_input("Name")  # 이름 입력 필드 추가
 position = st.selectbox("Position", ["Select Position", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
+
+# 유효성 검사 및 로그인 버튼
+login_disabled = False
+if position == "Select Position":
+    st.error("position을 선택해 주세요")
+    login_disabled = True
+elif not name or not is_korean_name(name):
+    st.error("한글 이름을 입력해 주세요")
+    login_disabled = True
 
 def handle_login(email, password, name, position):
     try:
@@ -108,8 +121,7 @@ def handle_login(email, password, name, position):
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-# 로그인 버튼
-if st.button("Login"):
+if st.button("Login", disabled=login_disabled):
     handle_login(email, password, name, position)
 
 # 로그 아웃 버튼
