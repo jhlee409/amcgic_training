@@ -53,6 +53,9 @@ login_disabled = False
 if position == "Select Position":
     st.error("position을 선택해 주세요")
     login_disabled = True
+if not name:
+    st.error("한글 이름을 입력해 주세요")
+    login_disabled = True
 elif not name or not is_korean_name(name):
     st.error("한글 이름을 입력해 주세요")
     login_disabled = True
