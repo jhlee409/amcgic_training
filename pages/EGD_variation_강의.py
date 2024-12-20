@@ -9,7 +9,7 @@ import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD_Varation", layout="wide")
+st.set_page_config(page_title="EGD_Variation", layout="wide")
 
 
 if st.session_state.get('logged_in'):
@@ -87,7 +87,7 @@ if st.session_state.get('logged_in'):
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.markdown('''
             1. 해당 주제에 대해 여러 증례를 대상으로 해설하는 동양상의 버튼이 오른쪽이 있습니다. 버튼을 눌러 동영상을 시청하세요.
-            1. 전체에 대한 안내와 아래에 나열한 흔하게 접하는 증례가 포함되어 있으니 가장 먼저 시청하세요.
+            1. 전체에 대한 안내와 아래에서 나열한, 흔하게 접하는 증례가 포함되어 있으니 이 동영상을 가장 먼저 시청하세요.
             - EGD 사진이 흔들려서 찍히는 경우가 많아요,
             - 환자가 과도한 retching을 해서 검사의 진행이 어려워요,
             - 진정 내시경 시 환자가 너무 irritable해서 검사의 진행이 어려워요,

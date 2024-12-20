@@ -31,10 +31,10 @@ if st.session_state.get('logged_in'):
         firebase_admin.initialize_app(cred)
 
     # Display Form Title
-    st.subheader("EGD 기타 강의 모음")
+    st.subheader("EGD 실전 강의 모음")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 이 강의 모음은 진단 EGD 실전 강의 동영상 모음입니다.")
-        st.write("- 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
+        st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
           
     # Lectures 폴더 내 mp4 파일 리스트 가져오기  

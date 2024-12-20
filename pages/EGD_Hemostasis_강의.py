@@ -8,7 +8,7 @@ from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD_Hemostasis_training", layout="wide")
+st.set_page_config(page_title="EGD_Hemostasis_lecture", layout="wide")
 
 if st.session_state.get('logged_in'):     
 
@@ -31,10 +31,10 @@ if st.session_state.get('logged_in'):
         firebase_admin.initialize_app(cred)
 
     # Display Form Title
-    st.subheader("EGD_Hemostasis_training")
+    st.subheader("EGD_Hemostasis_lecture")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 가장 먼저 왼쪽 sidebar에서 default는 'Default'입니다. Hemostasis 강의, esophagus, stomach, duodenum 중 한 가지를 선택합니다.")
-        st.write("- 우선 EGD 지혈술의 overview 강의를 시청하고 싶으면, Hemostasis 강의를 선택하고 '진행' 버튼을 누르면 강의 화면이 나타납니다. 클릭해서 시청하세요.")
+        st.write("- 가장 먼저 왼쪽 sidebar 선택버튼에서 default는 'Default'입니다. Hemostasis 강의, esophagus, stomach, duodenum 중 한 가지를 선택합니다.")
+        st.write("- 우선 EGD 지혈술의 overview 강의를 시청하고 싶으면, Hemostasis 일반 강의를 선택하고 '진행' 버튼을 누르면 강의 화면이 나타납니다. 클릭해서 시청하세요.")
         st.write("- EGD 지혈술 case를 시청하고 싶으면 우선 각 장기를 선택합니다. esophagus는 아직 증례가 올려져 있지 않아 오류납니다. 그냥 지나가세요.")
         st.write("- 다음으로, 그 아래에서 pre_video를 선택하면 치료전 case 동영상과 질문이 나타납니다.")
         st.write("- 잘 생각해 보고 '진행' 버튼을 누르면 답과 시술 동영상을 볼수있는 동영상 player가 나타납니다.")
