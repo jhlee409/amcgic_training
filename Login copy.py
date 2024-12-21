@@ -145,5 +145,3 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
         st.experimental_rerun()
-
-user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기

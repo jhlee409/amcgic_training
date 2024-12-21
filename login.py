@@ -3,6 +3,7 @@ import requests
 import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
+from datetime import datetime
 import os
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
@@ -119,8 +120,29 @@ def handle_login(email, password, name, position):
                     'position': position
                 })
                 user_data['position'] = position
-            
-            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
+
+            # Supabase로 로그인 기록 추가
+            supabase_url = st.secrets["supabase_url"]
+            supabase_key = st.secrets["supabase_key"]
+            supabase_headers = {
+                "Content-Type": "application/json",
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}"
+            }
+
+            login_data = {
+                "user_position": position,
+                "user_name": name,
+                "time": datetime.utcnow().isoformat() + 'Z'  # UTC 시간 기준 ISO 형식
+            }
+
+            supabase_response = requests.post(f"{supabase_url}/login", headers=supabase_headers, json=login_data)
+
+            if supabase_response.status_code == 201:
+                st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
+            else:
+                st.error(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
+
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
             st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
@@ -144,6 +166,3 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     if st.sidebar.button("Logout"):
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
-        st.experimental_rerun()
-
-# user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
