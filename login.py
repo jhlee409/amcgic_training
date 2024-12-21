@@ -3,9 +3,8 @@ import requests
 import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
-from datetime import datetime, timezone, timedelta
-import uuid
-import time
+from datetime import datetime, timezone
+import os
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -62,82 +61,6 @@ elif not name or not is_korean_name(name):
     st.error("한글 이름을 입력해 주세요")
     login_disabled = True
 
-def insert_to_supabase(position, name):
-    try:
-        supabase_url = st.secrets["supabase_url"]
-        supabase_key = st.secrets["supabase_key"]
-        supabase_headers = {
-            "Content-Type": "application/json",
-            "apikey": supabase_key,
-            "Authorization": f"Bearer {supabase_key}"
-        }
-
-        # 고유 ID 생성
-        unique_id = str(uuid.uuid4())
-        login_data = {
-            "id": unique_id,  # 고유 ID 추가
-            "user_position": position,
-            "user_name": name,
-            "time": datetime.now(timezone.utc).isoformat()  # UTC 시간 기준 ISO 형식
-        }
-
-        supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
-
-        if supabase_response.status_code != 201:
-            st.warning(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
-    except Exception as e:
-        st.error(f"Supabase에 데이터를 삽입하는 중 오류 발생: {str(e)}")
-
-def insert_logout_to_supabase(position, name):
-    try:
-        supabase_url = st.secrets["supabase_url"]
-        supabase_key = st.secrets["supabase_key"]
-        supabase_headers = {
-            "Content-Type": "application/json",
-            "apikey": supabase_key,
-            "Authorization": f"Bearer {supabase_key}"
-        }
-
-        # 고유 ID 생성
-        unique_id = str(uuid.uuid4())
-        logout_data = {
-            "id": unique_id,  # 고유 ID 추가
-            "user_position": position,
-            "user_name": name,
-            "time": datetime.now(timezone.utc).isoformat(),  # UTC 시간 기준 ISO 형식
-            "action": "logout"  # 로그아웃 정보 추가
-        }
-
-        supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
-
-        if supabase_response.status_code != 201:
-            st.warning(f"Supabase에 로그아웃 기록을 추가하는 중 오류 발생: {supabase_response.text}")
-    except Exception as e:
-        st.error(f"Supabase에 데이터를 삽입하는 중 오류 발생: {str(e)}")
-
-def periodic_insertion():
-    if "logged_in" in st.session_state and st.session_state['logged_in']:
-        now = datetime.now()
-        last_insert_time = st.session_state.get("last_insert_time", now - timedelta(minutes=1))
-
-        if (now - last_insert_time).seconds >= 60:
-            insert_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
-            st.session_state["last_insert_time"] = now
-            st.write(f"데이터 삽입: {now.isoformat()}")
-
-# 로그인 경과 시간 표시
-def display_timer():
-    if "login_time" not in st.session_state:
-        st.session_state["login_time"] = datetime.now()
-
-    placeholder = st.empty()
-    while st.session_state.get("logged_in", False):
-        elapsed_time = datetime.now() - st.session_state["login_time"]
-        minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
-        placeholder.metric("경과 시간", f"{int(minutes)}분 {int(seconds)}초")
-        time.sleep(1)
-
-# 로그인 처리
 def handle_login(email, password, name, position):
     try:
         # Streamlit secret에서 Firebase API 키 가져오기
@@ -199,34 +122,47 @@ def handle_login(email, password, name, position):
                 user_data['position'] = position
 
             # Supabase로 로그인 기록 추가
-            insert_to_supabase(position, name)
+            supabase_url = st.secrets["supabase_url"]
+            supabase_key = st.secrets["supabase_key"]
+            supabase_headers = {
+                "Content-Type": "application/json",
+                "apikey": supabase_key,
+                "Authorization": f"Bearer {supabase_key}"
+            }
 
-            # 주기적인 삽입 준비
+            login_data = {
+                "user_position": position,
+                "user_name": name,
+                "time": datetime.now(timezone.utc).isoformat()  # UTC 시간 기준 ISO 형식
+            }
+
+            supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
+
+            if supabase_response.status_code == 201:
+                st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
+            else:
+                st.error(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
+
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = name
-            st.session_state['user_position'] = position
-            st.session_state['last_insert_time'] = datetime.now() - timedelta(minutes=1)
-
-            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
-            display_timer()
+            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
+            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
+            st.session_state['user_id'] = user_id
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-# 주기적 삽입 실행
-if "logged_in" in st.session_state and st.session_state['logged_in']:
-    periodic_insertion()
+if st.button("Login", disabled=login_disabled):
+    handle_login(email, password, name, position)
 
-# UI 처리
-if "logged_in" not in st.session_state or not st.session_state['logged_in']:
-    if st.button("Login", disabled=login_disabled):
-        handle_login(email, password, name, position)
-else:
+# 로그 아웃 버튼
+if "logged_in" in st.session_state and st.session_state['logged_in']:
+    
+    # 로그인된 사용자 정보 표시
     st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
+    
     if st.sidebar.button("Logout"):
-        insert_logout_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
