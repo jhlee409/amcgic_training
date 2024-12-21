@@ -136,7 +136,7 @@ def handle_login(email, password, name, position):
                 "time": datetime.now(timezone.utc).isoformat() + 'Z'  # UTC 시간 기준 ISO 형식
             }
 
-            supabase_response = requests.post(f"{supabase_url}/login", headers=supabase_headers, json=login_data)
+            supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
 
             if supabase_response.status_code == 201:
                 st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
