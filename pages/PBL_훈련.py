@@ -121,7 +121,7 @@ if st.session_state.get('logged_in'):
 
                 # Firebase Storage에 로그 파일 업로드
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-                log_blob = bucket.blob(f'log_PBL/{user_position}*{position_name}*{case_file_without_extension}')  # 로그 파일 경로 설정
+                log_blob = bucket.blob(f'log_PBL/{user_position}*{user_name}*{case_file_without_extension}')  # 로그 파일 경로 설정
                 log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
 
