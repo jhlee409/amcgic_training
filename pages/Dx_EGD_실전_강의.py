@@ -64,6 +64,10 @@ if st.session_state.get('logged_in'):
         expiration_time = datetime.utcnow() + timedelta(seconds=3600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
+        # 세션 상태 초기화
+        if 'log_sent' not in st.session_state:
+            st.session_state.log_sent = False
+
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
             video_html = f'''
@@ -71,19 +75,23 @@ if st.session_state.get('logged_in'):
                 <video id="myVideo" width="1000" height="800" controls controlsList="nodownload">
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
+                <div id="progress" style="display: none;"></div>
             </div>
-            <div id="log_status" style="display: none;"></div>
             <script>
                 var video = document.getElementById('myVideo');
-                var logStatus = document.getElementById('log_status');
+                var progress = document.getElementById('progress');
                 var logSent = false;
                 
-                video.addEventListener('timeupdate', function() {{
-                    if (!logSent && video.currentTime >= video.duration * 0.05) {{
-                        logSent = true;
-                        logStatus.textContent = 'logged';
-                        logStatus.style.display = 'block';
-                    }}
+                video.addEventListener('loadedmetadata', function() {{
+                    var targetTime = video.duration * 0.05;  // 5% 지점 계산
+                    
+                    video.addEventListener('timeupdate', function() {{
+                        if (!logSent && video.currentTime >= targetTime) {{
+                            logSent = true;
+                            progress.textContent = 'reached_5_percent';
+                            progress.style.display = 'block';
+                        }}
+                    }});
                 }});
 
                 video.addEventListener('contextmenu', function(e) {{
@@ -93,39 +101,60 @@ if st.session_state.get('logged_in'):
             '''
             st.components.v1.html(video_html, height=850)
 
-            # 로그 상태를 확인하기 위한 요소
-            log_placeholder = st.empty()
-            
-            if st.button("로그 상태 확인", key="check_log"):
-                # JavaScript에서 로그 상태를 가져옴
-                log_status = st.components.v1.html(
+            # 진행 상태 확인
+            if not st.session_state.log_sent:
+                progress_check = st.empty()
+                
+                # 5% 진행 여부 확인
+                progress_status = st.components.v1.html(
                     """
                     <script>
-                        var logStatus = document.getElementById('log_status');
-                        if (logStatus && logStatus.textContent === 'logged') {
-                            window.parent.postMessage({type: 'log_ready'}, '*');
+                        var progressDiv = document.getElementById('progress');
+                        if (progressDiv && progressDiv.textContent === 'reached_5_percent') {
+                            window.parent.postMessage({type: 'progress_complete'}, '*');
                         }
                     </script>
                     """,
                     height=0
                 )
 
-                # 로그가 준비되었다면 Firebase에 업로드
-                user_name = st.session_state.get('user_name', 'unknown')
-                user_position = st.session_state.get('user_position', 'unknown')
-                access_date = datetime.now().strftime("%Y-%m-%d")
-                
-                # 로그 내용을 문자열로 생성
-                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
-                
-                # Firebase Storage에 로그 파일 업로드
-                try:
-                    log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
-                    log_blob.upload_from_string(log_entry, content_type='text/plain')
-                    log_placeholder.success("로그가 성공적으로 기록되었습니다.")
-                except Exception as e:
-                    log_placeholder.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-
+                # 5% 이상 시청했을 때만 로그 전송
+                if st.button("진행 상태 확인"):
+                    user_name = st.session_state.get('user_name', 'unknown')
+                    user_position = st.session_state.get('user_position', 'unknown')
+                    access_date = datetime.now().strftime("%Y-%m-%d")
+                    
+                    progress_element = st.components.v1.html(
+                        """
+                        <div id="result"></div>
+                        <script>
+                            var progressDiv = document.getElementById('progress');
+                            var resultDiv = document.getElementById('result');
+                            if (progressDiv && progressDiv.textContent === 'reached_5_percent') {
+                                resultDiv.textContent = 'true';
+                            } else {
+                                resultDiv.textContent = 'false';
+                            }
+                        </script>
+                        """,
+                        height=0
+                    )
+                    
+                    # 5% 이상 시청한 경우에만 로그 전송
+                    if not st.session_state.log_sent:
+                        # 로그 내용 생성
+                        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
+                        
+                        try:
+                            # Firebase Storage에 로그 업로드
+                            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
+                            log_blob.upload_from_string(log_entry, content_type='text/plain')
+                            st.session_state.log_sent = True
+                            progress_check.success("5% 이상 시청 완료되어 로그가 기록되었습니다.")
+                        except Exception as e:
+                            progress_check.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
+                    else:
+                        progress_check.info("아직 5% 시청이 완료되지 않았습니다. 계속 시청해주세요.")
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
