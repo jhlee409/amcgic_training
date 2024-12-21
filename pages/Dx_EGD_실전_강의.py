@@ -6,6 +6,8 @@ import io
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
+import json
+from flask import Flask, request
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
@@ -37,19 +39,11 @@ if st.session_state.get('logged_in'):
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
 
-    # Lectures 폴더 내 mp4 파일 리스트 가져오기  
+    # Firebase Storage에서 mp4 파일 리스트 가져오기
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
-        file_names = []
-        for blob in blobs:
-            if blob.name.endswith(".mp4"):
-                file_name = os.path.basename(blob.name)
-                file_names.append(file_name)
-        return file_names
-
-    # 동영상 플레이어를 렌더링할 컨테이너 생성
-    video_player_container = st.container()
+        return [os.path.basename(blob.name) for blob in blobs if blob.name.endswith(".mp4")]
 
     # 동영상 플레이어를 렌더링할 플레이스홀더 생성
     video_player_placeholder = st.empty()
@@ -58,39 +52,20 @@ if st.session_state.get('logged_in'):
     lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
-    # 로그 파일 생성 함수 (20% 이상 재생 시 실행)
-    def log_on_play(selected_lecture, user_name, user_position):
-        position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-        # 로그 내용을 문자열로 생성
-        log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
-
-        # Firebase Storage에 로그 파일 업로드
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
-        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
-    # 선택된 강의와 같은 이름의 mp4 파일 찾기
+    # 동영상 URL 생성
     directory_lectures = "Lectures/"
     mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
-
-    # 선택된 강의에 해당하는 mp4 파일 찾기
-    selected_mp4 = None
-    for file_name in mp4_files:
-        if file_name.startswith(selected_lecture):
-            selected_mp4 = file_name
-            break
+    selected_mp4 = next((file for file in mp4_files if file.startswith(selected_lecture)), None)
 
     if selected_mp4:
-        # Firebase Storage에서 선택된 mp4 파일의 URL 생성
+        # Generate Firebase Signed URL
         selected_mp4_path = directory_lectures + selected_mp4
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(selected_mp4_path)
-        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+        expiration_time = datetime.utcnow() + timedelta(seconds=3600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
-        # 동영상 플레이어 렌더링
+        # JavaScript Player with Logging
         with video_player_placeholder.container():
             video_html = f'''
             <div style="display: flex; justify-content: center;">
@@ -100,45 +75,58 @@ if st.session_state.get('logged_in'):
             </div>
             <script>
             var video_player = document.getElementById("video_player");
-            var logged = false;  // Prevent multiple log attempts
+            var logged = false;
             video_player.addEventListener('timeupdate', function() {{
                 var duration = video_player.duration;
                 var currentTime = video_player.currentTime;
                 if (!logged && currentTime >= duration * 0.2) {{
                     logged = true;
-                    fetch("/log_play", {{
-                        method: "POST",
+                    fetch('/log_play', {{
+                        method: 'POST',
                         headers: {{
-                            "Content-Type": "application/json"
+                            'Content-Type': 'application/json'
                         }},
                         body: JSON.stringify({{
                             "lecture": "{selected_lecture}",
                             "user_name": "{st.session_state.get('user_name', 'unknown')}",
                             "user_position": "{st.session_state.get('user_position', 'unknown')}"
                         }})
-                    }}).then(response => {{
-                        if (response.ok) {{
-                            console.log("Log sent successfully!");
-                        }} else {{
-                            console.error("Failed to send log");
-                        }}
                     }});
                 }}
             }});
             </script>
             '''
             st.markdown(video_html, unsafe_allow_html=True)
-
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
+    # Flask-like POST endpoint for log handling
+    @st.experimental_singleton
+    def get_flask_app():
+        app = Flask(__name__)
+
+        @app.route('/log_play', methods=['POST'])
+        def log_play():
+            data = request.get_json()
+            try:
+                position_name = f"{data['user_position']}*{data['user_name']}"
+                access_date = datetime.now().strftime("%Y-%m-%d")
+                log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {data['lecture']}\n"
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{data["lecture"]}')
+                log_blob.upload_from_string(log_entry, content_type='text/plain')
+                return {"status": "success", "message": "Log uploaded successfully."}, 200
+            except Exception as e:
+                return {"status": "error", "message": str(e)}, 500
+
+        return app
+
+    get_flask_app()
     st.sidebar.divider()
 
-    # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
-        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+        st.rerun()
 
 else:
-    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
     st.error("로그인이 필요합니다.")
