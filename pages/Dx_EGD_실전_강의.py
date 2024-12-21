@@ -67,6 +67,8 @@ if st.session_state.get('logged_in'):
         # 세션 상태 초기화
         if 'log_sent' not in st.session_state:
             st.session_state.log_sent = set()
+        if 'should_send_log' not in st.session_state:
+            st.session_state.should_send_log = False
 
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
@@ -106,7 +108,7 @@ if st.session_state.get('logged_in'):
                         totalPlayTime += 1;
                         playTime.textContent = totalPlayTime;
                         
-                        if (totalPlayTime >= 180) {{  
+                        if (totalPlayTime >= 180) {{  // 3분(180초)
                             logSent = true;
                             window.parent.postMessage({{
                                 type: 'send_log',
@@ -127,16 +129,21 @@ if st.session_state.get('logged_in'):
                 <script>
                     window.addEventListener('message', function(e) {
                         if (e.data.type === 'send_log') {
-                            window.parent.postMessage(e.data, '*');
+                            window.parent.postMessage({type: 'streamlit:set_component_value', value: true}, '*');
                         }
                     });
                 </script>
                 """,
-                height=0
+                height=0,
+                key="message_receiver"
             )
 
-        # JavaScript에서 메시지를 받아 로그 전송
-        if selected_lecture not in st.session_state.log_sent:
+        # JavaScript에서 메시지를 받으면 should_send_log를 True로 설정
+        if st.session_state.get("message_receiver", False):
+            st.session_state.should_send_log = True
+
+        # 3분 재생 후 로그 전송
+        if st.session_state.should_send_log and selected_lecture not in st.session_state.log_sent:
             try:
                 user_name = st.session_state.get('user_name', 'unknown')
                 user_position = st.session_state.get('user_position', 'unknown')
