@@ -6,6 +6,7 @@ from firebase_admin import credentials, db, auth, storage
 import os
 import datetime
 import threading
+import time
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -26,9 +27,8 @@ if not firebase_admin._apps:
     })
     firebase_admin.initialize_app(cred, {
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
+        'storageBucket': st.secrets["FIREBASE_STORAGE_BUCKET"]
     })
-
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
 st.set_page_config(page_title="GI_training")
 
@@ -65,17 +65,20 @@ elif not name or not is_korean_name(name):
     login_disabled = True
 
 def log_user_activity():
-    while "logged_in" in st.session_state and st.session_state['logged_in']:
-        now = datetime.datetime.now()
-        formatted_date = now.strftime("%Y년%m월%d일-%H시%M분")
-        log_data = f"{st.session_state['user_position']}*{st.session_state['user_name']}*{formatted_date}-로그인"
-        
-        # Firebase Storage에 로그 저장
-        bucket = storage.bucket()
-        blob = bucket.blob(f"log_stay_duration/{st.session_state['user_id']}-{now.strftime('%Y%m%d%H%M%S')}.txt")
-        blob.upload_from_string(log_data, content_type="text/plain")
+    try:
+        while "logged_in" in st.session_state and st.session_state['logged_in']:
+            now = datetime.datetime.now()
+            formatted_date = now.strftime("%Y년%m월%d일-%H시%M분")
+            log_data = f"{st.session_state['user_position']}*{st.session_state['user_name']}*{formatted_date}-로그인"
+            
+            # Firebase Storage에 로그 저장
+            bucket = storage.bucket()
+            blob = bucket.blob(f"log_stay_duration/{st.session_state['user_id']}-{now.strftime('%Y%m%d%H%M%S')}.txt")
+            blob.upload_from_string(log_data, content_type="text/plain")
 
-        time.sleep(60)  # 1분 대기
+            time.sleep(60)  # 1분 대기
+    except Exception as e:
+        st.error(f"로그 기록 중 오류 발생: {str(e)}")
 
 def handle_login(email, password, name, position):
     try:
@@ -100,9 +103,19 @@ def handle_login(email, password, name, position):
             st.session_state['user_position'] = position
             st.session_state['user_id'] = user_id
 
+            # 즉시 첫 로그 기록
+            now = datetime.datetime.now()
+            formatted_date = now.strftime("%Y년%m월%d일-%H시%M분")
+            log_data = f"{position}*{name}*{formatted_date}-로그인"
+            bucket = storage.bucket()
+            blob = bucket.blob(f"log_stay_duration/{user_id}-{now.strftime('%Y%m%d%H%M%S')}.txt")
+            blob.upload_from_string(log_data, content_type="text/plain")
+
             # 로그 기록 쓰레드 시작
-            log_thread = threading.Thread(target=log_user_activity, daemon=True)
-            log_thread.start()
+            if 'log_thread' not in st.session_state or not st.session_state['log_thread'].is_alive():
+                log_thread = threading.Thread(target=log_user_activity, daemon=True)
+                st.session_state['log_thread'] = log_thread
+                log_thread.start()
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
