@@ -65,63 +65,8 @@ if st.session_state.get('logged_in'):
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
         # 세션 상태 초기화
-        if 'lecture_start_time' not in st.session_state:
-            st.session_state.lecture_start_time = {}
         if 'log_sent' not in st.session_state:
-            st.session_state.log_sent = set()  # 빈 set으로 초기화
-        if 'last_lecture' not in st.session_state:
-            st.session_state.last_lecture = None
-
-        # 이전 강의가 있고, 로그를 아직 전송하지 않았다면
-        if (st.session_state.last_lecture and 
-            st.session_state.last_lecture != "Default" and 
-            st.session_state.last_lecture != selected_lecture and
-            st.session_state.last_lecture not in st.session_state.log_sent):
-            try:
-                # 로그 생성 및 전송
-                user_name = st.session_state.get('user_name', 'unknown')
-                user_position = st.session_state.get('user_position', 'unknown')
-                access_date = datetime.now().strftime("%Y-%m-%d")
-                
-                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {st.session_state.last_lecture}\n"
-                
-                log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{st.session_state.last_lecture}')
-                log_blob.upload_from_string(log_entry, content_type='text/plain')
-                
-                st.session_state.log_sent.add(st.session_state.last_lecture)
-                st.success(f"강의 '{st.session_state.last_lecture}'의 로그가 기록되었습니다.")
-            except Exception as e:
-                st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-
-        # 현재 강의 시작 시간 기록
-        if selected_lecture != "Default" and selected_lecture not in st.session_state.lecture_start_time:
-            st.session_state.lecture_start_time[selected_lecture] = datetime.now()
-        
-        # 현재 강의 저장
-        st.session_state.last_lecture = selected_lecture
-
-        # 20초 경과 체크 및 로그 전송
-        if selected_lecture != "Default" and selected_lecture not in st.session_state.log_sent:
-            start_time = st.session_state.lecture_start_time.get(selected_lecture)
-            if start_time:
-                elapsed_time = (datetime.now() - start_time).total_seconds()
-                
-                if elapsed_time >= 20:  # 20초 이상 경과
-                    try:
-                        # 로그 생성 및 전송
-                        user_name = st.session_state.get('user_name', 'unknown')
-                        user_position = st.session_state.get('user_position', 'unknown')
-                        access_date = datetime.now().strftime("%Y-%m-%d")
-                        
-                        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
-                        
-                        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
-                        log_blob.upload_from_string(log_entry, content_type='text/plain')
-                        
-                        st.session_state.log_sent.add(selected_lecture)
-                        st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
-                    except Exception as e:
-                        st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
+            st.session_state.log_sent = set()
 
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
@@ -130,41 +75,88 @@ if st.session_state.get('logged_in'):
                 <video id="myVideo" width="1000" height="800" controls controlsList="nodownload">
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
+                <div id="playTime" style="display: none;">0</div>
             </div>
             <script>
                 var video = document.getElementById('myVideo');
+                var playTime = document.getElementById('playTime');
+                var totalPlayTime = 0;
+                var isPlaying = false;
+                var logSent = false;
+                
+                video.addEventListener('play', function() {{
+                    isPlaying = true;
+                    checkPlayTime();
+                }});
+                
+                video.addEventListener('pause', function() {{
+                    isPlaying = false;
+                }});
+                
+                video.addEventListener('ended', function() {{
+                    isPlaying = false;
+                }});
+                
                 video.addEventListener('contextmenu', function(e) {{
                     e.preventDefault();
                 }});
+                
+                function checkPlayTime() {{
+                    if (isPlaying && !logSent) {{
+                        totalPlayTime += 1;
+                        playTime.textContent = totalPlayTime;
+                        
+                        if (totalPlayTime >= 20) {{
+                            logSent = true;
+                            window.parent.postMessage({{
+                                type: 'send_log',
+                                lecture: '{selected_lecture}'
+                            }}, '*');
+                        }}
+                        
+                        setTimeout(checkPlayTime, 1000);
+                    }}
+                }}
             </script>
             '''
             st.components.v1.html(video_html, height=850)
+            
+            # JavaScript 메시지 수신을 위한 컴포넌트
+            st.components.v1.html(
+                """
+                <script>
+                    window.addEventListener('message', function(e) {
+                        if (e.data.type === 'send_log') {
+                            window.parent.postMessage(e.data, '*');
+                        }
+                    });
+                </script>
+                """,
+                height=0
+            )
+
+        # JavaScript에서 메시지를 받아 로그 전송
+        if selected_lecture not in st.session_state.log_sent:
+            try:
+                user_name = st.session_state.get('user_name', 'unknown')
+                user_position = st.session_state.get('user_position', 'unknown')
+                access_date = datetime.now().strftime("%Y-%m-%d")
+                
+                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
+                
+                log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
+                log_blob.upload_from_string(log_entry, content_type='text/plain')
+                
+                st.session_state.log_sent.add(selected_lecture)
+                st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
+            except Exception as e:
+                st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
 
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
     # 로그아웃 버튼
     if st.sidebar.button('로그아웃'):
-        # 현재 강의의 로그가 아직 전송되지 않았다면 전송
-        if (st.session_state.last_lecture and 
-            st.session_state.last_lecture != "Default" and 
-            st.session_state.last_lecture not in st.session_state.log_sent):
-            try:
-                user_name = st.session_state.get('user_name', 'unknown')
-                user_position = st.session_state.get('user_position', 'unknown')
-                access_date = datetime.now().strftime("%Y-%m-%d")
-                
-                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {st.session_state.last_lecture}\n"
-                
-                log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{st.session_state.last_lecture}')
-                log_blob.upload_from_string(log_entry, content_type='text/plain')
-                
-                st.session_state.log_sent.add(st.session_state.last_lecture)
-                st.success(f"강의 '{st.session_state.last_lecture}'의 로그가 기록되었습니다.")
-            except Exception as e:
-                st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-        
-        # 세션 상태 초기화
         for key in list(st.session_state.keys()):
             del st.session_state[key]
         st.rerun()
