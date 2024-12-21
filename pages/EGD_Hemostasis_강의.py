@@ -165,8 +165,8 @@ if st.session_state.get('logged_in'):
         # 사용자 이름과 직책과 접속 날짜 기록
         user_name = st.session_state.get('user_name', 'unknown')
         user_position = st.session_state.get('user_position', 'unknown')
-        position = f"(user_position:{user_position})"
-        name = f"(user_name:{user_name})"
+        position = f"{user_position}"
+        name = f"{user_name}"
         access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # 로그 내용을 문자열로 생성
