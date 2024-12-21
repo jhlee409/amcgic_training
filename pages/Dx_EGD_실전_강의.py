@@ -71,14 +71,24 @@ if st.session_state.get('logged_in'):
         if selected_lecture != "Default":
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
-            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+            access_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            
+            # Supabase 데이터 삽입
+            try:
+                response = supabase_client.table("login_duration").insert({
+                    "id": str(uuid.uuid4()),  # UUID 생성
+                    "user_position": user_position,
+                    "user_name": user_name,
+                    "access_datetime": access_datetime,
+                    "duration": 0,  # 강의 선택 시 체류시간은 기본 0분으로 설정
+                }).execute()
 
-            log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
-
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')
-            log_blob.upload_from_string(log_entry, content_type='text/plain')
+                if response.data:
+                    st.success(f"강의 '{selected_lecture}' 선택 기록이 저장되었습니다.")
+                elif response.error:
+                    st.error(f"Supabase 오류: {response.error['message']}")
+            except Exception as e:
+                st.error(f"Supabase 연결 오류: {e}")
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
@@ -118,23 +128,24 @@ if st.session_state.get('logged_in'):
     st.sidebar.divider()
 
     if st.sidebar.button('로그아웃'):
-        # 로그아웃 시 머무른 시간 계산 및 저장
         end_time = datetime.now()
-        duration = (end_time - start_time).total_seconds() // 60  # 분 단위로 계산
+        duration = (end_time - start_time).total_seconds() // 60  # 분 단위 계산
+        
+        try:
+            # Supabase 데이터 업데이트
+            response = supabase_client.table("login_duration").update({
+                "duration": int(duration)
+            }).eq("user_name", st.session_state.get('user_name')).execute()
 
-        user_name = st.session_state.get('user_name', 'unknown')
-        user_position = st.session_state.get('user_position', 'unknown')
-        access_datetime = start_time.strftime("%Y-%m-%d %H:%M")
-
-        # Supabase에 데이터 저장
-        supabase_client.table("login_duration").insert({
-            "user_position": user_position,
-            "user_name": user_name,
-            "access_datetime": access_datetime,
-            "duration": duration
-        }).execute()
-
+            if response.data:
+                st.success(f"사용자 {st.session_state.get('user_name')}의 체류시간 {int(duration)}분이 저장되었습니다.")
+            elif response.error:
+                st.error(f"Supabase 오류: {response.error['message']}")
+        except Exception as e:
+            st.error(f"Supabase 연결 오류: {e}")
+        
         st.session_state.logged_in = False
         st.rerun()
+        
 else:
     st.error("로그인이 필요합니다.")
