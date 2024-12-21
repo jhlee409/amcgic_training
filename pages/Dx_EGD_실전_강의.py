@@ -78,24 +78,30 @@ if st.session_state.get('logged_in'):
         elif st.session_state["current_lecture"] != selected_lecture:
             # 다른 강의로 변경된 경우
             end_time = datetime.now(timezone.utc)
-            duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
+            duration = (end_time - st.session_state["start_time"]).total_seconds() / 60  # 분 단위 계산
+            duration = int(duration) if duration >= 1 else 0  # 1분 미만은 0으로 처리
 
             # 이전 강의의 duration 업데이트
             try:
-                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S%z")
+                
+                data = supabase_client.table("login_duration").select("*").eq(
+                    "user_name", st.session_state.get("user_name")
+                ).eq("access_datetime", utc_start_time).execute()
 
-                response = supabase_client.table("login_duration").update({
-                    "duration": int(duration)
-                }).eq("user_name", st.session_state.get("user_name")).eq(
-                    "access_datetime", utc_start_time
-                ).execute()
-
-                if response.data:
-                    st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
+                if data.data:
+                    response = supabase_client.table("login_duration").update({
+                        "duration": duration
+                    }).eq("user_name", st.session_state.get("user_name")).eq(
+                        "access_datetime", utc_start_time
+                    ).execute()
+                    
+                    if duration > 0:
+                        st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {duration}분이 저장되었습니다.")
                 else:
-                    st.error(f"Supabase 업데이트 실패: 조건에 맞는 데이터가 없습니다. 응답 내용: {response.json()}")
+                    st.warning("저장할 데이터를 찾을 수 없습니다.")
             except Exception as e:
-                st.error(f"Supabase 연결 오류: {e}")
+                st.error(f"Supabase 연결 오류: {str(e)}")
 
             # 현재 강의 및 시작 시간 갱신
             st.session_state["current_lecture"] = selected_lecture
@@ -142,24 +148,29 @@ if st.session_state.get('logged_in'):
     if st.sidebar.button("로그아웃"):
         if st.session_state["current_lecture"]:
             end_time = datetime.now(timezone.utc)
-            duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
+            duration = (end_time - st.session_state["start_time"]).total_seconds() / 60
+            duration = int(duration) if duration >= 1 else 0
 
             # 마지막 강의의 duration 업데이트
             try:
-                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S%z")
+                data = supabase_client.table("login_duration").select("*").eq(
+                    "user_name", st.session_state.get("user_name")
+                ).eq("access_datetime", utc_start_time).execute()
 
-                response = supabase_client.table("login_duration").update({
-                    "duration": int(duration)
-                }).eq("user_name", st.session_state.get("user_name")).eq(
-                    "access_datetime", utc_start_time
-                ).execute()
-
-                if response.data:
-                    st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
+                if data.data:
+                    response = supabase_client.table("login_duration").update({
+                        "duration": duration
+                    }).eq("user_name", st.session_state.get("user_name")).eq(
+                        "access_datetime", utc_start_time
+                    ).execute()
+                    
+                    if duration > 0:
+                        st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {duration}분이 저장되었습니다.")
                 else:
-                    st.error(f"Supabase 업데이트 실패: 조건에 맞는 데이터가 없습니다. 응답 내용: {response.json()}")
+                    st.warning("저장할 데이터를 찾을 수 없습니다.")
             except Exception as e:
-                st.error(f"Supabase 연결 오류: {e}")
+                st.error(f"Supabase 연결 오류: {str(e)}")
 
         st.session_state["logged_in"] = False
         st.rerun()
