@@ -150,10 +150,10 @@ if st.session_state.get('logged_in'):
                     "access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
                 ).execute()
 
-                if response.data:
+                if response.data:  # 데이터가 성공적으로 업데이트된 경우
                     st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
-                elif response.error:
-                    st.error(f"Supabase 오류: {response.error['message']}")
+                else:  # 데이터가 없거나 실패한 경우
+                    st.error(f"Supabase 업데이트 실패: 응답 내용 {response.json()}")
             except Exception as e:
                 st.error(f"Supabase 연결 오류: {e}")
 
