@@ -67,8 +67,12 @@ if st.session_state.get('logged_in'):
         # 세션 상태 초기화
         if 'log_sent' not in st.session_state:
             st.session_state.log_sent = set()
-        if 'should_send_log' not in st.session_state:
-            st.session_state.should_send_log = False
+        if 'play_time' not in st.session_state:
+            st.session_state.play_time = {}
+
+        # 현재 강의의 재생 시간 초기화
+        if selected_lecture not in st.session_state.play_time:
+            st.session_state.play_time[selected_lecture] = 0
 
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
@@ -77,13 +81,11 @@ if st.session_state.get('logged_in'):
                 <video id="myVideo" width="1000" height="800" controls controlsList="nodownload">
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
-                <div id="playTime" style="display: none;">0</div>
             </div>
             <script>
                 var video = document.getElementById('myVideo');
-                var playTime = document.getElementById('playTime');
-                var totalPlayTime = 0;
                 var isPlaying = false;
+                var totalPlayTime = {st.session_state.play_time[selected_lecture]};
                 var logSent = false;
                 
                 video.addEventListener('play', function() {{
@@ -106,13 +108,17 @@ if st.session_state.get('logged_in'):
                 function checkPlayTime() {{
                     if (isPlaying && !logSent) {{
                         totalPlayTime += 1;
-                        playTime.textContent = totalPlayTime;
                         
-                        if (totalPlayTime >= 180) {{  // 3분(180초)
+                        // 3분(180초) 이상 재생 시 로그 전송
+                        if (totalPlayTime >= 180) {{
                             logSent = true;
+                            const data = {{
+                                lecture: '{selected_lecture}',
+                                playTime: totalPlayTime
+                            }};
                             window.parent.postMessage({{
-                                type: 'send_log',
-                                lecture: '{selected_lecture}'
+                                type: 'streamlit:set_component_value',
+                                data: data
                             }}, '*');
                         }}
                         
@@ -122,42 +128,45 @@ if st.session_state.get('logged_in'):
             </script>
             '''
             st.components.v1.html(video_html, height=850)
-            
-            # JavaScript 메시지 수신을 위한 컴포넌트
-            st.components.v1.html(
+
+            # 재생 시간 추적을 위한 컴포넌트
+            result = st.components.html(
                 """
                 <script>
                     window.addEventListener('message', function(e) {
-                        if (e.data.type === 'send_log') {
-                            window.parent.postMessage({type: 'streamlit:set_component_value', value: true}, '*');
+                        if (e.data.type === 'streamlit:set_component_value') {
+                            window.parent.postMessage(e.data, '*');
                         }
                     });
                 </script>
                 """,
                 height=0,
-                key="message_receiver"
+                key=f"video_tracker_{selected_lecture}"
             )
 
-        # JavaScript에서 메시지를 받으면 should_send_log를 True로 설정
-        if st.session_state.get("message_receiver", False):
-            st.session_state.should_send_log = True
-
-        # 3분 재생 후 로그 전송
-        if st.session_state.should_send_log and selected_lecture not in st.session_state.log_sent:
-            try:
-                user_name = st.session_state.get('user_name', 'unknown')
-                user_position = st.session_state.get('user_position', 'unknown')
-                access_date = datetime.now().strftime("%Y-%m-%d")
-                
-                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
-                
-                log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
-                log_blob.upload_from_string(log_entry, content_type='text/plain')
-                
-                st.session_state.log_sent.add(selected_lecture)
-                st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
-            except Exception as e:
-                st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
+            # 컴포넌트로부터 재생 시간 업데이트 받기
+            if result:
+                try:
+                    data = result.get('data', {})
+                    if isinstance(data, dict) and 'playTime' in data:
+                        lecture = data.get('lecture')
+                        play_time = data.get('playTime', 0)
+                        
+                        if lecture == selected_lecture and play_time >= 180 and selected_lecture not in st.session_state.log_sent:
+                            # 로그 전송
+                            user_name = st.session_state.get('user_name', 'unknown')
+                            user_position = st.session_state.get('user_position', 'unknown')
+                            access_date = datetime.now().strftime("%Y-%m-%d")
+                            
+                            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
+                            
+                            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
+                            log_blob.upload_from_string(log_entry, content_type='text/plain')
+                            
+                            st.session_state.log_sent.add(selected_lecture)
+                            st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
+                except Exception as e:
+                    st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
 
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
@@ -166,7 +175,7 @@ if st.session_state.get('logged_in'):
     if st.sidebar.button('로그아웃'):
         for key in list(st.session_state.keys()):
             del st.session_state[key]
-        st.rerun()
+        st.experimental_rerun()
 
 else:
     st.error("로그인이 필요합니다.")
