@@ -165,24 +165,18 @@ if st.session_state.get('logged_in'):
         # 사용자 이름과 직책과 접속 날짜 기록
         user_name = st.session_state.get('user_name', 'unknown')
         user_position = st.session_state.get('user_position', 'unknown')
-        
-        # 디버깅을 위한 출력
-        st.write(f"Debug - Session state: {dict(st.session_state)}")
-        st.write(f"Debug - user_position: {user_position}")
-        
-        position = user_position.strip()  # 공백 제거
-        name = user_name.strip()  # 공백 제거
+        position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
         access_date = datetime.now().strftime("%Y-%m-%d")
 
         # 로그 내용을 문자열로 생성
-        log_entry = f"Position: {position}, User: {name}, Access Date: {access_date}, Menu: {folder_selection}\n"
+        log_entry = f"User: {position_name}, Access Date: {access_date}, Menu: {folder_selection}\n"
 
         # 파일 이름에서 확장자(.mp4) 제거
         file_name_without_extension = os.path.splitext(selected_pre_videos_file)[0]
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        log_blob = bucket.blob(f'log_EGD_Hemostasis/{position}*{name}*{file_name_without_extension}')
+        log_blob = bucket.blob(f'log_EGD_Hemostasis/{position_name}*{file_name_without_extension}')
         log_blob.upload_from_string(log_entry, content_type='text/plain')
 
         if st.session_state.get('selected_video_file'):
