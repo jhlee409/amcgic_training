@@ -17,6 +17,21 @@ supabase_key = st.secrets["supabase_key"]
 supabase_client = create_client(supabase_url, supabase_key)
 
 if st.session_state.get('logged_in'):
+    try:
+        # 테스트 데이터 삽입
+        response = supabase_client.table("login_duration").insert({
+            "user_position": "Manager",
+            "user_name": "John Doe",
+            "access_datetime": "2024-12-21 10:30:00",
+            "duration": 15
+        }).execute()
+
+        if response.status_code == 201:  # HTTP 201 Created
+            st.success("테스트 데이터 삽입 성공!")
+        else:
+            st.error(f"테스트 실패: {response.data}")
+    except Exception as e:
+        st.error(f"Supabase 연결 오류: {e}")
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
         cred = credentials.Certificate({
@@ -67,13 +82,6 @@ if st.session_state.get('logged_in'):
 
     # 로그 파일 생성
     if selected_lecture:
-        supabase_client.table("login_duration").insert({
-            "user_position": "Manager",
-            "user_name": "John Doe",
-            "access_datetime": "2024-12-21 10:30:00",
-            "duration": 15
-        }).execute()
-        
         if selected_lecture != "Default":
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
