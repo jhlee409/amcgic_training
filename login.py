@@ -47,7 +47,7 @@ def update_login_info():
     while user_data['is_logged_in']:
         try:
             # 현재 시간을 KST로 설정
-            current_time = datetime.now(timezone(timedelta(hours=9))).isoformat()
+            current_time = "2024-12-21T23:19:45+09:00"
             
             # Supabase에 로그인 정보 저장
             data = {
@@ -170,7 +170,7 @@ def handle_login(email, password, name, position):
             st.session_state['authenticated'] = True
             st.session_state['user_name'] = name
             st.session_state['user_position'] = position
-            st.experimental_rerun()
+            st.rerun()
             
         else:
             st.error(response_data["error"]["message"])
@@ -197,6 +197,6 @@ if 'authenticated' in st.session_state and st.session_state['authenticated']:
         st.session_state['user_name'] = None
         st.session_state['user_position'] = None
         st.success("로그아웃 되었습니다.")
-        st.experimental_rerun()
+        st.rerun()
 
 user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
