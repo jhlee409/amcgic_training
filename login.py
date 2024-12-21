@@ -4,12 +4,10 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
 import os
-from supabase import create_client, Client
-import time
-import threading
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
+
     # Streamlit Secrets에서 Firebase 설정 정보 로드
     cred = credentials.Certificate({
         "type": "service_account",
@@ -27,36 +25,6 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred, {
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
-
-# Supabase 초기화
-supabase: Client = create_client(
-    st.secrets["supabase_url"],
-    st.secrets["supabase_key"]
-)
-
-# Supabase 로그인 정보 업데이트 함수
-def update_supabase_login():
-    if 'logged_in' in st.session_state and st.session_state['logged_in']:
-        try:
-            data = {
-                'user_name': st.session_state.get('user_name'),
-                'user_position': st.session_state.get('user_position'),
-                'time': "2024-12-21T23:27:01+09:00"
-            }
-            supabase.table('login').insert(data).execute()
-        except Exception as e:
-            st.error(f"로그인 정보 저장 중 오류 발생: {str(e)}")
-
-# 주기적 업데이트를 위한 스레드 함수
-def periodic_update():
-    while True:
-        if 'logged_in' in st.session_state and st.session_state['logged_in']:
-            update_supabase_login()
-        time.sleep(60)
-
-# 백그라운드 스레드 시작
-update_thread = threading.Thread(target=periodic_update, daemon=True)
-update_thread.start()
 
 st.set_page_config(page_title="GI_training")
 
@@ -77,8 +45,8 @@ def is_korean_name(name):
 # 사용자 인풋
 email = st.text_input("Email")
 password = st.text_input("Password", type="password")
-name = st.text_input("Name")
-position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Student"])
+name = st.text_input("Name")  # 이름 입력 필드 추가
+position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
 
 # 유효성 검사 및 로그인 버튼
 login_disabled = False
@@ -94,7 +62,7 @@ elif not name or not is_korean_name(name):
 
 def handle_login(email, password, name, position):
     try:
-        # Firebase 인증
+        # Streamlit secret에서 Firebase API 키 가져오기
         api_key = st.secrets["FIREBASE_API_KEY"]
         request_ref = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
         headers = {"Content-Type": "application/json"}
@@ -104,9 +72,11 @@ def handle_login(email, password, name, position):
         response_data = response.json()
 
         if response.status_code == 200:
+            # Firebase Authentication 성공 후 사용자 정보 가져오기
             user_id = response_data['localId']
-            id_token = response_data['idToken']
-
+            id_token = response_data['idToken']  # ID 토큰 저장
+            
+            # Authentication 사용자 정보 업데이트
             try:
                 user = auth.update_user(
                     user_id,
@@ -114,6 +84,7 @@ def handle_login(email, password, name, position):
                     custom_claims={'position': position}
                 )
             except auth.UserNotFoundError:
+                # 사용자가 없는 경우, 새로운 사용자 생성
                 try:
                     user = auth.create_user(
                         uid=user_id,
@@ -121,45 +92,51 @@ def handle_login(email, password, name, position):
                         password=password,
                         display_name=name
                     )
+                    # 생성된 사용자에 대한 custom claims 설정
                     auth.set_custom_user_claims(user_id, {'position': position})
                     st.success("새로운 사용자가 생성되었습니다.")
                 except Exception as e:
                     st.error(f"사용자 생성 중 오류 발생: {str(e)}")
                     return
+            
+            # Realtime Database에도 정보 저장
+            user_ref = db.reference(f'users/{user_id}')
+            user_data = user_ref.get()
 
-            # Realtime Database에 사용자 정보 저장
-            user_data = {
-                'name': name,
-                'position': position,
-                'email': email,
-                'last_login': {'.sv': 'timestamp'}
-            }
-            db.reference(f'users/{user_id}').update({
-                'profile': user_data,
-                'id_token': id_token
-            })
-
-            st.success(f"환영합니다, {name}님! ({position})")
+            if user_data is None:
+                # 새 사용자인 경우 정보 저장
+                user_ref.set({
+                    'email': email,
+                    'name': name,
+                    'position': position,
+                    'created_at': {'.sv': 'timestamp'}  # 서버 타임스탬프 사용
+                })
+                user_data = {'name': name, 'position': position}
+            
+            # position이 없는 경우 업데이트
+            elif 'position' not in user_data:
+                user_ref.update({
+                    'position': position
+                })
+                user_data['position'] = position
+            
+            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = name
-            st.session_state['user_position'] = position
+            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
+            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
             st.session_state['user_id'] = user_id
-            
-            # 첫 로그인 정보 저장
-            update_supabase_login()
-            
-            st.rerun()
         else:
-            st.error("로그인 실패: 이메일 또는 비밀번호를 확인해주세요.")
+            st.error(response_data["error"]["message"])
     except Exception as e:
-        st.error(f"로그인 중 오류 발생: {str(e)}")
+        st.error(f"An error occurred: {str(e)}")
 
 if st.button("Login", disabled=login_disabled):
     handle_login(email, password, name, position)
 
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
+    
     # 로그인된 사용자 정보 표시
     st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
@@ -167,6 +144,6 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     if st.sidebar.button("Logout"):
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
-        st.rerun()
+        st.experimental_rerun()
 
-user_email = st.session_state.get('user_email', 'unknown')
+user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
