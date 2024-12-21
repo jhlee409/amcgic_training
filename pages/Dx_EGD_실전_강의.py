@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
 
-if st.session_state.get('logged_in'):
+if st.session_state.get('logged_in'):     
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -36,19 +36,8 @@ if st.session_state.get('logged_in'):
         st.write("- 이 강의 모음은 진단 EGD 실전 강의 동영상 모음입니다.")
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
-
-    # JavaScript를 사용해 창 닫힘 이벤트를 감지
-    logout_script = """
-    <script>
-        window.addEventListener("beforeunload", function () {
-            // Streamlit 서버로 로그아웃 요청
-            fetch('/_stcore_logout', { method: 'POST' });
-        });
-    </script>
-    """
-    st.markdown(logout_script, unsafe_allow_html=True)
-
-    # Lectures 폴더 내 mp4 파일 리스트 가져오기
+          
+    # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -58,10 +47,10 @@ if st.session_state.get('logged_in'):
                 file_name = os.path.basename(blob.name)
                 file_names.append(file_name)
         return file_names
-
+    
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     video_player_container = st.container()
-
+    
     # 동영상 플레이어를 렌더링할 플레이스홀더 생성
     video_player_placeholder = st.empty()
 
@@ -76,29 +65,16 @@ if st.session_state.get('logged_in'):
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
             position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-            access_date = datetime.now().strftime("%Y-%m-%d %H:%M")  # 현재 날짜와 시간 가져오기
+            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-            # 로그인 시간 로그 내용 생성
-            login_log_entry = f"User: {position_name}, Login Time: {access_date}, 실전강의: {selected_lecture}\n"
-
-            # 로그아웃 시 로그 생성 설정
-            if 'logout_time' in st.session_state:
-                logout_time = st.session_state['logout_time']
-                logout_log_entry = f"User: {position_name}, Logout Time: {logout_time}, 실전강의: {selected_lecture}\n"
-            else:
-                logout_log_entry = ""
+            # 로그 내용을 문자열로 생성
+            log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
+            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
-            # 로그인 로그 업로드
-            login_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}_Login')  # 로그인 로그 파일 경로 설정
-            login_blob.upload_from_string(login_log_entry, content_type='text/plain')  # 문자열로 업로드
-
-            # 로그아웃 로그 업로드
-            if logout_log_entry:
-                logout_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}_Logout')
-                logout_blob.upload_from_string(logout_log_entry, content_type='text/plain')
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
@@ -118,7 +94,7 @@ if st.session_state.get('logged_in'):
         blob = bucket.blob(selected_mp4_path)
         expiration_time = datetime.utcnow() + timedelta(seconds=1600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-
+        
         # 동영상 플레이어 렌더링
         with video_player_placeholder.container():
             video_html = f'''
@@ -139,14 +115,12 @@ if st.session_state.get('logged_in'):
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
     st.sidebar.divider()
-
+    
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
-        logout_time = datetime.now().strftime("%Y-%m-%d %H:%M")
-        st.session_state['logout_time'] = logout_time  # 로그아웃 시간 저장
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-
+        
 else:
-    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
     st.error("로그인이 필요합니다.")
