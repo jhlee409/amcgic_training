@@ -65,12 +65,43 @@ if st.session_state.get('logged_in'):
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
         # 세션 상태 초기화
+        if 'lecture_start_time' not in st.session_state:
+            st.session_state.lecture_start_time = {}
+        if 'last_lecture' not in st.session_state:
+            st.session_state.last_lecture = None
         if 'log_sent' not in st.session_state:
-            st.session_state.log_sent = False
-        if 'play_started' not in st.session_state:
-            st.session_state.play_started = False
-        if 'play_start_time' not in st.session_state:
-            st.session_state.play_start_time = None
+            st.session_state.log_sent = set()
+
+        # 새로운 강의를 선택했을 때
+        if selected_lecture != st.session_state.last_lecture:
+            # 이전 강의에 대한 로그 처리
+            if st.session_state.last_lecture and st.session_state.last_lecture != "Default":
+                last_lecture = st.session_state.last_lecture
+                start_time = st.session_state.lecture_start_time.get(last_lecture)
+                
+                if start_time and last_lecture not in st.session_state.log_sent:
+                    elapsed_time = (datetime.now() - start_time).total_seconds()
+                    
+                    if elapsed_time >= 30:  # 30초 이상 시청
+                        try:
+                            # 로그 생성 및 전송
+                            user_name = st.session_state.get('user_name', 'unknown')
+                            user_position = st.session_state.get('user_position', 'unknown')
+                            access_date = datetime.now().strftime("%Y-%m-%d")
+                            
+                            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {last_lecture}\n"
+                            
+                            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{last_lecture}')
+                            log_blob.upload_from_string(log_entry, content_type='text/plain')
+                            
+                            st.session_state.log_sent.add(last_lecture)
+                        except Exception as e:
+                            st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
+            
+            # 새 강의 시작 시간 기록
+            if selected_lecture != "Default":
+                st.session_state.lecture_start_time[selected_lecture] = datetime.now()
+            st.session_state.last_lecture = selected_lecture
 
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
@@ -80,30 +111,8 @@ if st.session_state.get('logged_in'):
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
             </div>
-            <div id="play_status" style="display:none;"></div>
             <script>
                 var video = document.getElementById('myVideo');
-                var playStatus = document.getElementById('play_status');
-                var startTime = null;
-                
-                video.addEventListener('play', function() {{
-                    if (!startTime) {{
-                        startTime = Date.now();
-                        playStatus.textContent = 'playing';
-                        playStatus.style.display = 'block';
-                    }}
-                }});
-                
-                video.addEventListener('pause', function() {{
-                    startTime = null;
-                    playStatus.textContent = 'paused';
-                }});
-                
-                video.addEventListener('ended', function() {{
-                    startTime = null;
-                    playStatus.textContent = 'ended';
-                }});
-
                 video.addEventListener('contextmenu', function(e) {{
                     e.preventDefault();
                 }});
@@ -111,53 +120,37 @@ if st.session_state.get('logged_in'):
             '''
             st.components.v1.html(video_html, height=850)
 
-            # 재생 상태 확인
-            status_check = st.components.v1.html(
-                """
-                <script>
-                    function checkStatus() {
-                        var status = document.getElementById('play_status');
-                        if (status && status.textContent === 'playing') {
-                            window.parent.postMessage({type: 'playing'}, '*');
-                        }
-                    }
-                    setInterval(checkStatus, 1000);
-                </script>
-                """,
-                height=0
-            )
+    else:
+        st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
-            # 재생 시작 시간 기록
-            if not st.session_state.play_started:
-                st.session_state.play_start_time = datetime.now()
-                st.session_state.play_started = True
-
-            # 1분 이상 재생되었고 아직 로그를 보내지 않았다면
-            if st.session_state.play_started and not st.session_state.log_sent:
-                elapsed_time = (datetime.now() - st.session_state.play_start_time).total_seconds()
+    # 로그아웃 버튼
+    if st.sidebar.button('로그아웃'):
+        # 로그아웃 전 현재 강의 로그 처리
+        if st.session_state.last_lecture and st.session_state.last_lecture != "Default":
+            start_time = st.session_state.lecture_start_time.get(st.session_state.last_lecture)
+            
+            if start_time and st.session_state.last_lecture not in st.session_state.log_sent:
+                elapsed_time = (datetime.now() - start_time).total_seconds()
                 
-                if elapsed_time >= 60:  # 1분 이상 경과
+                if elapsed_time >= 30:  # 30초 이상 시청
                     try:
                         # 로그 생성 및 전송
                         user_name = st.session_state.get('user_name', 'unknown')
                         user_position = st.session_state.get('user_position', 'unknown')
                         access_date = datetime.now().strftime("%Y-%m-%d")
                         
-                        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
+                        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {st.session_state.last_lecture}\n"
                         
-                        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
+                        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{st.session_state.last_lecture}')
                         log_blob.upload_from_string(log_entry, content_type='text/plain')
                         
-                        st.session_state.log_sent = True
+                        st.session_state.log_sent.add(st.session_state.last_lecture)
                     except Exception as e:
                         st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-    else:
-        st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
-
-    st.sidebar.divider()
-
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
+        
+        # 세션 상태 초기화
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
         st.rerun()
 
 else:
