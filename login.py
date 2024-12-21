@@ -91,7 +91,10 @@ def periodic_insertion():
         insert_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
         time.sleep(60)
 
+background_thread = None
+
 def handle_login(email, password, name, position):
+    global background_thread
     try:
         # Streamlit secret에서 Firebase API 키 가져오기
         api_key = st.secrets["FIREBASE_API_KEY"]
@@ -155,7 +158,9 @@ def handle_login(email, password, name, position):
             insert_to_supabase(position, name)
 
             # 주기적인 삽입 시작
-            threading.Thread(target=periodic_insertion, daemon=True).start()
+            if background_thread is None or not background_thread.is_alive():
+                background_thread = threading.Thread(target=periodic_insertion, daemon=True)
+                background_thread.start()
 
             st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
 
