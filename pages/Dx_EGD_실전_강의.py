@@ -64,23 +64,53 @@ if st.session_state.get('logged_in'):
         expiration_time = datetime.utcnow() + timedelta(seconds=3600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
-        # 동영상 재생 상태를 추적하기 위한 세션 상태 초기화
-        if 'video_started' not in st.session_state:
-            st.session_state.video_started = False
-        if 'log_sent' not in st.session_state:
-            st.session_state.log_sent = False
-
-        # 동영상 플레이어와 시작 버튼
+        # 동영상 플레이어 표시
         with video_player_placeholder.container():
-            # 시작 버튼
-            if not st.session_state.video_started:
-                if st.button("강의 시작하기", key="start_video"):
-                    st.session_state.video_started = True
-                    st.rerun()
+            video_html = f'''
+            <div style="display: flex; justify-content: center;">
+                <video id="myVideo" width="1000" height="800" controls controlsList="nodownload">
+                    <source src="{mp4_url}" type="video/mp4">
+                </video>
+            </div>
+            <div id="log_status" style="display: none;"></div>
+            <script>
+                var video = document.getElementById('myVideo');
+                var logStatus = document.getElementById('log_status');
+                var logSent = false;
+                
+                video.addEventListener('timeupdate', function() {{
+                    if (!logSent && video.currentTime >= video.duration * 0.05) {{
+                        logSent = true;
+                        logStatus.textContent = 'logged';
+                        logStatus.style.display = 'block';
+                    }}
+                }});
 
-            # 동영상이 시작되면 플레이어를 표시하고 로그를 기록
-            if st.session_state.video_started and not st.session_state.log_sent:
-                # 로그 기록
+                video.addEventListener('contextmenu', function(e) {{
+                    e.preventDefault();
+                }});
+            </script>
+            '''
+            st.components.v1.html(video_html, height=850)
+
+            # 로그 상태를 확인하기 위한 요소
+            log_placeholder = st.empty()
+            
+            if st.button("로그 상태 확인", key="check_log"):
+                # JavaScript에서 로그 상태를 가져옴
+                log_status = st.components.v1.html(
+                    """
+                    <script>
+                        var logStatus = document.getElementById('log_status');
+                        if (logStatus && logStatus.textContent === 'logged') {
+                            window.parent.postMessage({type: 'log_ready'}, '*');
+                        }
+                    </script>
+                    """,
+                    height=0
+                )
+
+                # 로그가 준비되었다면 Firebase에 업로드
                 user_name = st.session_state.get('user_name', 'unknown')
                 user_position = st.session_state.get('user_position', 'unknown')
                 access_date = datetime.now().strftime("%Y-%m-%d")
@@ -89,28 +119,12 @@ if st.session_state.get('logged_in'):
                 log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
                 
                 # Firebase Storage에 로그 파일 업로드
-                bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
-                log_blob.upload_from_string(log_entry, content_type='text/plain')
-                
-                st.session_state.log_sent = True
-
-            # 동영상 플레이어 표시
-            if st.session_state.video_started:
-                video_html = f'''
-                <div style="display: flex; justify-content: center;">
-                    <video width="1000" height="800" controls controlsList="nodownload">
-                        <source src="{mp4_url}" type="video/mp4">
-                    </video>
-                </div>
-                <script>
-                var video = document.querySelector('video');
-                video.addEventListener('contextmenu', function(e) {{
-                    e.preventDefault();
-                }});
-                </script>
-                '''
-                st.components.v1.html(video_html, height=850)
+                try:
+                    log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
+                    log_blob.upload_from_string(log_entry, content_type='text/plain')
+                    log_placeholder.success("로그가 성공적으로 기록되었습니다.")
+                except Exception as e:
+                    log_placeholder.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
 
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
