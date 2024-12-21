@@ -7,6 +7,7 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
 from supabase import create_client
+import uuid
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
@@ -17,21 +18,24 @@ supabase_key = st.secrets["supabase_key"]
 supabase_client = create_client(supabase_url, supabase_key)
 
 if st.session_state.get('logged_in'):
+# Supabase 연결 테스트
     try:
-        # 테스트 데이터 삽입
         response = supabase_client.table("login_duration").insert({
+            "id": str(uuid.uuid4()),  # UUID 생성
             "user_position": "Manager",
             "user_name": "John Doe",
             "access_datetime": "2024-12-21 10:30:00",
             "duration": 15
         }).execute()
 
-        if response.status_code == 201:  # HTTP 201 Created
+        # Supabase 클라이언트 응답 처리
+        if response.data:  # 성공 시
             st.success("테스트 데이터 삽입 성공!")
-        else:
-            st.error(f"테스트 실패: {response.data}")
+        elif response.error:  # 오류가 발생한 경우
+            st.error(f"테스트 실패: {response.error['message']}")
     except Exception as e:
         st.error(f"Supabase 연결 오류: {e}")
+
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
         cred = credentials.Certificate({
