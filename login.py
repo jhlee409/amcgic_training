@@ -5,6 +5,8 @@ import firebase_admin
 from firebase_admin import credentials, db, auth
 from datetime import datetime, timezone
 import os
+import threading
+import time
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -60,6 +62,34 @@ if not name:
 elif not name or not is_korean_name(name):
     st.error("한글 이름을 입력해 주세요")
     login_disabled = True
+
+def insert_to_supabase(position, name):
+    try:
+        supabase_url = st.secrets["supabase_url"]
+        supabase_key = st.secrets["supabase_key"]
+        supabase_headers = {
+            "Content-Type": "application/json",
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}"
+        }
+
+        login_data = {
+            "user_position": position,
+            "user_name": name,
+            "time": datetime.now(timezone.utc).isoformat()  # UTC 시간 기준 ISO 형식
+        }
+
+        supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
+
+        if supabase_response.status_code != 201:
+            st.error(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
+    except Exception as e:
+        st.error(f"Supabase에 데이터를 삽입하는 중 오류 발생: {str(e)}")
+
+def periodic_insertion():
+    while "logged_in" in st.session_state and st.session_state['logged_in']:
+        insert_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
+        time.sleep(60)
 
 def handle_login(email, password, name, position):
     try:
@@ -122,26 +152,12 @@ def handle_login(email, password, name, position):
                 user_data['position'] = position
 
             # Supabase로 로그인 기록 추가
-            supabase_url = st.secrets["supabase_url"]
-            supabase_key = st.secrets["supabase_key"]
-            supabase_headers = {
-                "Content-Type": "application/json",
-                "apikey": supabase_key,
-                "Authorization": f"Bearer {supabase_key}"
-            }
+            insert_to_supabase(position, name)
 
-            login_data = {
-                "user_position": position,
-                "user_name": name,
-                "time": datetime.now(timezone.utc).isoformat()  # UTC 시간 기준 ISO 형식
-            }
+            # 주기적인 삽입 시작
+            threading.Thread(target=periodic_insertion, daemon=True).start()
 
-            supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
-
-            if supabase_response.status_code == 201:
-                st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
-            else:
-                st.error(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
+            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
 
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
