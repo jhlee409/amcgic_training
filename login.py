@@ -2,7 +2,7 @@ import streamlit as st
 import requests
 import json
 import firebase_admin
-from firebase_admin import credentials, db, auth
+from firebase_admin import credentials, db, auth, storage
 import os
 from datetime import datetime
 
@@ -26,6 +26,9 @@ def initialize_firebase_apps():
         default_app = firebase_admin.initialize_app(cred, {
             'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
         }, name='default')
+        storage_app = firebase_admin.initialize_app(cred, {
+            'storageBucket': 'amcgi-bulletin.appspot.com'
+        }, name='storage')
 
     # 두 번째 Firebase 앱
     if 'secondary' not in firebase_admin._apps:
@@ -52,6 +55,30 @@ initialize_firebase_apps()
 # Firebase 데이터베이스 참조 가져오기 함수
 def get_db(app_name='default'):
     return db.reference(app=firebase_admin.get_app(name=app_name))
+
+def save_log_to_storage(user_data, log_type):
+    try:
+        bucket = storage.bucket('amcgi-bulletin.appspot.com', app=firebase_admin.get_app(name='storage'))
+        current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+        position_name = f"{user_data['position']}*{user_data['name']}"
+        
+        # 로그 파일 경로 설정 (log_stay_duration 폴더 사용)
+        log_path = f'log_stay_duration/{position_name}*{current_time}'
+        
+        # 로그 내용 생성
+        if log_type == 'login':
+            log_content = f"{position_name}*{current_time}"
+        else:  # logout
+            log_content = f"{position_name}*{current_time}*{user_data.get('duration', 0)}분"
+            
+        # Firebase Storage에 로그 저장
+        blob = bucket.blob(log_path)
+        blob.upload_from_string(log_content, content_type='text/plain')
+        
+        return True
+    except Exception as e:
+        st.error(f"로그 저장 중 오류 발생: {str(e)}")
+        return False
 
 st.set_page_config(page_title="GI_training")
 
@@ -84,29 +111,7 @@ def handle_login(email, password, name, position):
 
         if response.status_code == 200:
             user_id = response_data['localId']
-            id_token = response_data['idToken']
             
-            # 첫 번째 데이터베이스에 사용자 정보 저장
-            default_db = get_db('default')
-            user_ref = default_db.reference(f'users/{user_id}')
-            user_ref.update({
-                'email': email,
-                'name': name,
-                'position': position,
-                'last_login': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            })
-
-            # 두 번째 데이터베이스에 로그 저장
-            secondary_db = get_db('secondary')
-            log_ref = secondary_db.reference('login_logs')
-            log_ref.push({
-                'user_id': user_id,
-                'name': name,
-                'position': position,
-                'login_time': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-                'type': 'login'
-            })
-
             # 로그인 시간 저장
             login_time = datetime.now()
             st.session_state['logged_in'] = True
@@ -116,11 +121,18 @@ def handle_login(email, password, name, position):
             st.session_state['user_id'] = user_id
             st.session_state['login_time'] = login_time
 
+            # 로그인 로그 저장
+            save_log_to_storage({
+                'name': name,
+                'position': position,
+                'email': email
+            }, 'login')
+
             st.success(f"환영합니다, {name}님! ({position})")
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
-        st.error(f"An error occurred: {str(e)}")
+        st.error(f"로그인 중 오류가 발생했습니다: {str(e)}")
 
 if st.button("Login", disabled=login_disabled):
     handle_login(email, password, name, position)
@@ -139,18 +151,12 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
                 # 체류 시간 계산 (분 단위)
                 duration = (logout_time - login_time).total_seconds() / 60
                 
-                # Firebase에 로그아웃 및 체류 시간 기록
-                user_id = st.session_state['user_id']
-                secondary_db = get_db('secondary')
-                log_ref = secondary_db.reference('login_logs')
-                log_ref.push({
-                    'user_id': user_id,
+                # 로그아웃 로그 저장
+                save_log_to_storage({
                     'name': st.session_state['user_name'],
                     'position': st.session_state['user_position'],
-                    'logout_time': logout_time.strftime('%Y-%m-%d %H:%M:%S'),
-                    'duration_minutes': round(duration, 2),
-                    'type': 'logout'
-                })
+                    'duration': round(duration, 2)
+                }, 'logout')
                 
                 st.success(f"로그아웃 되었습니다. 체류 시간: {round(duration, 2)}분")
             
