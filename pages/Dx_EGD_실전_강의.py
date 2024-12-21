@@ -5,7 +5,7 @@ import docx
 import io
 import firebase_admin
 from firebase_admin import credentials, storage
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from supabase import create_client
 import uuid
 
@@ -74,30 +74,32 @@ if st.session_state.get('logged_in'):
         if st.session_state["current_lecture"] is None:
             # 처음 강의를 선택했을 때
             st.session_state["current_lecture"] = selected_lecture
-            st.session_state["start_time"] = datetime.now()
+            st.session_state["start_time"] = datetime.now(timezone.utc)
         elif st.session_state["current_lecture"] != selected_lecture:
             # 다른 강의로 변경된 경우
-            end_time = datetime.now()
+            end_time = datetime.now(timezone.utc)
             duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
 
             # 이전 강의의 duration 업데이트
             try:
+                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+
                 response = supabase_client.table("login_duration").update({
                     "duration": int(duration)
                 }).eq("user_name", st.session_state.get("user_name")).eq(
-                    "access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+                    "access_datetime", utc_start_time
                 ).execute()
 
                 if response.data:
                     st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
                 else:
-                    st.error(f"Supabase 업데이트 실패: 응답 내용 {response.json()}")
+                    st.error(f"Supabase 업데이트 실패: 조건에 맞는 데이터가 없습니다. 응답 내용: {response.json()}")
             except Exception as e:
                 st.error(f"Supabase 연결 오류: {e}")
 
             # 현재 강의 및 시작 시간 갱신
             st.session_state["current_lecture"] = selected_lecture
-            st.session_state["start_time"] = datetime.now()
+            st.session_state["start_time"] = datetime.now(timezone.utc)
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
@@ -139,21 +141,23 @@ if st.session_state.get('logged_in'):
     # 로그아웃 처리
     if st.sidebar.button("로그아웃"):
         if st.session_state["current_lecture"]:
-            end_time = datetime.now()
+            end_time = datetime.now(timezone.utc)
             duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
 
             # 마지막 강의의 duration 업데이트
             try:
+                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+
                 response = supabase_client.table("login_duration").update({
                     "duration": int(duration)
                 }).eq("user_name", st.session_state.get("user_name")).eq(
-                    "access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+                    "access_datetime", utc_start_time
                 ).execute()
 
                 if response.data:
                     st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
                 else:
-                    st.error(f"Supabase 업데이트 실패: 응답 내용 {response.json()}")
+                    st.error(f"Supabase 업데이트 실패: 조건에 맞는 데이터가 없습니다. 응답 내용: {response.json()}")
             except Exception as e:
                 st.error(f"Supabase 연결 오류: {e}")
 
