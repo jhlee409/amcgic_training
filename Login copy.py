@@ -4,10 +4,6 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
 import os
-from supabase import create_client, Client
-import time
-import threading
-from datetime import datetime, timezone, timedelta
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -29,39 +25,6 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred, {
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
-
-# Supabase 초기화
-supabase: Client = create_client(
-    st.secrets["SUPABASE_URL"],
-    st.secrets["SUPABASE_KEY"]
-)
-
-# 전역 변수 설정
-user_data = {
-    'user_name': None,
-    'user_position': None,
-    'is_logged_in': False
-}
-
-def update_login_info():
-    while user_data['is_logged_in']:
-        try:
-            # 현재 시간을 KST로 설정
-            current_time = datetime.now(timezone(timedelta(hours=9))).isoformat()
-            
-            # Supabase에 로그인 정보 저장
-            data = {
-                'user_name': user_data['user_name'],
-                'user_position': user_data['user_position'],
-                'time': current_time
-            }
-            supabase.table('login').insert(data).execute()
-            
-            # 1분 대기
-            time.sleep(60)
-        except Exception as e:
-            st.error(f"로그인 정보 저장 중 오류 발생: {str(e)}")
-            break
 
 st.set_page_config(page_title="GI_training")
 
@@ -157,45 +120,29 @@ def handle_login(email, password, name, position):
                 })
                 user_data['position'] = position
             
-            # 로그인 성공 시 전역 변수 업데이트
-            user_data['user_name'] = name
-            user_data['user_position'] = position
-            user_data['is_logged_in'] = True
-            
-            # 백그라운드에서 로그인 정보 업데이트 시작
-            update_thread = threading.Thread(target=update_login_info, daemon=True)
-            update_thread.start()
-            
-            st.success("로그인 성공!")
-            st.session_state['authenticated'] = True
-            st.session_state['user_name'] = name
-            st.session_state['user_position'] = position
-            st.experimental_rerun()
-            
+            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
+            st.session_state['logged_in'] = True
+            st.session_state['user_email'] = email
+            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
+            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
+            st.session_state['user_id'] = user_id
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
-        st.error(f"로그인 중 오류 발생: {str(e)}")
+        st.error(f"An error occurred: {str(e)}")
 
 if st.button("Login", disabled=login_disabled):
     handle_login(email, password, name, position)
 
 # 로그 아웃 버튼
-if 'authenticated' in st.session_state and st.session_state['authenticated']:
+if "logged_in" in st.session_state and st.session_state['logged_in']:
     
     # 로그인된 사용자 정보 표시
     st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
-        # 로그아웃 시 전역 변수 초기화
-        user_data['is_logged_in'] = False
-        user_data['user_name'] = None
-        user_data['user_position'] = None
-        
-        st.session_state['authenticated'] = False
-        st.session_state['user_name'] = None
-        st.session_state['user_position'] = None
+        st.session_state.clear()
         st.success("로그아웃 되었습니다.")
         st.experimental_rerun()
 
