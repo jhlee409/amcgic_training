@@ -3,7 +3,7 @@ import requests
 import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import uuid
 import time
 
@@ -90,8 +90,13 @@ def insert_to_supabase(position, name):
 
 def periodic_insertion():
     if "logged_in" in st.session_state and st.session_state['logged_in']:
-        insert_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
-        st.session_state["last_insert_time"] = datetime.now()
+        now = datetime.now()
+        last_insert_time = st.session_state.get("last_insert_time", now - timedelta(minutes=1))
+
+        if (now - last_insert_time).seconds >= 60:
+            insert_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
+            st.session_state["last_insert_time"] = now
+            st.write(f"데이터 삽입: {now.isoformat()}")
 
 # 로그인 처리
 def handle_login(email, password, name, position):
@@ -162,6 +167,7 @@ def handle_login(email, password, name, position):
             st.session_state['user_email'] = email
             st.session_state['user_name'] = name
             st.session_state['user_position'] = position
+            st.session_state['last_insert_time'] = datetime.now() - timedelta(minutes=1)
 
             st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
         else:
@@ -169,16 +175,10 @@ def handle_login(email, password, name, position):
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-# 주기적 삽입 실행 - 타이머를 계속 유지
+# 주기적 삽입 실행
 if "logged_in" in st.session_state and st.session_state['logged_in']:
-    now = datetime.now()
-    last_insert_time = st.session_state.get("last_insert_time", None)
-    
-    # 초기값이 없으면 삽입하고 타이머 시작
-    if last_insert_time is None or (now - last_insert_time).seconds >= 60:
-        periodic_insertion()  # 데이터 삽입
-        st.session_state["last_insert_time"] = now  # 마지막 삽입 시간 업데이트
-        
+    periodic_insertion()
+
 # UI 처리
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
     if st.button("Login", disabled=login_disabled):
