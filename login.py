@@ -24,7 +24,7 @@ def initialize_firebase_apps():
             "universe_domain": st.secrets["universe_domain"]
         })
         default_app = firebase_admin.initialize_app(cred, {
-            'databaseURL': st.secrets["database_url"]
+            'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
         }, name='default')
 
     # 두 번째 Firebase 앱
@@ -43,7 +43,7 @@ def initialize_firebase_apps():
             "universe_domain": st.secrets["universe_domain_secondary"]
         })
         secondary_app = firebase_admin.initialize_app(cred_secondary, {
-            'databaseURL': st.secrets["database_url_secondary"]
+            'databaseURL': st.secrets["database_url"]
         }, name='secondary')
 
 # Firebase 앱 초기화 실행
