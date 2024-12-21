@@ -174,8 +174,6 @@ if st.button("Login", disabled=login_disabled):
 
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
-    
-    # 로그인된 사용자 정보 표시
     st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
     
@@ -191,14 +189,18 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
                 duration_rounded = round(duration, 2)
                 
                 # 로그아웃 로그 저장
-                save_log_to_storage({
+                logout_success = save_log_to_storage({
                     'name': st.session_state['user_name'],
                     'position': st.session_state['user_position'],
                     'duration': duration_rounded
                 }, '로그아웃')
                 
-                st.success(f"로그아웃 되었습니다. 체류 시간: {duration_rounded}분")
+                if logout_success:
+                    st.success(f"로그아웃 되었습니다. 체류 시간: {duration_rounded}분")
+                else:
+                    st.error("로그아웃 로그 저장 중 오류가 발생했습니다.")
             
+            # 세션 초기화는 로그 저장 후에 실행
             st.session_state.clear()
             st.experimental_rerun()
         except Exception as e:
