@@ -65,17 +65,18 @@ elif not name or not is_korean_name(name):
 def save_log_to_storage(user_data, log_type):
     try:
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
+        current_time = datetime.now().strftime('%Y년%m월%d일-%H시%M분%S초')
         position_name = f"{user_data['position']}*{user_data['name']}"
         
         # 로그 파일 경로 설정
-        log_path = f'log_stay_duration/{position_name}*{current_time}'
+        log_path = f'log_stay_duration/{position_name}*{current_time}_{log_type}'
         
         # 로그 내용 생성
-        if log_type == 'login':
-            log_content = f"{position_name}*{current_time}"
-        else:  # logout
-            log_content = f"{position_name}*{current_time}*{user_data.get('duration', 0)}분"
+        if log_type == '로그인':
+            log_content = f"{position_name}*{current_time}_{log_type}"
+        else:  # 로그아웃
+            duration = user_data.get('duration', 0)
+            log_content = f"{position_name}*{current_time}_{log_type}*{duration}분"
             
         # Firebase Storage에 로그 저장
         blob = bucket.blob(log_path)
@@ -160,7 +161,7 @@ def handle_login(email, password, name, position):
                 'name': name,
                 'position': position,
                 'email': email
-            }, 'login')
+            }, '로그인')
 
             st.success(f"환영합니다, {name}님! ({position})")
         else:
@@ -187,15 +188,16 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
             if login_time:
                 # 체류 시간 계산 (분 단위)
                 duration = (logout_time - login_time).total_seconds() / 60
+                duration_rounded = round(duration, 2)
                 
                 # 로그아웃 로그 저장
                 save_log_to_storage({
                     'name': st.session_state['user_name'],
                     'position': st.session_state['user_position'],
-                    'duration': round(duration, 2)
-                }, 'logout')
+                    'duration': duration_rounded
+                }, '로그아웃')
                 
-                st.success(f"로그아웃 되었습니다. 체류 시간: {round(duration, 2)}분")
+                st.success(f"로그아웃 되었습니다. 체류 시간: {duration_rounded}분")
             
             st.session_state.clear()
             st.experimental_rerun()
