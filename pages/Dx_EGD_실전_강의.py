@@ -67,6 +67,13 @@ if st.session_state.get('logged_in'):
 
     # 로그 파일 생성
     if selected_lecture:
+        supabase_client.table("login_duration").insert({
+            "user_position": "Manager",
+            "user_name": "John Doe",
+            "access_datetime": "2024-12-21 10:30:00",
+            "duration": 15
+        }).execute()
+        
         if selected_lecture != "Default":
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
