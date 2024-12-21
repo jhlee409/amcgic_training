@@ -4,11 +4,13 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db, auth, storage
 import os
-from datetime import datetime, timedelta
+import datetime
 import threading
 
-# Firebase 초기화
+# Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
+
+    # Streamlit Secrets에서 Firebase 설정 정보 로드
     cred = credentials.Certificate({
         "type": "service_account",
         "project_id": st.secrets["project_id"],
@@ -19,113 +21,105 @@ if not firebase_admin._apps:
         "auth_uri": st.secrets["auth_uri"],
         "token_uri": st.secrets["token_uri"],
         "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": st.secrets["client_x509_cert_url"]
+        "client_x509_cert_url": st.secrets["client_x509_cert_url"],
+        "universe_domain": st.secrets["universe_domain"]
     })
     firebase_admin.initialize_app(cred, {
-        'storageBucket': 'amcgi-bulletin.appspot.com',
-        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
+        'storageBucket': st.secrets["FIREBASE_STORAGE_BUCKET"]
     })
 
-st.set_page_config(page_title="GI Training")
-st.title("GI Training Programs")
+st.set_page_config(page_title="GI_training")
 
-# Helper Functions
-def save_log_to_storage(user_data, log_type):
-    try:
+# 제목 및 서브헤딩 설정
+st.title("GI training programs")
+
+# 설명 텍스트
+with st.expander("**이 프로그램 사용 방법**"):
+    st.write("* 로그인이 제대로 안되면 왼쪽 증례 페이지에 접근할 수 없습니다.")
+    st.write("* 등록된  이메일 주소와 PW, 한글이름, postion으로 로그인 하신 후 왼쪽 sidebar에서 원하는 프로그램을 선택하면 그 페이지로 이동합니다.")
+    st.write("* 이 프로그램은 울산의대 서울아산병원 이진혁과 의대 관계자 및 여러 서울아산병원 소화기 선생님들의 참여에 의해 제작되었습니다.")
+st.divider()
+
+# 한글 이름 확인 함수
+def is_korean_name(name):
+    return any('\u3131' <= char <= '\u3163' or '\uac00' <= char <= '\ud7a3' for char in name)
+
+# 사용자 인풋
+email = st.text_input("Email")
+password = st.text_input("Password", type="password")
+name = st.text_input("Name")  # 이름 입력 필드 추가
+position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
+
+# 유효성 검사 및 로그인 버튼
+login_disabled = False
+if position == "":
+    st.error("position을 선택해 주세요")
+    login_disabled = True
+if not name:
+    st.error("한글 이름을 입력해 주세요")
+    login_disabled = True
+elif not name or not is_korean_name(name):
+    st.error("한글 이름을 입력해 주세요")
+    login_disabled = True
+
+def log_user_activity():
+    while "logged_in" in st.session_state and st.session_state['logged_in']:
+        now = datetime.datetime.now()
+        formatted_date = now.strftime("%Y년%m월%d일-%H시%M분")
+        log_data = f"{st.session_state['user_position']}*{st.session_state['user_name']}*{formatted_date}-로그인"
+        
+        # Firebase Storage에 로그 저장
         bucket = storage.bucket()
-        current_time = datetime.now().strftime('%Y년%m월%d일-%H시%M분%S초')
-        position_name = f"{user_data['position']}*{user_data['name']}"
-        log_path = f'log_stay_duration/{position_name}*{current_time}_{log_type}'
+        blob = bucket.blob(f"log_stay_duration/{st.session_state['user_id']}-{now.strftime('%Y%m%d%H%M%S')}.txt")
+        blob.upload_from_string(log_data, content_type="text/plain")
 
-        if log_type == '로그아웃':
-            duration = user_data.get('duration', 0)
-            log_content = f"{position_name}*{current_time}_{log_type}*{duration}분"
-        else:
-            log_content = f"{position_name}*{current_time}_{log_type}"
+        time.sleep(60)  # 1분 대기
 
-        blob = bucket.blob(log_path)
-        blob.upload_from_string(log_content, content_type='text/plain')
-        return True
-    except Exception as e:
-        st.error(f"로그 저장 중 오류 발생: {str(e)}")
-        return False
-
-# 자동 상태 저장 (1분마다)
-def periodically_save_login_state():
-    while st.session_state.get("logged_in", False):
-        if "last_log_time" in st.session_state:
-            last_log_time = st.session_state["last_log_time"]
-            elapsed = (datetime.now() - last_log_time).total_seconds()
-            if elapsed >= 60:  # 1분마다 로그 저장
-                user_info = {
-                    "name": st.session_state["user_name"],
-                    "position": st.session_state["user_position"]
-                }
-                save_log_to_storage(user_info, "현재 로그인 상태")
-                st.session_state["last_log_time"] = datetime.now()
-        else:
-            st.session_state["last_log_time"] = datetime.now()
-        time.sleep(10)
-
-# 로그인 처리
 def handle_login(email, password, name, position):
     try:
+        # Streamlit secret에서 Firebase API 키 가져오기
         api_key = st.secrets["FIREBASE_API_KEY"]
-        response = requests.post(
-            f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}",
-            headers={"Content-Type": "application/json"},
-            data=json.dumps({"email": email, "password": password, "returnSecureToken": True})
-        )
+        request_ref = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={api_key}"
+        headers = {"Content-Type": "application/json"}
+        data = json.dumps({"email": email, "password": password, "returnSecureToken": True})
+
+        response = requests.post(request_ref, headers=headers, data=data)
+        response_data = response.json()
+
         if response.status_code == 200:
-            st.session_state.update({
-                "logged_in": True,
-                "user_email": email,
-                "user_name": name,
-                "user_position": position,
-                "login_time": datetime.now()
-            })
-            save_log_to_storage({"name": name, "position": position}, "로그인")
-            threading.Thread(target=periodically_save_login_state, daemon=True).start()
+            # Firebase Authentication 성공 후 사용자 정보 가져오기
+            user_id = response_data['localId']
+            id_token = response_data['idToken']  # ID 토큰 저장
+
             st.success(f"환영합니다, {name}님! ({position})")
+            st.session_state['logged_in'] = True
+            st.session_state['user_email'] = email
+            st.session_state['user_name'] = name
+            st.session_state['user_position'] = position
+            st.session_state['user_id'] = user_id
+
+            # 로그 기록 쓰레드 시작
+            log_thread = threading.Thread(target=log_user_activity, daemon=True)
+            log_thread.start()
         else:
-            st.error(response.json().get("error", {}).get("message", "로그인 실패"))
+            st.error(response_data["error"]["message"])
     except Exception as e:
-        st.error(f"로그인 중 오류 발생: {str(e)}")
+        st.error(f"An error occurred: {str(e)}")
 
-# 로그아웃 처리
-def handle_logout():
-    try:
-        if "login_time" in st.session_state:
-            login_time = st.session_state["login_time"]
-            duration = (datetime.now() - login_time).total_seconds() / 60
-            duration = round(duration, 2)
-            save_log_to_storage({
-                "name": st.session_state["user_name"],
-                "position": st.session_state["user_position"],
-                "duration": duration
-            }, "로그아웃")
-            st.success(f"로그아웃 되었습니다. 체류 시간: {duration}분")
+if st.button("Login", disabled=login_disabled):
+    handle_login(email, password, name, position)
+
+# 로그 아웃 버튼
+if "logged_in" in st.session_state and st.session_state['logged_in']:
+
+    # 로그인된 사용자 정보 표시
+    st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
+    st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
+
+    if st.sidebar.button("Logout"):
         st.session_state.clear()
+        st.success("로그아웃 되었습니다.")
         st.experimental_rerun()
-    except Exception as e:
-        st.error(f"로그아웃 중 오류 발생: {str(e)}")
 
-# 로그인 UI
-def main():
-    email = st.text_input("Email")
-    password = st.text_input("Password", type="password")
-    name = st.text_input("Name")
-    position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Student"])
-
-    login_disabled = not email or not password or not name or not position
-    if st.button("Login", disabled=login_disabled):
-        handle_login(email, password, name, position)
-
-    if st.session_state.get("logged_in", False):
-        st.sidebar.write(f"**사용자**: {st.session_state['user_name']}")
-        st.sidebar.write(f"**직책**: {st.session_state['user_position']}")
-        if st.sidebar.button("Logout"):
-            handle_logout()
-
-if __name__ == "__main__":
-    main()
+user_email = st.session_state.get('user_email', 'unknown')
