@@ -32,8 +32,8 @@ if not firebase_admin._apps:
 
 # Supabase 초기화
 supabase: Client = create_client(
-    st.secrets["SUPABASE_URL"],
-    st.secrets["SUPABASE_KEY"]
+    st.secrets["supabase_url"],
+    st.secrets["supabase_key"]
 )
 
 # 전역 변수 설정
