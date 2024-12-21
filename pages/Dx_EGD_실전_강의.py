@@ -35,6 +35,12 @@ if st.session_state.get('logged_in'):
         })
         firebase_admin.initialize_app(cred)
 
+    # Initialize session state
+    if "current_lecture" not in st.session_state:
+        st.session_state["current_lecture"] = None
+    if "start_time" not in st.session_state:
+        st.session_state["start_time"] = None
+
     # Display Form Title
     st.subheader("EGD 실전 강의 모음")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
@@ -42,12 +48,6 @@ if st.session_state.get('logged_in'):
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
 
-    # 시작 시간 기록 (세션 상태에 저장)
-    if "start_time" not in st.session_state:
-        st.session_state["start_time"] = datetime.now()
-
-    start_time = st.session_state["start_time"]
-    
     # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
@@ -69,29 +69,35 @@ if st.session_state.get('logged_in'):
     lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
-    # 로그 파일 생성
-    if selected_lecture:
-        if selected_lecture != "Default":
-            user_name = st.session_state.get('user_name', 'unknown')
-            user_position = st.session_state.get('user_position', 'unknown')
-            access_datetime = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            
-            # Supabase 데이터 삽입
+    # 강의 선택 처리
+    if selected_lecture and selected_lecture != "Default":
+        if st.session_state["current_lecture"] is None:
+            # 처음 강의를 선택했을 때
+            st.session_state["current_lecture"] = selected_lecture
+            st.session_state["start_time"] = datetime.now()
+        elif st.session_state["current_lecture"] != selected_lecture:
+            # 다른 강의로 변경된 경우
+            end_time = datetime.now()
+            duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
+
+            # 이전 강의의 duration 업데이트
             try:
-                response = supabase_client.table("login_duration").insert({
-                    "id": str(uuid.uuid4()),  # UUID 생성
-                    "user_position": user_position,
-                    "user_name": user_name,
-                    "access_datetime": access_datetime,
-                    "duration": 0,  # 강의 선택 시 체류시간은 기본 0분으로 설정
-                }).execute()
+                response = supabase_client.table("login_duration").update({
+                    "duration": int(duration)
+                }).eq("user_name", st.session_state.get("user_name")).eq(
+                    "access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+                ).execute()
 
                 if response.data:
-                    st.success(f"강의 '{selected_lecture}' 선택 기록이 저장되었습니다.")
+                    st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
                 elif response.error:
                     st.error(f"Supabase 오류: {response.error['message']}")
             except Exception as e:
                 st.error(f"Supabase 연결 오류: {e}")
+
+            # 현재 강의 및 시작 시간 갱신
+            st.session_state["current_lecture"] = selected_lecture
+            st.session_state["start_time"] = datetime.now()
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
@@ -130,24 +136,28 @@ if st.session_state.get('logged_in'):
 
     st.sidebar.divider()
 
-    if st.sidebar.button('로그아웃'):
-        end_time = datetime.now()
-        duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
+    # 로그아웃 처리
+    if st.sidebar.button("로그아웃"):
+        if st.session_state["current_lecture"]:
+            end_time = datetime.now()
+            duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
 
-        try:
-            # Supabase 데이터 업데이트
-            response = supabase_client.table("login_duration").update({
-                "duration": int(duration)
-            }).eq("user_name", st.session_state.get("user_name")).eq("access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")).execute()
+            # 마지막 강의의 duration 업데이트
+            try:
+                response = supabase_client.table("login_duration").update({
+                    "duration": int(duration)
+                }).eq("user_name", st.session_state.get("user_name")).eq(
+                    "access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")
+                ).execute()
 
-            if response.data:
-                st.success(f"사용자 {st.session_state.get('user_name')}의 체류시간 {int(duration)}분이 저장되었습니다.")
-            elif response.error:
-                st.error(f"Supabase 오류: {response.error['message']}")
-        except Exception as e:
-            st.error(f"Supabase 연결 오류: {e}")
-            
-        st.session_state.logged_in = False
+                if response.data:
+                    st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {int(duration)}분이 저장되었습니다.")
+                elif response.error:
+                    st.error(f"Supabase 오류: {response.error['message']}")
+            except Exception as e:
+                st.error(f"Supabase 연결 오류: {e}")
+
+        st.session_state["logged_in"] = False
         st.rerun()
 
 else:
