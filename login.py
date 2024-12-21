@@ -169,13 +169,16 @@ def handle_login(email, password, name, position):
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-# 주기적 삽입 실행
+# 주기적 삽입 실행 - 타이머를 계속 유지
 if "logged_in" in st.session_state and st.session_state['logged_in']:
     now = datetime.now()
-    last_insert_time = st.session_state.get("last_insert_time", now)
-    if (now - last_insert_time).seconds >= 60:
-        periodic_insertion()
-
+    last_insert_time = st.session_state.get("last_insert_time", None)
+    
+    # 초기값이 없으면 삽입하고 타이머 시작
+    if last_insert_time is None or (now - last_insert_time).seconds >= 60:
+        periodic_insertion()  # 데이터 삽입
+        st.session_state["last_insert_time"] = now  # 마지막 삽입 시간 업데이트
+        
 # UI 처리
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
     if st.button("Login", disabled=login_disabled):
