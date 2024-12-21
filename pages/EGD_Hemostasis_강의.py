@@ -176,7 +176,7 @@ if st.session_state.get('logged_in'):
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        log_blob = bucket.blob(f'log_EGD_Hemostasis/{position_name}*{file_name_without_extension}')
+        log_blob = bucket.blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{file_name_without_extension}')
         log_blob.upload_from_string(log_entry, content_type='text/plain')
 
         if st.session_state.get('selected_video_file'):
