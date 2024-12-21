@@ -67,41 +67,60 @@ if st.session_state.get('logged_in'):
         # 세션 상태 초기화
         if 'lecture_start_time' not in st.session_state:
             st.session_state.lecture_start_time = {}
-        if 'last_lecture' not in st.session_state:
-            st.session_state.last_lecture = None
         if 'log_sent' not in st.session_state:
             st.session_state.log_sent = set()
+        if 'last_lecture' not in st.session_state:
+            st.session_state.last_lecture = None
 
-        # 새로운 강의를 선택했을 때
-        if selected_lecture != st.session_state.last_lecture:
-            # 이전 강의에 대한 로그 처리
-            if st.session_state.last_lecture and st.session_state.last_lecture != "Default":
-                last_lecture = st.session_state.last_lecture
-                start_time = st.session_state.lecture_start_time.get(last_lecture)
-                
-                if start_time and last_lecture not in st.session_state.log_sent:
-                    elapsed_time = (datetime.now() - start_time).total_seconds()
+        # 이전 강의가 있고, 로그를 아직 전송하지 않았다면
+        if st.session_state.last_lecture and st.session_state.last_lecture != "Default" and st.session_state.last_lecture != selected_lecture:
+            last_lecture = st.session_state.last_lecture
+            if last_lecture not in st.session_state.log_sent:
+                try:
+                    # 로그 생성 및 전송
+                    user_name = st.session_state.get('user_name', 'unknown')
+                    user_position = st.session_state.get('user_position', 'unknown')
+                    access_date = datetime.now().strftime("%Y-%m-%d")
                     
-                    if elapsed_time >= 30:  # 30초 이상 시청
-                        try:
-                            # 로그 생성 및 전송
-                            user_name = st.session_state.get('user_name', 'unknown')
-                            user_position = st.session_state.get('user_position', 'unknown')
-                            access_date = datetime.now().strftime("%Y-%m-%d")
-                            
-                            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {last_lecture}\n"
-                            
-                            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{last_lecture}')
-                            log_blob.upload_from_string(log_entry, content_type='text/plain')
-                            
-                            st.session_state.log_sent.add(last_lecture)
-                        except Exception as e:
-                            st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-            
-            # 새 강의 시작 시간 기록
-            if selected_lecture != "Default":
-                st.session_state.lecture_start_time[selected_lecture] = datetime.now()
-            st.session_state.last_lecture = selected_lecture
+                    log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {last_lecture}\n"
+                    
+                    log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{last_lecture}')
+                    log_blob.upload_from_string(log_entry, content_type='text/plain')
+                    
+                    st.session_state.log_sent.add(last_lecture)
+                    st.success(f"강의 '{last_lecture}'의 로그가 기록되었습니다.")
+                except Exception as e:
+                    st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
+
+        # 현재 강의 시작 시간 기록
+        if selected_lecture != "Default" and selected_lecture not in st.session_state.lecture_start_time:
+            st.session_state.lecture_start_time[selected_lecture] = datetime.now()
+        
+        # 현재 강의 저장
+        st.session_state.last_lecture = selected_lecture
+
+        # 20초 경과 체크 및 로그 전송
+        if selected_lecture != "Default" and selected_lecture not in st.session_state.log_sent:
+            start_time = st.session_state.lecture_start_time.get(selected_lecture)
+            if start_time:
+                elapsed_time = (datetime.now() - start_time).total_seconds()
+                
+                if elapsed_time >= 20:  # 20초 이상 경과
+                    try:
+                        # 로그 생성 및 전송
+                        user_name = st.session_state.get('user_name', 'unknown')
+                        user_position = st.session_state.get('user_position', 'unknown')
+                        access_date = datetime.now().strftime("%Y-%m-%d")
+                        
+                        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
+                        
+                        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
+                        log_blob.upload_from_string(log_entry, content_type='text/plain')
+                        
+                        st.session_state.log_sent.add(selected_lecture)
+                        st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
+                    except Exception as e:
+                        st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
 
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
@@ -125,28 +144,24 @@ if st.session_state.get('logged_in'):
 
     # 로그아웃 버튼
     if st.sidebar.button('로그아웃'):
-        # 로그아웃 전 현재 강의 로그 처리
+        # 현재 강의의 로그가 아직 전송되지 않았다면 전송
         if st.session_state.last_lecture and st.session_state.last_lecture != "Default":
-            start_time = st.session_state.lecture_start_time.get(st.session_state.last_lecture)
-            
-            if start_time and st.session_state.last_lecture not in st.session_state.log_sent:
-                elapsed_time = (datetime.now() - start_time).total_seconds()
-                
-                if elapsed_time >= 30:  # 30초 이상 시청
-                    try:
-                        # 로그 생성 및 전송
-                        user_name = st.session_state.get('user_name', 'unknown')
-                        user_position = st.session_state.get('user_position', 'unknown')
-                        access_date = datetime.now().strftime("%Y-%m-%d")
-                        
-                        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {st.session_state.last_lecture}\n"
-                        
-                        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{st.session_state.last_lecture}')
-                        log_blob.upload_from_string(log_entry, content_type='text/plain')
-                        
-                        st.session_state.log_sent.add(st.session_state.last_lecture)
-                    except Exception as e:
-                        st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
+            last_lecture = st.session_state.last_lecture
+            if last_lecture not in st.session_state.log_sent:
+                try:
+                    user_name = st.session_state.get('user_name', 'unknown')
+                    user_position = st.session_state.get('user_position', 'unknown')
+                    access_date = datetime.now().strftime("%Y-%m-%d")
+                    
+                    log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {last_lecture}\n"
+                    
+                    log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{last_lecture}')
+                    log_blob.upload_from_string(log_entry, content_type='text/plain')
+                    
+                    st.session_state.log_sent.add(last_lecture)
+                    st.success(f"강의 '{last_lecture}'의 로그가 기록되었습니다.")
+                except Exception as e:
+                    st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
         
         # 세션 상태 초기화
         for key in list(st.session_state.keys()):
