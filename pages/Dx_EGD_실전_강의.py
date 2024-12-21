@@ -6,41 +6,11 @@ import io
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
-import asyncio
-from supabase import create_client, Client
-import time
-import threading
-
-# Supabase 초기화
-supabase: Client = create_client(
-    st.secrets["supabase_url"],
-    st.secrets["supabase_key"]
-)
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
 
 if st.session_state.get('logged_in'):     
-
-    # 로그인 데이터 저장 함수
-    def save_login_data():
-        while st.session_state.get('logged_in', False):
-            try:
-                data = {
-                    'user_position': st.session_state.get('user_position', 'unknown'),
-                    'user_name': st.session_state.get('user_name', 'unknown'),
-                    'time': datetime.now().isoformat()
-                }
-                supabase.table('login').insert(data).execute()
-            except Exception as e:
-                print(f"Error saving login data: {e}")
-            time.sleep(60)  # 1분 대기
-
-    # 로그인 데이터 저장 스레드 시작
-    if not hasattr(st.session_state, 'login_thread_started'):
-        login_thread = threading.Thread(target=save_login_data, daemon=True)
-        login_thread.start()
-        st.session_state.login_thread_started = True
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
