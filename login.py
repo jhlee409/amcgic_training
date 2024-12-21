@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 import os
 import threading
 import time
+import uuid
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -73,7 +74,10 @@ def insert_to_supabase(position, name):
             "Authorization": f"Bearer {supabase_key}"
         }
 
+        # 고유 ID 생성
+        unique_id = str(uuid.uuid4())
         login_data = {
+            "id": unique_id,  # 고유 ID 추가
             "user_position": position,
             "user_name": name,
             "time": datetime.now(timezone.utc).isoformat()  # UTC 시간 기준 ISO 형식
