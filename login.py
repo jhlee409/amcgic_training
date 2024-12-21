@@ -98,6 +98,18 @@ def periodic_insertion():
             st.session_state["last_insert_time"] = now
             st.write(f"데이터 삽입: {now.isoformat()}")
 
+# 로그인 경과 시간 표시
+def display_timer():
+    if "login_time" not in st.session_state:
+        st.session_state["login_time"] = datetime.now()
+
+    placeholder = st.empty()
+    while st.session_state.get("logged_in", False):
+        elapsed_time = datetime.now() - st.session_state["login_time"]
+        minutes, seconds = divmod(elapsed_time.total_seconds(), 60)
+        placeholder.metric("경과 시간", f"{int(minutes)}분 {int(seconds)}초")
+        time.sleep(1)
+
 # 로그인 처리
 def handle_login(email, password, name, position):
     try:
@@ -170,6 +182,7 @@ def handle_login(email, password, name, position):
             st.session_state['last_insert_time'] = datetime.now() - timedelta(minutes=1)
 
             st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
+            display_timer()
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
