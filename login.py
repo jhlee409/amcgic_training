@@ -122,8 +122,8 @@ def main():
         handle_login(email, password, name, position)
 
     if st.session_state.get("logged_in", False):
-        st.sidebar.write(f"**사용자**: {st.session_state["user_name"]}")
-        st.sidebar.write(f"**직책**: {st.session_state["user_position"]}")
+        st.sidebar.write(f"**사용자**: {st.session_state['user_name']}")
+        st.sidebar.write(f"**직책**: {st.session_state['user_position']}")
         if st.sidebar.button("Logout"):
             handle_logout()
 
