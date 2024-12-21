@@ -165,8 +165,13 @@ if st.session_state.get('logged_in'):
         # 사용자 이름과 직책과 접속 날짜 기록
         user_name = st.session_state.get('user_name', 'unknown')
         user_position = st.session_state.get('user_position', 'unknown')
-        position = user_position
-        name = user_name
+        
+        # 디버깅을 위한 출력
+        st.write(f"Debug - Session state: {dict(st.session_state)}")
+        st.write(f"Debug - user_position: {user_position}")
+        
+        position = user_position.strip()  # 공백 제거
+        name = user_name.strip()  # 공백 제거
         access_date = datetime.now().strftime("%Y-%m-%d")
 
         # 로그 내용을 문자열로 생성
