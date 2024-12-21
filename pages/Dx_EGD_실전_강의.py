@@ -42,9 +42,12 @@ if st.session_state.get('logged_in'):
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
 
-    # 시작 시간 기록
-    start_time = datetime.now()
+    # 시작 시간 기록 (세션 상태에 저장)
+    if "start_time" not in st.session_state:
+        st.session_state["start_time"] = datetime.now()
 
+    start_time = st.session_state["start_time"]
+    
     # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
@@ -129,13 +132,13 @@ if st.session_state.get('logged_in'):
 
     if st.sidebar.button('로그아웃'):
         end_time = datetime.now()
-        duration = (end_time - start_time).total_seconds() // 60  # 분 단위 계산
-        
+        duration = (end_time - st.session_state["start_time"]).total_seconds() // 60  # 분 단위 계산
+
         try:
-            # Supabase 데이터 업데이트 (사용자 이름과 강의를 기준으로 업데이트)
+            # Supabase 데이터 업데이트
             response = supabase_client.table("login_duration").update({
                 "duration": int(duration)
-            }).eq("user_name", st.session_state.get('user_name')).execute()
+            }).eq("user_name", st.session_state.get("user_name")).eq("access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S")).execute()
 
             if response.data:
                 st.success(f"사용자 {st.session_state.get('user_name')}의 체류시간 {int(duration)}분이 저장되었습니다.")
@@ -143,7 +146,7 @@ if st.session_state.get('logged_in'):
                 st.error(f"Supabase 오류: {response.error['message']}")
         except Exception as e:
             st.error(f"Supabase 연결 오류: {e}")
-        
+            
         st.session_state.logged_in = False
         st.rerun()
 
