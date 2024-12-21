@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
 
-if st.session_state.get('logged_in'):
+if st.session_state.get('logged_in'):     
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -36,13 +36,21 @@ if st.session_state.get('logged_in'):
         st.write("- 이 강의 모음은 진단 EGD 실전 강의 동영상 모음입니다.")
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
-
-    # Firebase Storage에서 mp4 파일 리스트 가져오기
+          
+    # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
-        return [os.path.basename(blob.name) for blob in blobs if blob.name.endswith(".mp4")]
-
+        file_names = []
+        for blob in blobs:
+            if blob.name.endswith(".mp4"):
+                file_name = os.path.basename(blob.name)
+                file_names.append(file_name)
+        return file_names
+    
+    # 동영상 플레이어를 렌더링할 컨테이너 생성
+    video_player_container = st.container()
+    
     # 동영상 플레이어를 렌더링할 플레이스홀더 생성
     video_player_placeholder = st.empty()
 
@@ -50,132 +58,69 @@ if st.session_state.get('logged_in'):
     lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
+    # 로그 파일 생성
+    if selected_lecture:
+        # 'Default'일 경우 로그 파일 생성하지 않음
+        if selected_lecture != "Default":
+            user_name = st.session_state.get('user_name', 'unknown')
+            user_position = st.session_state.get('user_position', 'unknown')
+            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
+            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+
+            # 로그 내용을 문자열로 생성
+            log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
+
+            # Firebase Storage에 로그 파일 업로드
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
+            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
+            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
+
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
     mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
-    mp4_files.sort()  # 파일 이름 알파벳 순으로 정렬
-    selected_mp4 = next((file for file in mp4_files if file.startswith(selected_lecture)), None)
+
+    # 선택된 강의에 해당하는 mp4 파일 찾기
+    selected_mp4 = None
+    for file_name in mp4_files:
+        if file_name.startswith(selected_lecture):
+            selected_mp4 = file_name
+            break
 
     if selected_mp4:
-        # Generate Firebase Signed URL
+        # Firebase Storage에서 선택된 mp4 파일의 URL 생성
         selected_mp4_path = directory_lectures + selected_mp4
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(selected_mp4_path)
-        expiration_time = datetime.utcnow() + timedelta(seconds=3600)
+        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-
-        # 세션 상태 초기화
-        if 'log_sent' not in st.session_state:
-            st.session_state.log_sent = set()
-        if 'play_time' not in st.session_state:
-            st.session_state.play_time = {}
-
-        # 현재 강의의 재생 시간 초기화
-        if selected_lecture not in st.session_state.play_time:
-            st.session_state.play_time[selected_lecture] = 0
-
-        # 동영상 플레이어 표시
+        
+        # 동영상 플레이어 렌더링
         with video_player_placeholder.container():
             video_html = f'''
             <div style="display: flex; justify-content: center;">
-                <video id="myVideo" width="1000" height="800" controls controlsList="nodownload">
+                <video width="1000" height="800" controls controlsList="nodownload">
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
             </div>
             <script>
-                var video = document.getElementById('myVideo');
-                var isPlaying = false;
-                var totalPlayTime = {st.session_state.play_time[selected_lecture]};
-                var logSent = false;
-                
-                video.addEventListener('play', function() {{
-                    isPlaying = true;
-                    checkPlayTime();
-                }});
-                
-                video.addEventListener('pause', function() {{
-                    isPlaying = false;
-                }});
-                
-                video.addEventListener('ended', function() {{
-                    isPlaying = false;
-                }});
-                
-                video.addEventListener('contextmenu', function(e) {{
-                    e.preventDefault();
-                }});
-                
-                function checkPlayTime() {{
-                    if (isPlaying && !logSent) {{
-                        totalPlayTime += 1;
-                        
-                        // 3분(180초) 이상 재생 시 로그 전송
-                        if (totalPlayTime >= 20) {{
-                            logSent = true;
-                            const data = {{
-                                lecture: '{selected_lecture}',
-                                playTime: totalPlayTime
-                            }};
-                            window.parent.postMessage({{
-                                type: 'streamlit:set_component_value',
-                                data: data
-                            }}, '*');
-                        }}
-                        
-                        setTimeout(checkPlayTime, 1000);
-                    }}
-                }}
+            var video_player = document.querySelector("video");
+            video_player.addEventListener('contextmenu', function(e) {{
+                e.preventDefault();
+            }});
             </script>
             '''
-            st.components.v1.html(video_html, height=850)
-
-            # 재생 시간 추적을 위한 컴포넌트
-            result = st.components.v1.html(
-                """
-                <script>
-                    window.addEventListener('message', function(e) {
-                        if (e.data.type === 'streamlit:set_component_value') {
-                            window.parent.postMessage(e.data, '*');
-                        }
-                    });
-                </script>
-                """,
-                height=0,
-                key=f"video_tracker_{selected_lecture}"
-            )
-
-            # 컴포넌트로부터 재생 시간 업데이트 받기
-            if result:
-                try:
-                    data = result.get('data', {})
-                    if isinstance(data, dict) and 'playTime' in data:
-                        lecture = data.get('lecture')
-                        play_time = data.get('playTime', 0)
-                        
-                        if lecture == selected_lecture and play_time >= 180 and selected_lecture not in st.session_state.log_sent:
-                            # 로그 전송
-                            user_name = st.session_state.get('user_name', 'unknown')
-                            user_position = st.session_state.get('user_position', 'unknown')
-                            access_date = datetime.now().strftime("%Y-%m-%d")
-                            
-                            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n실전강의: {selected_lecture}\n"
-                            
-                            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{user_position}*{user_name}*{selected_lecture}')
-                            log_blob.upload_from_string(log_entry, content_type='text/plain')
-                            
-                            st.session_state.log_sent.add(selected_lecture)
-                            st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
-                except Exception as e:
-                    st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-
+            st.markdown(video_html, unsafe_allow_html=True)
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
-    # 로그아웃 버튼
+    st.sidebar.divider()
+    
+    # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
-        for key in list(st.session_state.keys()):
-            del st.session_state[key]
-        st.experimental_rerun()
-
+        st.session_state.logged_in = False
+        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+        
 else:
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
     st.error("로그인이 필요합니다.")
