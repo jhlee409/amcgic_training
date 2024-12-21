@@ -23,6 +23,7 @@ if not firebase_admin._apps:
         "client_x509_cert_url": st.secrets["client_x509_cert_url"],
         "universe_domain": st.secrets["universe_domain"]
     })
+    # Firebase 앱 초기화 (Storage와 Database URL 모두 설정)
     firebase_admin.initialize_app(cred, {
         'storageBucket': 'amcgi-bulletin.appspot.com',
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
@@ -64,7 +65,8 @@ elif not name or not is_korean_name(name):
 
 def save_log_to_storage(user_data, log_type):
     try:
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        # Firebase Storage 버킷 가져오기
+        bucket = storage.bucket()
         current_time = datetime.now().strftime('%Y년%m월%d일-%H시%M분%S초')
         position_name = f"{user_data['position']}*{user_data['name']}"
         
@@ -77,13 +79,18 @@ def save_log_to_storage(user_data, log_type):
         else:  # 로그아웃
             duration = user_data.get('duration', 0)
             log_content = f"{position_name}*{current_time}_{log_type}*{duration}분"
+        
+        print(f"저장할 로그 경로: {log_path}")  # 디버깅용 출력
+        print(f"저장할 로그 내용: {log_content}")  # 디버깅용 출력
             
         # Firebase Storage에 로그 저장
         blob = bucket.blob(log_path)
         blob.upload_from_string(log_content, content_type='text/plain')
         
+        print(f"로그 저장 성공: {log_type}")  # 디버깅용 출력
         return True
     except Exception as e:
+        print(f"로그 저장 중 오류 발생: {str(e)}")  # 디버깅용 출력
         st.error(f"로그 저장 중 오류 발생: {str(e)}")
         return False
 
@@ -188,22 +195,31 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
                 duration = (logout_time - login_time).total_seconds() / 60
                 duration_rounded = round(duration, 2)
                 
-                # 로그아웃 로그 저장
-                logout_success = save_log_to_storage({
+                # 사용자 정보 저장
+                user_info = {
                     'name': st.session_state['user_name'],
                     'position': st.session_state['user_position'],
                     'duration': duration_rounded
-                }, '로그아웃')
+                }
+                
+                print(f"로그아웃 시도 - 사용자: {user_info}")  # 디버깅용 출력
+                
+                # 로그아웃 로그 저장
+                logout_success = save_log_to_storage(user_info, '로그아웃')
                 
                 if logout_success:
                     st.success(f"로그아웃 되었습니다. 체류 시간: {duration_rounded}분")
+                    # 세션 초기화는 성공적인 로그 저장 후에만 실행
+                    st.session_state.clear()
+                    st.experimental_rerun()
                 else:
-                    st.error("로그아웃 로그 저장 중 오류가 발생했습니다.")
-            
-            # 세션 초기화는 로그 저장 후에 실행
-            st.session_state.clear()
-            st.experimental_rerun()
+                    st.error("로그아웃 로그 저장에 실패했습니다.")
+            else:
+                st.error("로그인 시간 정보를 찾을 수 없습니다.")
+                st.session_state.clear()
+                st.experimental_rerun()
         except Exception as e:
+            print(f"로그아웃 중 오류 발생: {str(e)}")  # 디버깅용 출력
             st.error(f"로그아웃 중 오류가 발생했습니다: {str(e)}")
 
 user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
