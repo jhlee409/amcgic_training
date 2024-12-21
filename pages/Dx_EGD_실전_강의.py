@@ -131,11 +131,32 @@ if st.session_state.get('logged_in'):
                         body: JSON.stringify({{
                             playTime: totalPlayTime.toFixed(2)
                         }})
+                    }}).then(response => response.json()).then(data => {{
+                        console.log('Play time logged:', data);
                     }});
                 }});
             </script>
             '''
             st.markdown(video_html, unsafe_allow_html=True)
+
+        # Streamlit 서버에서 재생 시간 로그 처리
+        from flask import request, jsonify
+
+        @st.cache_data
+        def log_play_time():
+            data = request.get_json()
+            play_time = data.get('playTime', 0)
+            user_name = st.session_state.get('user_name', 'unknown')
+            user_position = st.session_state.get('user_position', 'unknown')
+            position_name = f"{user_position}*{user_name}"
+            log_date = datetime.now().strftime("%Y-%m-%d")
+
+            # Firebase Storage에 재생 시간 로그 업로드
+            log_entry = f"{position_name}*{log_date}*{play_time}분\n"
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            log_blob = bucket.blob(f'log_EGD_Dx_실전_강의/{position_name}*{log_date}')
+            log_blob.upload_from_string(log_entry, content_type='text/plain')
+            return jsonify({'status': 'success', 'playTime': play_time})
 
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
