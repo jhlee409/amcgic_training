@@ -170,7 +170,7 @@ if st.session_state.get('logged_in'):
         access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # 로그 내용을 문자열로 생성
-        log_entry = f"User: {position_name}, Access Date: {access_date}, Menu: {folder_selection}\n"
+        log_entry = f"postiion: {position}, User: {name}, Access Date: {access_date}, Menu: {folder_selection}\n"
 
         # 파일 이름에서 확장자(.mp4) 제거
         file_name_without_extension = os.path.splitext(selected_pre_videos_file)[0]
