@@ -132,7 +132,7 @@ if st.session_state.get('logged_in'):
         duration = (end_time - start_time).total_seconds() // 60  # 분 단위 계산
         
         try:
-            # Supabase 데이터 업데이트
+            # Supabase 데이터 업데이트 (사용자 이름과 강의를 기준으로 업데이트)
             response = supabase_client.table("login_duration").update({
                 "duration": int(duration)
             }).eq("user_name", st.session_state.get('user_name')).execute()
@@ -146,6 +146,6 @@ if st.session_state.get('logged_in'):
         
         st.session_state.logged_in = False
         st.rerun()
-        
+
 else:
     st.error("로그인이 필요합니다.")
