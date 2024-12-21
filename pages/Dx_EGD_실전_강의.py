@@ -59,14 +59,13 @@ if st.session_state.get('logged_in'):
     lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
-    # 로그 파일 생성 함수 (10분 대기 후 실행)
-    def log_after_delay(selected_lecture, user_name, user_position):
-        time.sleep(600)  # 10분 대기
+    # 로그 파일 생성 함수 (20% 이상 재생 시 실행)
+    def log_on_play(selected_lecture, user_name, user_position, video_duration):
         position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
         access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # 로그 내용을 문자열로 생성
-        log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
+        log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}, 재생 길이: {video_duration * 0.2}초 이상\n"
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
@@ -102,8 +101,13 @@ if st.session_state.get('logged_in'):
             </div>
             <script>
             var video_player = document.getElementById("video_player");
-            video_player.addEventListener('play', function() {{
-                fetch("{st.get_option('server.address')}/start_logging", {{method: "POST"}});
+            video_player.addEventListener('timeupdate', function() {{
+                var duration = video_player.duration;
+                var currentTime = video_player.currentTime;
+                if (currentTime >= duration * 0.2) {{
+                    fetch("{st.get_option('server.address')}/log_play", {{method: "POST"}});
+                    video_player.removeEventListener('timeupdate', arguments.callee); // Remove listener after logging
+                }}
             }});
             </script>
             '''
@@ -113,7 +117,7 @@ if st.session_state.get('logged_in'):
         if selected_lecture != "Default":
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
-            threading.Thread(target=log_after_delay, args=(selected_lecture, user_name, user_position)).start()
+            threading.Thread(target=log_on_play, args=(selected_lecture, user_name, user_position, 600)).start()
 
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
