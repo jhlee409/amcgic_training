@@ -113,11 +113,18 @@ def handle_login(email, password, name, position):
                 })
                 user_data = {'name': name, 'position': position}
             
+            # position이 없는 경우 업데이트
+            elif 'position' not in user_data:
+                user_ref.update({
+                    'position': position
+                })
+                user_data['position'] = position
+            
             st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = user_data.get('name')
-            st.session_state['user_position'] = user_data.get('position')
+            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
+            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
             st.session_state['user_id'] = user_id
         else:
             st.error(response_data["error"]["message"])
