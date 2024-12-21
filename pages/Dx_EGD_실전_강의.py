@@ -6,6 +6,8 @@ import io
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
+import time
+import threading
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
@@ -120,7 +122,56 @@ if st.session_state.get('logged_in'):
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-        
+
+    # 세션 상태에 last_log_time이 없으면 초기화
+    if 'last_log_time' not in st.session_state:
+        st.session_state['last_log_time'] = time.time()
+
+    # 현재 시간과 마지막 로그 시간의 차이를 계산
+    current_time = time.time()
+    time_diff = current_time - st.session_state['last_log_time']
+
+    # 1분(60초)이 지났으면 로그 저장
+    if time_diff >= 60:
+        def save_log_to_storage():
+            try:
+                if 'user_name' not in st.session_state or 'user_position' not in st.session_state:
+                    print("사용자 정보가 세션에 없습니다.")
+                    return
+                    
+                # Firebase Storage 버킷 가져오기
+                bucket = storage.bucket()
+                current_time = datetime.now().strftime('%Y년%m월%d일%H시%M분')
+                position_name = f"{st.session_state['user_position']}*{st.session_state['user_name']}"
+                
+                # 로그 파일 경로 설정
+                log_path = f'log_stay_duration/{position_name}*{current_time}'
+                
+                # 로그 내용 생성
+                log_content = f"{position_name}*{current_time}"
+                
+                print(f"저장할 로그 경로: {log_path}")  # 디버깅용 출력
+                print(f"저장할 로그 내용: {log_content}")  # 디버깅용 출력
+                    
+                # Firebase Storage에 로그 저장
+                blob = bucket.blob(log_path)
+                blob.upload_from_string(log_content, content_type='text/plain')
+                
+                print(f"로그 저장 성공: {current_time}")  # 디버깅용 출력
+                return True
+            except Exception as e:
+                print(f"로그 저장 중 오류 발생: {str(e)}")  # 디버깅용 출력
+                return False
+
+        if save_log_to_storage():
+            st.session_state['last_log_time'] = current_time
+            print(f"로그 저장 시간 업데이트: {datetime.now().strftime('%Y년%m월%d일%H시%M분')}")
+
+    # 자동 새로고침을 위한 빈 요소 (매 60초마다)
+    st.empty()
+    time.sleep(60)
+    st.experimental_rerun()
+
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
     st.error("로그인이 필요합니다.")

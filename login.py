@@ -2,11 +2,8 @@ import streamlit as st
 import requests
 import json
 import firebase_admin
-from firebase_admin import credentials, db, auth, storage
+from firebase_admin import credentials, db, auth
 import os
-import datetime
-import threading
-import time
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -26,9 +23,8 @@ if not firebase_admin._apps:
         "universe_domain": st.secrets["universe_domain"]
     })
     firebase_admin.initialize_app(cred, {
-        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
+        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
 st.set_page_config(page_title="GI_training")
 
@@ -64,22 +60,6 @@ elif not name or not is_korean_name(name):
     st.error("한글 이름을 입력해 주세요")
     login_disabled = True
 
-def log_user_activity():
-    try:
-        while "logged_in" in st.session_state and st.session_state['logged_in']:
-            now = datetime.datetime.now()
-            formatted_date = now.strftime("%Y년%m월%d일-%H시%M분")
-            log_data = f"{st.session_state['user_position']}*{st.session_state['user_name']}*{formatted_date}-로그인"
-            
-            # Firebase Storage에 로그 저장
-            bucket = storage.bucket()
-            blob = bucket.blob(f"log_stay_duration/{st.session_state['user_id']}-{now.strftime('%Y%m%d%H%M%S')}.txt")
-            blob.upload_from_string(log_data, content_type="text/plain")
-
-            time.sleep(60)  # 1분 대기
-    except Exception as e:
-        st.error(f"로그 기록 중 오류 발생: {str(e)}")
-
 def handle_login(email, password, name, position):
     try:
         # Streamlit secret에서 Firebase API 키 가져오기
@@ -95,27 +75,57 @@ def handle_login(email, password, name, position):
             # Firebase Authentication 성공 후 사용자 정보 가져오기
             user_id = response_data['localId']
             id_token = response_data['idToken']  # ID 토큰 저장
+            
+            # Authentication 사용자 정보 업데이트
+            try:
+                user = auth.update_user(
+                    user_id,
+                    display_name=name,
+                    custom_claims={'position': position}
+                )
+            except auth.UserNotFoundError:
+                # 사용자가 없는 경우, 새로운 사용자 생성
+                try:
+                    user = auth.create_user(
+                        uid=user_id,
+                        email=email,
+                        password=password,
+                        display_name=name
+                    )
+                    # 생성된 사용자에 대한 custom claims 설정
+                    auth.set_custom_user_claims(user_id, {'position': position})
+                    st.success("새로운 사용자가 생성되었습니다.")
+                except Exception as e:
+                    st.error(f"사용자 생성 중 오류 발생: {str(e)}")
+                    return
+            
+            # Realtime Database에도 정보 저장
+            user_ref = db.reference(f'users/{user_id}')
+            user_data = user_ref.get()
 
-            st.success(f"환영합니다, {name}님! ({position})")
+            if user_data is None:
+                # 새 사용자인 경우 정보 저장
+                user_ref.set({
+                    'email': email,
+                    'name': name,
+                    'position': position,
+                    'created_at': {'.sv': 'timestamp'}  # 서버 타임스탬프 사용
+                })
+                user_data = {'name': name, 'position': position}
+            
+            # position이 없는 경우 업데이트
+            elif 'position' not in user_data:
+                user_ref.update({
+                    'position': position
+                })
+                user_data['position'] = position
+            
+            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = name
-            st.session_state['user_position'] = position
+            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
+            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
             st.session_state['user_id'] = user_id
-
-            # 즉시 첫 로그 기록
-            now = datetime.datetime.now()
-            formatted_date = now.strftime("%Y년%m월%d일-%H시%M분")
-            log_data = f"{position}*{name}*{formatted_date}-로그인"
-            bucket = storage.bucket()
-            blob = bucket.blob(f"log_stay_duration/{user_id}-{now.strftime('%Y%m%d%H%M%S')}.txt")
-            blob.upload_from_string(log_data, content_type="text/plain")
-
-            # 로그 기록 쓰레드 시작
-            if 'log_thread' not in st.session_state or not st.session_state['log_thread'].is_alive():
-                log_thread = threading.Thread(target=log_user_activity, daemon=True)
-                st.session_state['log_thread'] = log_thread
-                log_thread.start()
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
@@ -126,14 +136,14 @@ if st.button("Login", disabled=login_disabled):
 
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
-
+    
     # 로그인된 사용자 정보 표시
     st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
-
+    
     if st.sidebar.button("Logout"):
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
         st.experimental_rerun()
 
-user_email = st.session_state.get('user_email', 'unknown')
+user_email = st.session_state.get('user_email', 'unknown')  # 세션에서 이메일 가져오기
