@@ -90,7 +90,7 @@ if st.session_state.get('logged_in'):
             video_player.addEventListener('timeupdate', function() {{
                 var duration = video_player.duration;
                 var currentTime = video_player.currentTime;
-                if (!logged && currentTime >= duration * 0.2) {{
+                if (!logged && currentTime >= duration * 0.05) {{
                     logged = true;
                     fetch('/log_play', {{
                         method: 'POST',
