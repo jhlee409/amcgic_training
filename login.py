@@ -4,7 +4,6 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
 from datetime import datetime, timezone
-import os
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
