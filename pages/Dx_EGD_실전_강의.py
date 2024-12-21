@@ -39,7 +39,16 @@ if st.session_state.get('logged_in'):
     if "current_lecture" not in st.session_state:
         st.session_state["current_lecture"] = None
     if "start_time" not in st.session_state:
-        st.session_state["start_time"] = None
+        st.session_state["start_time"] = datetime.now(timezone.utc)
+        try:
+            # 페이지 진입 시 로그 기록 생성
+            supabase_client.table("login_duration").insert({
+                "user_name": st.session_state.get("user_name"),
+                "access_datetime": st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S%z"),
+                "duration": 0
+            }).execute()
+        except Exception as e:
+            st.error(f"Supabase 연결 오류: {str(e)}")
 
     # Display Form Title
     st.subheader("EGD 실전 강의 모음")
@@ -71,41 +80,7 @@ if st.session_state.get('logged_in'):
 
     # 강의 선택 처리
     if selected_lecture and selected_lecture != "Default":
-        if st.session_state["current_lecture"] is None:
-            # 처음 강의를 선택했을 때
-            st.session_state["current_lecture"] = selected_lecture
-            st.session_state["start_time"] = datetime.now(timezone.utc)
-        elif st.session_state["current_lecture"] != selected_lecture:
-            # 다른 강의로 변경된 경우
-            end_time = datetime.now(timezone.utc)
-            duration = (end_time - st.session_state["start_time"]).total_seconds() / 60  # 분 단위 계산
-            duration = int(duration) if duration >= 1 else 0  # 1분 미만은 0으로 처리
-
-            # 이전 강의의 duration 업데이트
-            try:
-                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S%z")
-                
-                data = supabase_client.table("login_duration").select("*").eq(
-                    "user_name", st.session_state.get("user_name")
-                ).eq("access_datetime", utc_start_time).execute()
-
-                if data.data:
-                    response = supabase_client.table("login_duration").update({
-                        "duration": duration
-                    }).eq("user_name", st.session_state.get("user_name")).eq(
-                        "access_datetime", utc_start_time
-                    ).execute()
-                    
-                    if duration > 0:
-                        st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {duration}분이 저장되었습니다.")
-                else:
-                    st.warning("저장할 데이터를 찾을 수 없습니다.")
-            except Exception as e:
-                st.error(f"Supabase 연결 오류: {str(e)}")
-
-            # 현재 강의 및 시작 시간 갱신
-            st.session_state["current_lecture"] = selected_lecture
-            st.session_state["start_time"] = datetime.now(timezone.utc)
+        st.session_state["current_lecture"] = selected_lecture
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
@@ -146,31 +121,21 @@ if st.session_state.get('logged_in'):
 
     # 로그아웃 처리
     if st.sidebar.button("로그아웃"):
-        if st.session_state["current_lecture"]:
-            end_time = datetime.now(timezone.utc)
+        end_time = datetime.now(timezone.utc)
+        try:
             duration = (end_time - st.session_state["start_time"]).total_seconds() / 60
             duration = int(duration) if duration >= 1 else 0
 
-            # 마지막 강의의 duration 업데이트
-            try:
-                utc_start_time = st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S%z")
-                data = supabase_client.table("login_duration").select("*").eq(
-                    "user_name", st.session_state.get("user_name")
-                ).eq("access_datetime", utc_start_time).execute()
+            response = supabase_client.table("login_duration").update({
+                "duration": duration
+            }).eq("user_name", st.session_state.get("user_name")).eq(
+                "access_datetime", st.session_state["start_time"].strftime("%Y-%m-%d %H:%M:%S%z")
+            ).execute()
 
-                if data.data:
-                    response = supabase_client.table("login_duration").update({
-                        "duration": duration
-                    }).eq("user_name", st.session_state.get("user_name")).eq(
-                        "access_datetime", utc_start_time
-                    ).execute()
-                    
-                    if duration > 0:
-                        st.success(f"강의 '{st.session_state['current_lecture']}'에 머문 시간 {duration}분이 저장되었습니다.")
-                else:
-                    st.warning("저장할 데이터를 찾을 수 없습니다.")
-            except Exception as e:
-                st.error(f"Supabase 연결 오류: {str(e)}")
+            if duration > 0:
+                st.success(f"'Dx EGD 실전 강의' 페이지에 머문 시간 {duration}분이 저장되었습니다.")
+        except Exception as e:
+            st.error(f"Supabase 연결 오류: {str(e)}")
 
         st.session_state["logged_in"] = False
         st.rerun()
