@@ -106,7 +106,7 @@ if st.session_state.get('logged_in'):
                         totalPlayTime += 1;
                         playTime.textContent = totalPlayTime;
                         
-                        if (totalPlayTime >= 20) {{
+                        if (totalPlayTime >= 180) {{  
                             logSent = true;
                             window.parent.postMessage({{
                                 type: 'send_log',
