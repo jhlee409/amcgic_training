@@ -110,7 +110,7 @@ if st.session_state.get('logged_in'):
                         totalPlayTime += 1;
                         
                         // 3분(180초) 이상 재생 시 로그 전송
-                        if (totalPlayTime >= 180) {{
+                        if (totalPlayTime >= 20) {{
                             logSent = true;
                             const data = {{
                                 lecture: '{selected_lecture}',
@@ -130,7 +130,7 @@ if st.session_state.get('logged_in'):
             st.components.v1.html(video_html, height=850)
 
             # 재생 시간 추적을 위한 컴포넌트
-            result = st.components.html(
+            result = st.components.v1.html(
                 """
                 <script>
                     window.addEventListener('message', function(e) {
