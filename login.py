@@ -27,8 +27,8 @@ if not firebase_admin._apps:
     })
     firebase_admin.initialize_app(cred, {
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
-        'storageBucket': st.secrets["FIREBASE_STORAGE_BUCKET"]
     })
+    bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
 st.set_page_config(page_title="GI_training")
 
