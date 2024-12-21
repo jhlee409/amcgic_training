@@ -4,7 +4,7 @@ from PIL import Image
 import docx
 import io
 import firebase_admin
-from firebase_admin import credentials, storage
+from firebase_admin import credentials, storage, db
 from datetime import datetime, timedelta
 import json
 
@@ -29,7 +29,9 @@ if st.session_state.get('logged_in'):
             "client_x509_cert_url": st.secrets["client_x509_cert_url"],
             "universe_domain": st.secrets["universe_domain"]
         })
-        firebase_admin.initialize_app(cred)
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+        })
 
     # Display Form Title
     st.subheader("EGD 실전 강의 모음")
@@ -63,18 +65,20 @@ if st.session_state.get('logged_in'):
     if selected_lecture:
         # 'Default'일 경우 로그 파일 생성하지 않음
         if selected_lecture != "Default":
-            user_name = st.session_state.get('user_name', 'unknown')
-            user_position = st.session_state.get('user_position', 'unknown')
-            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-            # 로그 내용을 문자열로 생성
-            log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
-
-            # Firebase Storage에 로그 파일 업로드
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
-            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+            try:
+                user_name = st.session_state.get('user_name', 'unknown')
+                user_position = st.session_state.get('user_position', 'unknown')
+                position_name = f"{user_position}*{user_name}"
+                access_date = datetime.now().strftime("%Y-%m-%d")
+                
+                log_entry = f"{position_name}*{access_date}*{selected_lecture}\n"
+                
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                log_blob = bucket.blob(f'log_EGD_Dx_실전_강의/{position_name}*{selected_lecture}*{access_date}')
+                log_blob.upload_from_string(log_entry, content_type='text/plain')
+                st.success(f"강의 '{selected_lecture}'의 로그가 기록되었습니다.")
+            except Exception as e:
+                st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
 
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
@@ -97,6 +101,20 @@ if st.session_state.get('logged_in'):
 
         # 동영상 플레이어 렌더링
         with video_player_placeholder.container():
+            # JavaScript에서 전송한 데이터를 처리할 콜백 함수
+            def handle_watch_time(time, lecture):
+                user_name = st.session_state.get('user_name', 'unknown')
+                user_position = st.session_state.get('user_position', 'unknown')
+                current_date = datetime.now().strftime("%Y-%m-%d")
+                
+                # Firebase Realtime Database에 데이터 저장
+                watch_ref = db.reference(f'watch_time/{user_position}/{user_name}')
+                watch_ref.push({
+                    'lecture': lecture,
+                    'minutes_watched': time,
+                    'date': current_date
+                })
+
             video_html = f'''
             <div style="display: flex; justify-content: center;">
                 <video id="video_player" width="1000" height="800" controls controlsList="nodownload">
@@ -105,69 +123,42 @@ if st.session_state.get('logged_in'):
             </div>
             <script>
                 const video = document.getElementById('video_player');
-                let totalPlayTime = 0;
-                let lastPlayTime = 0;
-
-                video.addEventListener('play', () => {{
-                    lastPlayTime = Date.now();
-                }});
-
-                video.addEventListener('pause', () => {{
-                    if (lastPlayTime > 0) {{
-                        totalPlayTime += (Date.now() - lastPlayTime) / 60000; // 분 단위로 계산
-                        lastPlayTime = 0;
+                let lastReportedTime = 0;
+                
+                video.addEventListener('timeupdate', () => {{
+                    const currentMinutes = Math.floor(video.currentTime / 60);
+                    if (currentMinutes > lastReportedTime) {{
+                        lastReportedTime = currentMinutes;
+                        // Streamlit으로 데이터 전송
+                        window.parent.Streamlit.setComponentValue({{
+                            type: 'watchTime',
+                            time: currentMinutes,
+                            lecture: '{selected_lecture}'
+                        }});
                     }}
                 }});
-
-                video.addEventListener('ended', () => {{
-                    if (lastPlayTime > 0) {{
-                        totalPlayTime += (Date.now() - lastPlayTime) / 60000;
-                        lastPlayTime = 0;
-                    }}
-                    // Streamlit 서버로 데이터 전송
-                    fetch('/_log_play_time', {{
-                        method: 'POST',
-                        headers: {{ 'Content-Type': 'application/json' }},
-                        body: JSON.stringify({{
-                            playTime: totalPlayTime.toFixed(2)
-                        }})
-                    }}).then(response => response.json()).then(data => {{
-                        console.log('Play time logged:', data);
-                    }});
+                
+                video.addEventListener('contextmenu', (e) => {{
+                    e.preventDefault();
                 }});
             </script>
             '''
-            st.markdown(video_html, unsafe_allow_html=True)
-
-        # Streamlit 서버에서 재생 시간 로그 처리
-        from flask import request, jsonify
-
-        @st.cache_data
-        def log_play_time():
-            data = request.get_json()
-            play_time = data.get('playTime', 0)
-            user_name = st.session_state.get('user_name', 'unknown')
-            user_position = st.session_state.get('user_position', 'unknown')
-            position_name = f"{user_position}*{user_name}"
-            log_date = datetime.now().strftime("%Y-%m-%d")
-
-            # Firebase Storage에 재생 시간 로그 업로드
-            log_entry = f"{position_name}*{log_date}*{play_time}분\n"
-            bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            log_blob = bucket.blob(f'log_EGD_Dx_실전_강의/{position_name}*{log_date}')
-            log_blob.upload_from_string(log_entry, content_type='text/plain')
-            return jsonify({'status': 'success', 'playTime': play_time})
-
+            components = st.components.v1.html(video_html, height=850)
+            
+            # Streamlit 컴포넌트의 값이 변경될 때마다 호출
+            if components:
+                data = components
+                if isinstance(data, dict) and data.get('type') == 'watchTime':
+                    handle_watch_time(data['time'], data['lecture'])
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
     st.sidebar.divider()
 
-    # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+        for key in list(st.session_state.keys()):
+            del st.session_state[key]
+        st.rerun()
 
 else:
-    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
     st.error("로그인이 필요합니다.")
