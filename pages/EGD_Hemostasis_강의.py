@@ -165,14 +165,13 @@ if st.session_state.get('logged_in'):
         # 사용자 이름과 직책과 접속 날짜 기록
         user_name = st.session_state.get('user_name', 'unknown')
         user_position = st.session_state.get('user_position', 'unknown')
-        position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
         access_date = datetime.now().strftime("%Y-%m-%d")
-
-        # 로그 내용을 문자열로 생성
-        log_entry = f"User: {position_name}, Access Date: {access_date}, Menu: {folder_selection}\n"
 
         # 파일 이름에서 확장자(.mp4) 제거
         file_name_without_extension = os.path.splitext(selected_pre_videos_file)[0]
+
+        # 로그 내용을 문자열로 생성
+        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {folder_selection}\n"
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')

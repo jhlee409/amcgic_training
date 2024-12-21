@@ -125,22 +125,21 @@ if st.session_state.get('logged_in'):
         if selected_case_file:
             # 000.docx 파일은 로그를 생성하지 않음
             if selected_case_file != "000.docx":
-                # 사용자 이메일과 접속 날짜 기록
+                # 사용자 이름과 직책과 접속 날짜 기록
                 user_name = st.session_state.get('user_name', 'unknown')
                 user_position = st.session_state.get('user_position', 'unknown')
-                position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-                access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
-
-                # 로그 내용을 문자열로 생성
-                log_entry = f"Position: {user_position}, User: {user_name}, Access Date: {access_date}, Menu: {selected_case_file}\n"
+                access_date = datetime.now().strftime("%Y-%m-%d")
 
                 # '.docx' 확장자를 제거한 파일 이름
                 file_name_without_extension = selected_case_file.replace('.docx', '')
 
+                # 로그 내용을 문자열로 생성
+                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {selected_case_file}\n"
+
                 # Firebase Storage에 로그 파일 업로드
-                bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_position}*{user_name}*{file_name_without_extension}')  # 로그 파일 경로 설정
-                log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+                bucket = storage.bucket('amcgi-bulletin.appspot.com')
+                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_position}*{user_name}*{file_name_without_extension}')
+                log_blob.upload_from_string(log_entry, content_type='text/plain')
 
             # Include the directory in the path when reading the file
             case_full_path = case_directory + selected_case_file
