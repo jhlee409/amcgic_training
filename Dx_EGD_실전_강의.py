@@ -6,12 +6,11 @@ import io
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
-import json
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
 
-if st.session_state.get('logged_in'):
+if st.session_state.get('logged_in'):     
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -37,8 +36,8 @@ if st.session_state.get('logged_in'):
         st.write("- 이 강의 모음은 진단 EGD 실전 강의 동영상 모음입니다.")
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
-
-    # Lectures 폴더 내 mp4 파일 리스트 가져오기
+          
+    # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
@@ -48,10 +47,10 @@ if st.session_state.get('logged_in'):
                 file_name = os.path.basename(blob.name)
                 file_names.append(file_name)
         return file_names
-
+    
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     video_player_container = st.container()
-
+    
     # 동영상 플레이어를 렌더링할 플레이스홀더 생성
     video_player_placeholder = st.empty()
 
@@ -76,6 +75,7 @@ if st.session_state.get('logged_in'):
             log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
+
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
     mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
@@ -94,59 +94,33 @@ if st.session_state.get('logged_in'):
         blob = bucket.blob(selected_mp4_path)
         expiration_time = datetime.utcnow() + timedelta(seconds=1600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-
+        
         # 동영상 플레이어 렌더링
         with video_player_placeholder.container():
             video_html = f'''
             <div style="display: flex; justify-content: center;">
-                <video id="video_player" width="1000" height="800" controls controlsList="nodownload">
+                <video width="1000" height="800" controls controlsList="nodownload">
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
             </div>
             <script>
-                const video = document.getElementById('video_player');
-                let totalPlayTime = 0;
-                let lastPlayTime = 0;
-
-                video.addEventListener('play', () => {{
-                    lastPlayTime = Date.now();
-                }});
-
-                video.addEventListener('pause', () => {{
-                    if (lastPlayTime > 0) {{
-                        totalPlayTime += (Date.now() - lastPlayTime) / 60000; // 분 단위로 계산
-                        lastPlayTime = 0;
-                    }}
-                }});
-
-                video.addEventListener('ended', () => {{
-                    if (lastPlayTime > 0) {{
-                        totalPlayTime += (Date.now() - lastPlayTime) / 60000;
-                        lastPlayTime = 0;
-                    }}
-                    // Streamlit 서버로 데이터 전송
-                    fetch('/_log_play_time', {{
-                        method: 'POST',
-                        headers: {{ 'Content-Type': 'application/json' }},
-                        body: JSON.stringify({{
-                            playTime: totalPlayTime.toFixed(2)
-                        }})
-                    }});
-                }});
+            var video_player = document.querySelector("video");
+            video_player.addEventListener('contextmenu', function(e) {{
+                e.preventDefault();
+            }});
             </script>
             '''
             st.markdown(video_html, unsafe_allow_html=True)
-
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
     st.sidebar.divider()
-
+    
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-
+        
 else:
-    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
+    # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
     st.error("로그인이 필요합니다.")
