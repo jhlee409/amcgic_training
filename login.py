@@ -4,10 +4,8 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
 from datetime import datetime, timezone
-import os
-import threading
-import time
 import uuid
+import time
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -86,19 +84,17 @@ def insert_to_supabase(position, name):
         supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
 
         if supabase_response.status_code != 201:
-            st.error(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
+            st.warning(f"Supabase에 로그인 기록을 추가하는 중 오류 발생: {supabase_response.text}")
     except Exception as e:
         st.error(f"Supabase에 데이터를 삽입하는 중 오류 발생: {str(e)}")
 
 def periodic_insertion():
-    while "logged_in" in st.session_state and st.session_state['logged_in']:
+    if "logged_in" in st.session_state and st.session_state['logged_in']:
         insert_to_supabase(st.session_state['user_position'], st.session_state['user_name'])
-        time.sleep(60)
+        st.session_state["last_insert_time"] = datetime.now()
 
-background_thread = None
-
+# 로그인 처리
 def handle_login(email, password, name, position):
-    global background_thread
     try:
         # Streamlit secret에서 Firebase API 키 가져오기
         api_key = st.secrets["FIREBASE_API_KEY"]
@@ -161,33 +157,32 @@ def handle_login(email, password, name, position):
             # Supabase로 로그인 기록 추가
             insert_to_supabase(position, name)
 
-            # 주기적인 삽입 시작
-            if background_thread is None or not background_thread.is_alive():
-                background_thread = threading.Thread(target=periodic_insertion, daemon=True)
-                background_thread.start()
-
-            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
-
+            # 주기적인 삽입 준비
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
-            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
-            st.session_state['user_id'] = user_id
+            st.session_state['user_name'] = name
+            st.session_state['user_position'] = position
+
+            st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
-if st.button("Login", disabled=login_disabled):
-    handle_login(email, password, name, position)
-
-# 로그 아웃 버튼
+# 주기적 삽입 실행
 if "logged_in" in st.session_state and st.session_state['logged_in']:
-    
-    # 로그인된 사용자 정보 표시
+    now = datetime.now()
+    last_insert_time = st.session_state.get("last_insert_time", now)
+    if (now - last_insert_time).seconds >= 60:
+        periodic_insertion()
+
+# UI 처리
+if "logged_in" not in st.session_state or not st.session_state['logged_in']:
+    if st.button("Login", disabled=login_disabled):
+        handle_login(email, password, name, position)
+else:
     st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
-    
     if st.sidebar.button("Logout"):
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
