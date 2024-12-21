@@ -67,10 +67,10 @@ if st.session_state.get('logged_in'):
         # 세션 상태 초기화
         if 'log_sent' not in st.session_state:
             st.session_state.log_sent = False
-        if 'current_time' not in st.session_state:
-            st.session_state.current_time = 0
-        if 'video_duration' not in st.session_state:
-            st.session_state.video_duration = 0
+        if 'play_started' not in st.session_state:
+            st.session_state.play_started = False
+        if 'play_start_time' not in st.session_state:
+            st.session_state.play_start_time = None
 
         # 동영상 플레이어 표시
         with video_player_placeholder.container():
@@ -80,19 +80,28 @@ if st.session_state.get('logged_in'):
                     <source src="{mp4_url}" type="video/mp4">
                 </video>
             </div>
+            <div id="play_status" style="display:none;"></div>
             <script>
                 var video = document.getElementById('myVideo');
-                var lastTime = 0;
+                var playStatus = document.getElementById('play_status');
+                var startTime = null;
                 
-                video.addEventListener('loadedmetadata', function() {{
-                    window.parent.postMessage({{'type': 'duration', 'value': video.duration}}, '*');
+                video.addEventListener('play', function() {{
+                    if (!startTime) {{
+                        startTime = Date.now();
+                        playStatus.textContent = 'playing';
+                        playStatus.style.display = 'block';
+                    }}
                 }});
                 
-                video.addEventListener('timeupdate', function() {{
-                    if (Math.abs(video.currentTime - lastTime) >= 1) {{  // 1초마다 업데이트
-                        lastTime = video.currentTime;
-                        window.parent.postMessage({{'type': 'timeupdate', 'value': video.currentTime}}, '*');
-                    }}
+                video.addEventListener('pause', function() {{
+                    startTime = null;
+                    playStatus.textContent = 'paused';
+                }});
+                
+                video.addEventListener('ended', function() {{
+                    startTime = null;
+                    playStatus.textContent = 'ended';
                 }});
 
                 video.addEventListener('contextmenu', function(e) {{
@@ -102,29 +111,32 @@ if st.session_state.get('logged_in'):
             '''
             st.components.v1.html(video_html, height=850)
 
-            # JavaScript에서 보낸 메시지를 받는 컴포넌트
-            st.components.v1.html(
+            # 재생 상태 확인
+            status_check = st.components.v1.html(
                 """
                 <script>
-                    window.addEventListener('message', function(event) {
-                        if (event.data.type === 'duration') {
-                            window.parent.postMessage(event.data, '*');
-                        } else if (event.data.type === 'timeupdate') {
-                            window.parent.postMessage(event.data, '*');
+                    function checkStatus() {
+                        var status = document.getElementById('play_status');
+                        if (status && status.textContent === 'playing') {
+                            window.parent.postMessage({type: 'playing'}, '*');
                         }
-                    });
+                    }
+                    setInterval(checkStatus, 1000);
                 </script>
                 """,
                 height=0
             )
 
-            # 진행 상태 표시 및 로그 전송
-            status_container = st.empty()
-            
-            if not st.session_state.log_sent:
-                current_progress = (st.session_state.current_time / st.session_state.video_duration * 100) if st.session_state.video_duration > 0 else 0
+            # 재생 시작 시간 기록
+            if not st.session_state.play_started:
+                st.session_state.play_start_time = datetime.now()
+                st.session_state.play_started = True
+
+            # 1분 이상 재생되었고 아직 로그를 보내지 않았다면
+            if st.session_state.play_started and not st.session_state.log_sent:
+                elapsed_time = (datetime.now() - st.session_state.play_start_time).total_seconds()
                 
-                if current_progress >= 5:  # 5% 이상 시청했을 때
+                if elapsed_time >= 60:  # 1분 이상 경과
                     try:
                         # 로그 생성 및 전송
                         user_name = st.session_state.get('user_name', 'unknown')
@@ -137,14 +149,8 @@ if st.session_state.get('logged_in'):
                         log_blob.upload_from_string(log_entry, content_type='text/plain')
                         
                         st.session_state.log_sent = True
-                        status_container.success(f"5% 이상 시청 완료되어 로그가 기록되었습니다. (현재 진행률: {current_progress:.1f}%)")
                     except Exception as e:
-                        status_container.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
-                else:
-                    status_container.info(f"현재 진행률: {current_progress:.1f}% (5% 이상 시청 시 자동으로 로그가 기록됩니다)")
-
-            if st.button("진행 상태 새로고침"):
-                st.rerun()
+                        st.error(f"로그 기록 중 오류가 발생했습니다: {str(e)}")
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
 
