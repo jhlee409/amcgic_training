@@ -139,6 +139,7 @@ if st.session_state.get('logged_in'):
             st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
             st.write("- case가 준비되면 맨 처음은 입력창에 '로딩'을 입력하세요. 관련 자료를 로딩해야 하는데, 좀 오래 걸립니다 ^^;")
             st.write("- 처음부터 이전 대화가 많이 쌓여 있으면, 왼쪽에 있는 '이전 대화기록 삭제버튼'을 눌러 청소하세요.")
+            st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
            
         # Manage thread id
         if 'thread_id' not in st.session_state:

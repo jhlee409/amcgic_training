@@ -39,6 +39,7 @@ if st.session_state.get('logged_in'):
         st.write("- 다음으로, 그 아래에서 pre_video를 선택하면 치료전 case 동영상과 질문이 나타납니다.")
         st.write("- 잘 생각해 보고 '진행' 버튼을 누르면 답과 시술 동영상을 볼수있는 동영상 player가 나타납니다.")
         st.write("- 동영상을 클릭해서 보시면 됩니다.")
+        st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
           
     # Function to list files in a specific directory in Firebase Storage
     def pre_videos_list_files(bucket_name, directory):

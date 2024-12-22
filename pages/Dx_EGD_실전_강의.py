@@ -37,6 +37,7 @@ if st.session_state.get('logged_in'):
         st.write("- 이 강의 모음은 진단 EGD 실전 강의 동영상 모음입니다.")
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
+        st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
           
     # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):

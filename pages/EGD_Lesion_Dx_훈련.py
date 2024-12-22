@@ -37,7 +37,8 @@ if st.session_state.get('logged_in'):
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
         st.write("- 가장 먼저 왼쪽 sidebar에서 F1용인지 F2용인지를 선택합니다.")
         st.write("- 그 아래에서 EGD 사진을 선택하면 조금 있다가 사진과 질문이 나옵니다. 잘 생각해 보고 왼쪽 sidebar에서 '진행' 버튼을 눌러 답과 설명을 보세요.")
-        st.write("- '정리:' 가 나오면 그 증례가 종결된 것입니다. 다음 증례를 위해 초기화를 하거나, 로그아웃을 하세요.")
+        st.write("- '정리:' 가 나오면 그 증례가 종결된 것입니다. 다음 증례를 위해 초기화를 해서 찌꺼기를 청소하세요.")
+        st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
         
     # Firebase에서 이미지를 다운로드하고 PIL 이미지 객체로 열기
     def download_and_open_image(bucket_name, file_path):
