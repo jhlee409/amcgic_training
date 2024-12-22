@@ -124,7 +124,7 @@ if st.session_state.get('logged_in'):
         selected_mp4_path = directory_lectures + selected_mp4
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(selected_mp4_path)
-        expiration_time = datetime() + timedelta(seconds=1600)
+        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
         
         # 동영상 플레이어 렌더링
