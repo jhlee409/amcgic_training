@@ -3,7 +3,7 @@ import requests
 import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
-from datetime import datetime, timezone, timedelta
+from datetime import datetime
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -132,7 +132,7 @@ def handle_login(email, password, name, position):
             login_data = {
                 "user_position": position,
                 "user_name": name,
-                "time": int(datetime.now(timezone('Asia/Seoul')).timestamp() * 1000)  # timestamp in milliseconds
+                "time": int(datetime.utcnow().timestamp() * 1000)  # UTC timestamp in milliseconds
             }
 
             supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
