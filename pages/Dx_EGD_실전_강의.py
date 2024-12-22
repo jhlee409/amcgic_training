@@ -42,10 +42,9 @@ if st.session_state.get('logged_in'):
 
     # 한국 시간을 반환
     def get_korea_time():
-        # UTC 기준 시간 가져오기
-        utc_now = datetime.utcnow()
-        # Asia/Seoul로 변환
-        korea_time = utc_now.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Seoul'))
+        seoul_tz = pytz.timezone('Asia/Seoul')
+        utc_now = datetime.utcnow().replace(tzinfo=pytz.utc)
+        korea_time = utc_now.astimezone(seoul_tz)
         return korea_time
 
     # Supabase에 저장 시 UTC로 변환
