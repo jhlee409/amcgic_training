@@ -50,7 +50,7 @@ if st.session_state.get('logged_in'):
                 supabase.table('login').insert({
                     'user_position': st.session_state.get('user_position', 'unknown'),
                     'user_name': st.session_state.get('user_name', 'unknown'),
-                    'selected_lecture': selected_lecture,
+                    'selected_lecture': st.session_state.get('selected_lecture', 'unknown'),
                     'access_date': current_time.isoformat()
                 }).execute()
                 
@@ -87,6 +87,9 @@ if st.session_state.get('logged_in'):
     # 왼쪽 사이드바에서 강의 선택
     lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
     selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
+
+    # 선택한 강의를 상태로 저장
+    st.session_state['selected_lecture'] = selected_lecture
 
     # 로그 파일 생성
     if selected_lecture:
