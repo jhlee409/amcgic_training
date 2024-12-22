@@ -247,10 +247,39 @@ if st.session_state.get('logged_in'):
                         st.error(f"이미지를 불러오는 중 오류가 발생했습니다: {str(e)}")
 
     st.sidebar.divider()
-    # 로그아웃 버튼 생성
-    if st.sidebar.button('로그아웃'):
-        st.session_state.logged_in = False
-        st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
+
+    if st.sidebar.button("Logout"):
+        # 로그아웃 시간과 duration 계산
+        logout_time = datetime.utcnow()
+        login_time = st.session_state.get('login_time')
+        if login_time:
+            # 경과 시간을 분 단위로 계산하고 반올림
+            duration = round((logout_time - login_time).total_seconds() / 60)
+        else:
+            duration = 0
+
+        # 로그아웃 이벤트 기록
+        logout_data = {
+            "user_position": st.session_state.get('user_position'),
+            "user_name": st.session_state.get('user_name'),
+            "time": logout_time.isoformat(),
+            "event": "logout",
+            "duration": duration
+        }
+        
+        # Supabase에 로그아웃 기록 전송
+        supabase_url = st.secrets["supabase_url"]
+        supabase_key = st.secrets["supabase_key"]
+        supabase_headers = {
+            "Content-Type": "application/json",
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}"
+        }
+        
+        requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
+        
+        st.session_state.clear()
+        st.success("로그아웃 되었습니다.")
 
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시
