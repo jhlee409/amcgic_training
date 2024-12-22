@@ -37,7 +37,7 @@ if st.session_state.get('logged_in'):
         st.secrets["supabase_key"]
     )
 
-    # UTC 시간 반환
+     # UTC 시간 반환
     def get_utc_time():
         return datetime.now(timezone.utc)
 
@@ -46,26 +46,21 @@ if st.session_state.get('logged_in'):
         korea_tz = timezone(timedelta(hours=9))
         return datetime.now(korea_tz)
 
-    # Supabase에 저장 시 UTC 사용
+    # Supabase 데이터 업데이트
     def update_login_data():
         while st.session_state.get('logged_in'):
             try:
-                # 현재 UTC 시간 가져오기
                 utc_time = get_utc_time()
-
-                # Supabase에 데이터 입력
                 supabase.table('login').insert({
                     'user_position': st.session_state.get('user_position', 'unknown'),
                     'user_name': st.session_state.get('user_name', 'unknown'),
                     'selected_lecture': st.session_state.get('selected_lecture', 'unknown'),
-                    'access_date': utc_time.isoformat()  # UTC 시간 저장
+                    'access_date': utc_time.isoformat()
                 }).execute()
-
-                # 1분 대기
                 time.sleep(60)
             except Exception as e:
                 print(f"Error updating login data: {e}")
-                time.sleep(60)  # 에러 발생 시에도 1분 후 재시도
+                time.sleep(60)
 
     # Display Form Title
     st.subheader("EGD 실전 강의 모음")
