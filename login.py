@@ -129,11 +129,13 @@ def handle_login(email, password, name, position):
                 "Authorization": f"Bearer {supabase_key}"
             }
 
+            login_time = datetime.utcnow()
             login_data = {
                 "user_position": position,
                 "user_name": name,
-                "time": datetime.utcnow().isoformat(),  # ISO 8601 timestamp
-                "event": "login"
+                "time": login_time.isoformat(),
+                "event": "login",
+                "duration": 0
             }
 
             supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
@@ -145,9 +147,10 @@ def handle_login(email, password, name, position):
 
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = name  # user_data.get('name') 대신 직접 입력받은 name 사용
-            st.session_state['user_position'] = position  # user_data.get('position') 대신 직접 입력받은 position 사용
+            st.session_state['user_name'] = name
+            st.session_state['user_position'] = position
             st.session_state['user_id'] = user_id
+            st.session_state['login_time'] = login_time
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
@@ -164,12 +167,22 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
+        # 로그아웃 시간과 duration 계산
+        logout_time = datetime.utcnow()
+        login_time = st.session_state.get('login_time')
+        if login_time:
+            # 경과 시간을 분 단위로 계산하고 반올림
+            duration = round((logout_time - login_time).total_seconds() / 60)
+        else:
+            duration = 0
+
         # 로그아웃 이벤트 기록
         logout_data = {
             "user_position": st.session_state.get('user_position'),
             "user_name": st.session_state.get('user_name'),
-            "time": datetime.utcnow().isoformat(),
-            "event": "logout"
+            "time": logout_time.isoformat(),
+            "event": "logout",
+            "duration": duration
         }
         
         # Supabase에 로그아웃 기록 전송
