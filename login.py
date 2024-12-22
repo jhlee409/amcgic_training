@@ -132,7 +132,7 @@ def handle_login(email, password, name, position):
             login_data = {
                 "user_position": position,
                 "user_name": name,
-                "time": int(datetime.utcnow().timestamp() * 1000)  # UTC timestamp in milliseconds
+                "time": datetime.utcnow().isoformat()  # ISO 8601 timestamp
             }
 
             supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
