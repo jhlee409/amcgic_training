@@ -6,7 +6,7 @@ import io
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
-from pytz import timezone
+import pytz
 import threading
 import time
 from supabase import create_client, Client
@@ -44,7 +44,7 @@ if st.session_state.get('logged_in'):
         while st.session_state.get('logged_in'):
             try:
                 # 현재 시간을 Asia/Seoul 기준으로 가져오기
-                seoul_tz = timezone('Asia/Seoul')
+                seoul_tz = pytz.timezone('Asia/Seoul')
                 current_time = datetime.now(seoul_tz)
                 
                 # Supabase에 데이터 입력
@@ -99,7 +99,7 @@ if st.session_state.get('logged_in'):
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
             position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-            access_date = datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+            access_date = datetime.now(pytz.timezone('Asia/Seoul')).strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
             # 로그 내용을 문자열로 생성
             log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
