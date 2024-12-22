@@ -132,8 +132,7 @@ def handle_login(email, password, name, position):
             login_data = {
                 "user_position": position,
                 "user_name": name,
-                "time": datetime.utcnow().isoformat(),  # ISO 8601 timestamp
-                "event": "login"
+                "time": datetime.utcnow().isoformat()  # ISO 8601 timestamp
             }
 
             supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
@@ -164,24 +163,5 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
-        # 로그아웃 이벤트 기록
-        logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
-            "time": datetime.utcnow().isoformat(),
-            "event": "logout"
-        }
-        
-        # Supabase에 로그아웃 기록 전송
-        supabase_url = st.secrets["supabase_url"]
-        supabase_key = st.secrets["supabase_key"]
-        supabase_headers = {
-            "Content-Type": "application/json",
-            "apikey": supabase_key,
-            "Authorization": f"Bearer {supabase_key}"
-        }
-        
-        requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
-        
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
