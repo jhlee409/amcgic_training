@@ -1,8 +1,6 @@
 import streamlit as st
 import os
 from PIL import Image
-import docx
-import io
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta, timezone
@@ -42,6 +40,11 @@ if st.session_state.get('logged_in'):
     # UTC 시간 반환
     def get_utc_time():
         return datetime.now(timezone.utc)
+
+    # 한국 시간 반환
+    def get_korea_time():
+        korea_tz = timezone(timedelta(hours=9))
+        return datetime.now(korea_tz)
 
     # Supabase에 저장 시 UTC 사용
     def update_login_data():
