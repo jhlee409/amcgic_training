@@ -66,7 +66,7 @@ if st.session_state.get('logged_in'):
             user_name = st.session_state.get('user_name', 'unknown')
             user_position = st.session_state.get('user_position', 'unknown')
             position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-            access_date = datetime.now(timezone('Asia/Seoul')).strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+            access_date = datetime.now(timezone('UTC')).strftime("%Y-%m-%d")  # 현재 UTC+00:00 시간으로 가져오기 (시간 제외)
 
             # 로그 내용을 문자열로 생성
             log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
