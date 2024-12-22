@@ -7,9 +7,6 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
 from pytz import timezone
-import threading
-import time
-from supabase import create_client, Client
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
@@ -33,32 +30,6 @@ if st.session_state.get('logged_in'):
             "universe_domain": st.secrets["universe_domain"]
         })
         firebase_admin.initialize_app(cred)
-
-    # Supabase 클라이언트 초기화
-    supabase: Client = create_client(
-        st.secrets["supabase_url"],
-        st.secrets["supabase_key"]
-    )
-
-    def update_login_data():
-        while st.session_state.get('logged_in'):
-            try:
-                # 현재 시간을 Asia/Seoul 기준으로 가져오기
-                current_time = datetime.now(timezone('Asia/Seoul'))
-                
-                # Supabase에 데이터 입력
-                supabase.table('login').insert({
-                    'user_position': st.session_state.get('user_position', 'unknown'),
-                    'user_name': st.session_state.get('user_name', 'unknown'),
-                    'selected_lecture': selected_lecture,
-                    'access_date': current_time.isoformat()
-                }).execute()
-                
-                # 1분 대기
-                time.sleep(60)
-            except Exception as e:
-                print(f"Error updating login data: {e}")
-                time.sleep(60)  # 에러 발생시에도 1분 후 재시도
 
     # Display Form Title
     st.subheader("EGD 실전 강의 모음")
@@ -105,6 +76,7 @@ if st.session_state.get('logged_in'):
             log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
+
     # 선택된 강의와 같은 이름의 mp4 파일 찾기
     directory_lectures = "Lectures/"
     mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
@@ -142,12 +114,6 @@ if st.session_state.get('logged_in'):
             st.markdown(video_html, unsafe_allow_html=True)
     else:
         st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
-
-    # 로그인 상태일 때 데이터 업데이트 스레드 시작
-    if 'update_thread' not in st.session_state:
-        update_thread = threading.Thread(target=update_login_data, daemon=True)
-        update_thread.start()
-        st.session_state['update_thread'] = update_thread
 
     st.sidebar.divider()
     
