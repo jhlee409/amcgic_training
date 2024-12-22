@@ -44,7 +44,8 @@ if st.session_state.get('logged_in'):
         while st.session_state.get('logged_in'):
             try:
                 # 현재 시간을 Asia/Seoul 기준으로 가져오기
-                current_time = datetime.now(timezone('Asia/Seoul'))
+                seoul_tz = timezone('Asia/Seoul')
+                current_time = datetime.now(seoul_tz)
                 
                 # Supabase에 데이터 입력
                 supabase.table('login').insert({
