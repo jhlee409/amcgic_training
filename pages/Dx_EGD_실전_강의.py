@@ -14,7 +14,7 @@ from supabase import create_client, Client
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide")
 
-if st.session_state.get('logged_in'):     
+if st.session_state.get('logged_in'):
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -40,28 +40,37 @@ if st.session_state.get('logged_in'):
         st.secrets["supabase_key"]
     )
 
+    # 한국 시간을 반환
     def get_korea_time():
-        return datetime.now(pytz.timezone('Asia/Seoul'))
+        # UTC 기준 시간 가져오기
+        utc_now = datetime.utcnow()
+        # Asia/Seoul로 변환
+        korea_time = utc_now.replace(tzinfo=pytz.utc).astimezone(pytz.timezone('Asia/Seoul'))
+        return korea_time
 
+    # Supabase에 저장 시 UTC로 변환
     def update_login_data():
         while st.session_state.get('logged_in'):
             try:
-                # 현재 시간을 Asia/Seoul 기준으로 가져오기
-                current_time = get_korea_time()
-                
+                # 현재 한국 시간 가져오기
+                korea_time = get_korea_time()
+
+                # UTC로 변환
+                utc_time = korea_time.astimezone(pytz.utc)
+
                 # Supabase에 데이터 입력
                 supabase.table('login').insert({
                     'user_position': st.session_state.get('user_position', 'unknown'),
                     'user_name': st.session_state.get('user_name', 'unknown'),
                     'selected_lecture': st.session_state.get('selected_lecture', 'unknown'),
-                    'access_date': current_time.isoformat()
+                    'access_date': utc_time.isoformat()  # UTC 시간 저장
                 }).execute()
-                
+
                 # 1분 대기
                 time.sleep(60)
             except Exception as e:
                 print(f"Error updating login data: {e}")
-                time.sleep(60)  # 에러 발생시에도 1분 후 재시도
+                time.sleep(60)  # 에러 발생 시에도 1분 후 재시도
 
     # Display Form Title
     st.subheader("EGD 실전 강의 모음")
@@ -69,7 +78,7 @@ if st.session_state.get('logged_in'):
         st.write("- 이 강의 모음은 진단 EGD 실전 강의 동영상 모음입니다.")
         st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 오른쪽 화면에서 강의 첫 화면이 나타나면 화면을 클릭해서 시청하세요.")
         st.write("- 전체 화면을 보실 수 있습니다. 화면 왼쪽 아래 전체 화면 버튼 누르세요.")
-          
+
     # Lectures 폴더 내 mp4 파일 리스트 가져오기  
     def list_mp4_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
@@ -80,10 +89,10 @@ if st.session_state.get('logged_in'):
                 file_name = os.path.basename(blob.name)
                 file_names.append(file_name)
         return file_names
-    
+
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     video_player_container = st.container()
-    
+
     # 동영상 플레이어를 렌더링할 플레이스홀더 생성
     video_player_placeholder = st.empty()
 
@@ -127,9 +136,9 @@ if st.session_state.get('logged_in'):
         selected_mp4_path = directory_lectures + selected_mp4
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(selected_mp4_path)
-        expiration_time = get_korea_time() + timedelta(seconds=1600)
+        expiration_time = datetime.utcnow() + timedelta(seconds=1600)  # URL 만료 시간 설정
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-        
+
         # 동영상 플레이어 렌더링
         with video_player_placeholder.container():
             video_html = f'''
@@ -156,12 +165,12 @@ if st.session_state.get('logged_in'):
         st.session_state['update_thread'] = update_thread
 
     st.sidebar.divider()
-    
+
     # 로그아웃 버튼 생성
     if st.sidebar.button('로그아웃'):
         st.session_state.logged_in = False
         st.rerun()  # 페이지를 새로고침하여 로그인 화면으로 돌아감
-        
+
 else:
     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
     st.error("로그인이 필요합니다.")
