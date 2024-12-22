@@ -5,6 +5,7 @@ from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime
+import requests
 
 # Set page to wide mode
 st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout="wide")
@@ -242,7 +243,7 @@ if st.session_state.get('logged_in'):
         message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
-    
+
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
         logout_time = datetime.utcnow()

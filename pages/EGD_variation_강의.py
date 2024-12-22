@@ -7,6 +7,7 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
+import requests
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Variation", layout="wide")
