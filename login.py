@@ -4,7 +4,6 @@ import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
 from datetime import datetime
-import streamlit.components.v1 as components
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -152,41 +151,6 @@ def handle_login(email, password, name, position):
             st.session_state['user_position'] = position
             st.session_state['user_id'] = user_id
             st.session_state['login_time'] = login_time
-
-            # JavaScript 코드 추가
-            js_code = f"""
-            <script>
-            window.addEventListener('beforeunload', function(e) {{
-                const logoutTime = new Date();
-                const loginTime = new Date('{login_time.isoformat()}');
-                const duration = Math.round((logoutTime - loginTime) / (1000 * 60));  // 분 단위로 계산
-
-                const logoutData = {{
-                    user_position: '{position}',
-                    user_name: '{name}',
-                    time: logoutTime.toISOString(),
-                    event: 'logout',
-                    duration: duration
-                }};
-
-                // Supabase에 로그아웃 데이터 전송
-                fetch('{st.secrets["supabase_url"]}/rest/v1/login', {{
-                    method: 'POST',
-                    headers: {{
-                        'Content-Type': 'application/json',
-                        'apikey': '{st.secrets["supabase_key"]}',
-                        'Authorization': 'Bearer {st.secrets["supabase_key"]}'
-                    }},
-                    body: JSON.stringify(logoutData)
-                }});
-
-                // 브라우저의 기본 확인 메시지 표시
-                e.preventDefault();
-                e.returnValue = '';
-            }});
-            </script>
-            """
-            components.html(js_code, height=0)
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
@@ -203,5 +167,34 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
+        # 로그아웃 시간과 duration 계산
+        logout_time = datetime.utcnow()
+        login_time = st.session_state.get('login_time')
+        if login_time:
+            # 경과 시간을 분 단위로 계산하고 반올림
+            duration = round((logout_time - login_time).total_seconds() / 60)
+        else:
+            duration = 0
+
+        # 로그아웃 이벤트 기록
+        logout_data = {
+            "user_position": st.session_state.get('user_position'),
+            "user_name": st.session_state.get('user_name'),
+            "time": logout_time.isoformat(),
+            "event": "logout",
+            "duration": duration
+        }
+        
+        # Supabase에 로그아웃 기록 전송
+        supabase_url = st.secrets["supabase_url"]
+        supabase_key = st.secrets["supabase_key"]
+        supabase_headers = {
+            "Content-Type": "application/json",
+            "apikey": supabase_key,
+            "Authorization": f"Bearer {supabase_key}"
+        }
+        
+        requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
+        
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
