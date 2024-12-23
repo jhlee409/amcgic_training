@@ -5,7 +5,7 @@ import docx
 import io
 import firebase_admin
 from firebase_admin import credentials, storage
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pytz import timezone
 import requests
 
@@ -95,7 +95,7 @@ if st.session_state.get('logged_in'):
         selected_mp4_path = directory_lectures + selected_mp4
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(selected_mp4_path)
-        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+        expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
         mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
         
         # 동영상 플레이어 렌더링
@@ -121,7 +121,7 @@ if st.session_state.get('logged_in'):
     
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
-        logout_time = datetime.utcnow()
+        logout_time = datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')
         if login_time:
             # 경과 시간을 분 단위로 계산하고 반올림

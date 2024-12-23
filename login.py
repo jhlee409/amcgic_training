@@ -3,7 +3,7 @@ import requests
 import json
 import firebase_admin
 from firebase_admin import credentials, db, auth
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -130,7 +130,7 @@ def handle_login(email, password, name, position):
                 "Authorization": f"Bearer {supabase_key}"
             }
 
-            login_time = datetime.utcnow()
+            login_time = datetime.now(timezone.utc)
             login_data = {
                 "user_position": position,
                 "user_name": name,
@@ -169,7 +169,7 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
-        logout_time = datetime.utcnow()
+        logout_time = datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')
         if login_time:
             # 경과 시간을 분 단위로 계산하고 반올림

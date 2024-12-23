@@ -8,6 +8,7 @@ import os
 import firebase_admin
 from firebase_admin import credentials, storage
 import datetime
+from datetime import timezone
 import requests
 
 # Set page to wide mode
@@ -162,7 +163,7 @@ if st.session_state.get('logged_in'):
 
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
-        logout_time = datetime.utcnow()
+        logout_time = datetime.datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')
         if login_time:
             # 경과 시간을 분 단위로 계산하고 반올림

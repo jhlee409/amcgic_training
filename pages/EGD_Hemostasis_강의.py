@@ -5,7 +5,7 @@ import docx
 import io
 import firebase_admin
 from firebase_admin import credentials, storage
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import requests
 
 # Set page to wide mode
@@ -126,7 +126,7 @@ if st.session_state.get('logged_in'):
         # Firebase Storage 참조 생성
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
         blob = bucket.blob(selected_pre_videos_path)
-        expiration_time = datetime.utcnow() + timedelta(seconds=1600)
+        expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
         pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
         st.session_state.pre_video_url = pre_video_url
 
@@ -167,7 +167,7 @@ if st.session_state.get('logged_in'):
         # 사용자 이름과 직책과 접속 날짜 기록
         user_name = st.session_state.get('user_name', 'unknown')
         user_position = st.session_state.get('user_position', 'unknown')
-        access_date = datetime.now().strftime("%Y-%m-%d")
+        access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
         # 파일 이름에서 확장자(.mp4) 제거
         file_name_without_extension = os.path.splitext(selected_pre_videos_file)[0]
@@ -184,7 +184,7 @@ if st.session_state.get('logged_in'):
             # Firebase Storage 참조 생성
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
             blob = bucket.blob(st.session_state.selected_video_file)
-            expiration_time = datetime.now() + timedelta(seconds=1600)
+            expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
             # 비디오 플레이어 삽입
@@ -199,7 +199,7 @@ if st.session_state.get('logged_in'):
         
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
-        logout_time = datetime.utcnow()
+        logout_time = datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')
         if login_time:
             # 경과 시간을 분 단위로 계산하고 반올림
