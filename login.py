@@ -131,6 +131,7 @@ def handle_login(email, password, name, position):
             }
 
             login_time = datetime.now(timezone.utc)
+            st.session_state['login_time'] = login_time.astimezone()  # Update login_time to be timezone-aware
             login_data = {
                 "user_position": position,
                 "user_name": name,
@@ -151,7 +152,6 @@ def handle_login(email, password, name, position):
             st.session_state['user_name'] = name
             st.session_state['user_position'] = position
             st.session_state['user_id'] = user_id
-            st.session_state['login_time'] = login_time
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
