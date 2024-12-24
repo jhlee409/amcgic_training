@@ -125,7 +125,7 @@ if st.session_state.get('logged_in'):
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
             # 000.docx 파일은 로그를 생성하지 않음
-            if selected_case_file != "000.docx":
+            if selected_case_file != "00.docx":
                 # 사용자 이름과 직책과 접속 날짜 기록
                 user_name = st.session_state.get('user_name', 'unknown')
                 user_position = st.session_state.get('user_position', 'unknown')
