@@ -173,7 +173,7 @@ if st.session_state.get('logged_in'):
         file_name_without_extension = os.path.splitext(selected_pre_videos_file)[0]
 
         # 로그 내용을 문자열로 생성
-        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {folder_selection}\n"
+        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {file_name_without_extension}\n"
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
