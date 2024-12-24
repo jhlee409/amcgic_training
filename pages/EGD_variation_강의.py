@@ -41,7 +41,7 @@ if st.session_state.get('logged_in'):
     
     # 23개 항목의 데이터
     data = [
-        '가장 먼저 보세요: 전체 과정 해설 A',
+        '가장 먼저 보세요: A1은 default, 전체 과정 해설 동영상은 A2',
         '정상 위에서 Expert의 검사 전과정 B',
         'STG with Bilroth II reconstruction state애서 검사 전과정 C',
         'STG with Bilroth I reconstruction state에서 검사 전과정 D',
