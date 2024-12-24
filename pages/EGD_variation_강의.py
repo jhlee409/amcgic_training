@@ -135,7 +135,7 @@ if st.session_state.get('logged_in'):
                         access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
 
                         # 로그 내용을 문자열로 생성
-                        log_entry = f"User: {position_name}, Menu: EGD variation, Access Date: {access_date}\n"
+                        log_entry = f"User: {position_name}, Menu: EGD variation, Video: {video_name}, Access Date: {access_date}\n"
 
                         # Firebase Storage에 로그 파일 업로드
                         log_blob = bucket.blob(f'log_EGD_variation/{position_name}*{video_name}')  # 로그 파일 경로 설정
