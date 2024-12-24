@@ -125,22 +125,22 @@ if st.session_state.get('logged_in'):
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
             # 000.docx 파일은 로그를 생성하지 않음
-            if selected_case_file != "000.docx":
-                # 사용자 이름과 직책과 접속 날짜 기록
-                user_name = st.session_state.get('user_name', 'unknown')
-                user_position = st.session_state.get('user_position', 'unknown')
-                access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            # if selected_case_file != "000.docx":
+            # 사용자 이름과 직책과 접속 날짜 기록
+            user_name = st.session_state.get('user_name', 'unknown')
+            user_position = st.session_state.get('user_position', 'unknown')
+            access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-                # '.docx' 확장자를 제거한 파일 이름
-                file_name_without_extension = selected_case_file.replace('.docx', '')
+            # '.docx' 확장자를 제거한 파일 이름
+            file_name_without_extension = selected_case_file.replace('.docx', '')
 
-                # 로그 내용을 문자열로 생성
-                log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {selected_case_file}\n"
+            # 로그 내용을 문자열로 생성
+            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {selected_case_file}\n"
 
-                # Firebase Storage에 로그 파일 업로드
-                bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_position}*{user_name}*{file_name_without_extension}')
-                log_blob.upload_from_string(log_entry, content_type='text/plain')
+            # Firebase Storage에 로그 파일 업로드
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_position}*{user_name}*{file_name_without_extension}')
+            log_blob.upload_from_string(log_entry, content_type='text/plain')
 
             # Include the directory in the path when reading the file
             case_full_path = case_directory + selected_case_file
