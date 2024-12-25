@@ -148,9 +148,6 @@ if st.session_state.get('logged_in'):
             position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
             access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
-            # 로그 내용을 문자열로 생성
-            log_entry = f"User: {position_name}, Menu: EGD Dx training, Access Date: {access_date}\n"
-
             # '.png' 확장자를 제거한 파일 이름
             selected_image_file_without_extension = selected_image_file.replace('.png', '')
 
