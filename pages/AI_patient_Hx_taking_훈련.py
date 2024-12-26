@@ -228,13 +228,18 @@ if st.session_state.get('logged_in'):
                     run_id=run.id
                 )
 
-    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-    messages = client.beta.threads.messages.list(
-        thread_id=thread_id
-    )
+            #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+            messages = client.beta.threads.messages.list(
+                thread_id=thread_id
+            )
 
-    #메세지 모두 불러오기
-    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+            # assistant 메시지를 메시지 창에 추가
+            if messages.data[0].content and messages.data[0].content[0].text.value:
+                if messages.data[0].role == "assistant":
+                    st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+                else:
+                    st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
+                message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
 
@@ -245,19 +250,11 @@ if st.session_state.get('logged_in'):
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
         st.session_state['messages'] = []
-        for msg in thread_messages.data:
+        for msg in client.beta.threads.messages.list(thread_id, order="asc").data:
             msg.content[0].text.value=""
         # Clear the message box in col2
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
-
-    # assistant 메시지를 메시지 창에 추가
-    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-        if messages.data[0].role == "assistant":
-            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-        else:
-            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
 
