@@ -195,18 +195,31 @@ if st.session_state.get('logged_in'):
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
         prompt = user_input
+        
+        # 이전 run이 있는지 확인하고 필요시 취소
+        runs = client.beta.threads.runs.list(thread_id=thread_id)
+        for run in runs.data:
+            if run.status in ["in_progress", "queued"]:
+                try:
+                    client.beta.threads.runs.cancel(thread_id=thread_id, run_id=run.id)
+                except Exception as e:
+                    st.error(f"이전 실행을 취소하는데 실패했습니다: {str(e)}")
+                    continue
 
-    message = client.beta.threads.messages.create(
-        thread_id=thread_id,
-        role="user",
-        content=prompt
-    )
+        # 새 메시지 생성
+        message = client.beta.threads.messages.create(
+            thread_id=thread_id,
+            role="user",
+            content=prompt
+        )
+        
+        # 새로운 run 시작
+        run = client.beta.threads.runs.create(
+            thread_id=thread_id,
+            assistant_id=assistant_id,
+        )
+
     #RUN을 돌리는 과정
-    run = client.beta.threads.runs.create(
-        thread_id=thread_id,
-        assistant_id=assistant_id,
-    )
-
     with st.spinner('열일 중...'):
         #RUN이 completed 되었나 1초마다 체크
         while run.status != "completed":
