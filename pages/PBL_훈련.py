@@ -19,13 +19,8 @@ if st.session_state.get('logged_in'):
     # Initialize prompt variable
     prompt = ""
 
-    try:
-        openai_api_key = st.secrets["OPENAI_API_KEY"]
-        client = OpenAI(api_key=openai_api_key)
-    except Exception as e:
-        st.error("OpenAI API 키를 불러오는데 실패했습니다. .streamlit/secrets.toml 파일을 확인해주세요.")
-        st.stop()
-        
+    client = OpenAI()
+
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
         st.session_state.messages = []
@@ -169,37 +164,24 @@ if st.session_state.get('logged_in'):
     
     # 사용자 입력 처리
     if user_input:
-        prompt = user_input
-        
-        # 이전 run이 있는지 확인하고 필요시 취소
-        runs = client.beta.threads.runs.list(thread_id=thread_id)
-        for run in runs.data:
-            if run.status in ["in_progress", "queued"]:
-                try:
-                    client.beta.threads.runs.cancel(thread_id=thread_id, run_id=run.id)
-                except Exception as e:
-                    st.error(f"이전 실행을 취소하는데 실패했습니다: {str(e)}")
-                    continue
-
-        # 새 메시지 생성
+        # 사용자 메시지 전송
         message = client.beta.threads.messages.create(
-            thread_id=thread_id,
+            thread_id=st.session_state.thread_id,
             role="user",
-            content=prompt
+            content=user_input
         )
         
-        # 새로운 run 시작
+        # 실행
         run = client.beta.threads.runs.create(
-            thread_id=thread_id,
+            thread_id=st.session_state.thread_id,
             assistant_id=assistant_id,
         )
-
+        
         with st.spinner('열일 중...'):
-            #RUN이 completed 되었나 1초마다 체크
             while run.status != "completed":
                 time.sleep(1)
                 run = client.beta.threads.runs.retrieve(
-                    thread_id=thread_id,
+                    thread_id=st.session_state.thread_id,
                     run_id=run.id
                 )
 

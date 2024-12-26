@@ -19,12 +19,7 @@ if st.session_state.get('logged_in'):
     # Initialize prompt variable
     prompt = ""
 
-    try:
-        openai_api_key = st.secrets["OPENAI_API_KEY"]
-        client = OpenAI(api_key=openai_api_key)
-    except Exception as e:
-        st.error("OpenAI API 키를 불러오는데 실패했습니다. .streamlit/secrets.toml 파일을 확인해주세요.")
-        st.stop()
+    client = OpenAI()
 
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
@@ -195,51 +190,34 @@ if st.session_state.get('logged_in'):
     # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
     if user_input:
         prompt = user_input
-        
-        # 이전 run이 있는지 확인하고 필요시 취소
-        runs = client.beta.threads.runs.list(thread_id=thread_id)
-        for run in runs.data:
-            if run.status in ["in_progress", "queued"]:
-                try:
-                    client.beta.threads.runs.cancel(thread_id=thread_id, run_id=run.id)
-                except Exception as e:
-                    st.error(f"이전 실행을 취소하는데 실패했습니다: {str(e)}")
-                    continue
 
-        # 새 메시지 생성
-        message = client.beta.threads.messages.create(
-            thread_id=thread_id,
-            role="user",
-            content=prompt
-        )
-        
-        # 새로운 run 시작
-        run = client.beta.threads.runs.create(
-            thread_id=thread_id,
-            assistant_id=assistant_id,
-        )
+    message = client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=prompt
+    )
+    #RUN을 돌리는 과정
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+    )
 
-        with st.spinner('열일 중...'):
-            #RUN이 completed 되었나 1초마다 체크
-            while run.status != "completed":
-                time.sleep(1)
-                run = client.beta.threads.runs.retrieve(
-                    thread_id=thread_id,
-                    run_id=run.id
-                )
-
-            #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-            messages = client.beta.threads.messages.list(
-                thread_id=thread_id
+    with st.spinner('열일 중...'):
+        #RUN이 completed 되었나 1초마다 체크
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run.id
             )
 
-            # assistant 메시지를 메시지 창에 추가
-            if messages.data[0].content and messages.data[0].content[0].text.value:
-                if messages.data[0].role == "assistant":
-                    st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-                else:
-                    st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-                message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id
+    )
+
+    #메세지 모두 불러오기
+    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
     st.sidebar.divider()
 
@@ -250,11 +228,19 @@ if st.session_state.get('logged_in'):
         thread = client.beta.threads.create()
         st.session_state.thread_id = thread.id
         st.session_state['messages'] = []
-        for msg in client.beta.threads.messages.list(thread_id, order="asc").data:
+        for msg in thread_messages.data:
             msg.content[0].text.value=""
         # Clear the message box in col2
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
+
+    # assistant 메시지를 메시지 창에 추가
+    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+        if messages.data[0].role == "assistant":
+            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+        else:
+            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
+        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
     st.sidebar.divider()
 
