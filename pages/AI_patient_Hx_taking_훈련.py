@@ -18,8 +18,13 @@ if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
     prompt = ""
-    openai_api_key = st.secrets["OPENAI_API_KEY"]
-    client = OpenAI(api_key=openai_api_key)
+
+    try:
+        openai_api_key = st.secrets["OPENAI_API_KEY"]
+        client = OpenAI(api_key=openai_api_key)
+    except Exception as e:
+        st.error("OpenAI API 키를 불러오는데 실패했습니다. .streamlit/secrets.toml 파일을 확인해주세요.")
+        st.stop()
 
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
