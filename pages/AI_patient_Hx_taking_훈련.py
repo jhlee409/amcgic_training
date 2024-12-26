@@ -18,8 +18,8 @@ if st.session_state.get('logged_in'):
 
     # Initialize prompt variable
     prompt = ""
-
-    client = OpenAI()
+    openai_api_key = st.secrets["OPENAI_API_KEY"]
+    client = OpenAI(api_key=openai_api_key)
 
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
