@@ -23,16 +23,16 @@ if st.session_state.get('logged_in'):
 
     # Assistant ID 설정
     assistant_id = "asst_J7yYtxnWNqVxRJkQjMHZzOGJ"  # PBL assistant
-    
-    # thread_id가 없으면 새로 생성
-    if 'thread_id' not in st.session_state:
-        thread = client.beta.threads.create()
-        st.session_state.thread_id = thread.id
 
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
         st.session_state.messages = []
         
+    # thread_id가 없으면 새로 생성
+    if 'thread_id' not in st.session_state:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
         # Streamlit Secrets에서 Firebase 설정 정보 로드
@@ -168,11 +168,6 @@ if st.session_state.get('logged_in'):
     
     # 사용자 입력 처리
     if user_input:
-        # thread_id 확인
-        if 'thread_id' not in st.session_state:
-            thread = client.beta.threads.create()
-            st.session_state.thread_id = thread.id
-            
         # 사용자 메시지 전송
         message = client.beta.threads.messages.create(
             thread_id=st.session_state.thread_id,
