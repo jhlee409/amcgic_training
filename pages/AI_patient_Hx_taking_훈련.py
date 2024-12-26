@@ -21,6 +21,9 @@ if st.session_state.get('logged_in'):
 
     client = OpenAI()
 
+    # Assistant ID 설정
+    assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"  # AI 환자 병력 청취 assistant
+
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
         st.session_state.messages = []
@@ -168,8 +171,6 @@ if st.session_state.get('logged_in'):
             st.session_state.thread_id = thread.id
 
         thread_id = st.session_state.thread_id
-
-        assistant_id = "asst_ecq1rotgT4c3by2NJBjoYcKj"
 
         # Display Form Title
         main_container.subheader("AMC GI:&emsp;AI 환자 병력 청취 훈련 챗봇&emsp;&emsp;&emsp;v 1.5.0")

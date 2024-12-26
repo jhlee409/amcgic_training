@@ -21,9 +21,17 @@ if st.session_state.get('logged_in'):
 
     client = OpenAI()
 
+    # Assistant ID 설정
+    assistant_id = "asst_J7yYtxnWNqVxRJkQjMHZzOGJ"  # PBL assistant
+
     # 세션 상태 초기화
     if 'messages' not in st.session_state:
         st.session_state.messages = []
+        
+    # thread_id가 없으면 새로 생성
+    if 'thread_id' not in st.session_state:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
 
     # Check if Firebase app has already been initialized
     if not firebase_admin._apps:
@@ -143,10 +151,6 @@ if st.session_state.get('logged_in'):
             st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
            
         # Manage thread id
-        if 'thread_id' not in st.session_state:
-            thread = client.beta.threads.create()
-            st.session_state.thread_id = thread.id
-
         thread_id = st.session_state.thread_id
 
         # 초기 프롬프트 전송
