@@ -65,12 +65,14 @@ if st.session_state.get('logged_in'):
 
     # 메인 컨텐츠와 메시지 창을 위한 컨테이너 생성
     main_container = st.container()
-    message_container = st.container()
-
+    
     # 레이아웃 조정
     col1, col2 = st.columns([3, 1])
 
     with col1:
+        # 상단에 입력창 추가
+        user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
+        
         # 메시지 창 컨테이너 생성
         message_container = st.container()
 
@@ -163,11 +165,6 @@ if st.session_state.get('logged_in'):
             )
 
 
-    # col1과 col2 아래에 입력창 추가
-    input_container = st.container()
-    with input_container:
-        user_input = st.chat_input("입력창입니다. 선생님의 message를 여기에 입력하고 엔터를 치세요")
-    
     # 사용자 입력 처리
     if user_input:
         # 사용자 메시지 전송
@@ -198,9 +195,19 @@ if st.session_state.get('logged_in'):
 
     # 메시지 표시
     thread_messages = client.beta.threads.messages.list(
-        thread_id=st.session_state.thread_id, 
-        order="asc"
+        thread_id=st.session_state.thread_id,
+        order="desc"  # 최신 메시지가 먼저 오도록 설정
     )
+
+    # Display messages in reverse chronological order
+    for message in thread_messages.data:
+        role = message.role
+        content = message.content[0].text.value
+        
+        if role == "assistant":
+            st.write(f"🤖: {content}")
+        else:
+            st.write(f"👤: {content}")
 
     st.sidebar.divider()
 
