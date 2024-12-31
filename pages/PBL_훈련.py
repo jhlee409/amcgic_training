@@ -110,7 +110,7 @@ if st.session_state.get('logged_in'):
             st.session_state.thread_id = thread.id
             # 이미지 기록 삭제
             st.session_state.displayed_images = []
-            st.experimental_rerun()
+            st.rerun()
 
         # Streamlit Sidebar with Dropdown for file selection
         case_directory = "PBL/cases/"
@@ -126,7 +126,7 @@ if st.session_state.get('logged_in'):
             st.session_state.thread_id = thread.id
             # 이미지 기록 삭제
             st.session_state.displayed_images = []
-            st.experimental_rerun()
+            st.rerun()
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
