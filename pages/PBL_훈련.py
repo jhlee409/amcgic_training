@@ -15,6 +15,8 @@ if st.session_state.get('logged_in'):
     # Initialize session state variables
     if 'messages' not in st.session_state:
         st.session_state['messages'] = []
+    if 'displayed_images' not in st.session_state:
+        st.session_state['displayed_images'] = []
 
     # Initialize prompt variable
     prompt = ""
@@ -101,10 +103,30 @@ if st.session_state.get('logged_in'):
             st.session_state.message_box = ""
 
     with col2:
+        # 이전 대화기록 삭제 버튼
+        if st.sidebar.button("이전 대화기록 삭제"):
+            # 새로운 thread 생성
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
+            # 이미지 기록 삭제
+            st.session_state.displayed_images = []
+            st.experimental_rerun()
+
         # Streamlit Sidebar with Dropdown for file selection
         case_directory = "PBL/cases/"
         case_file_list = list_files('amcgi-bulletin.appspot.com', case_directory)
+        previous_case = st.session_state.get('previous_case', None)
         selected_case_file = st.sidebar.selectbox("증례 파일을 선택하세요.", case_file_list)
+        
+        # case가 변경되었는지 확인
+        if previous_case != selected_case_file:
+            st.session_state['previous_case'] = selected_case_file
+            # 새로운 thread 생성
+            thread = client.beta.threads.create()
+            st.session_state.thread_id = thread.id
+            # 이미지 기록 삭제
+            st.session_state.displayed_images = []
+            st.experimental_rerun()
 
         # Read content of the selected case file and store in prompt variable
         if selected_case_file:
