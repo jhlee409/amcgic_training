@@ -251,10 +251,13 @@ if st.session_state.get('logged_in'):
                     st.session_state.displayed_images.append(image_data.content)
 
     # 저장된 모든 이미지를 세로로 표시
-    for img_data in st.session_state.displayed_images:
-        # 각 이미지를 위한 단일 컬럼 생성
-        col1 = message_container.columns([1])  # 하나의 컬럼만 사용
-        col1[0].image(img_data, use_column_width=True)
+    for idx, img_data in enumerate(st.session_state.displayed_images):
+        # 각 이미지를 위한 새로운 컨테이너 생성
+        img_container = message_container.container()
+        # 이미지를 컨테이너에 추가
+        img_container.image(img_data)
+        # 이미지 사이에 작은 간격 추가
+        message_container.markdown("<br>", unsafe_allow_html=True)
 
     # 메시지 박스 업데이트
     message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
