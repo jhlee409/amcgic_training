@@ -222,10 +222,6 @@ if st.session_state.get('logged_in'):
         st.session_state.message_box = ""
         message_container.markdown("", unsafe_allow_html=True)
 
-    # 이미지 처리를 위한 세션 상태 초기화
-    if 'displayed_images' not in st.session_state:
-        st.session_state.displayed_images = []
-
     # assistant 메시지를 메시지 창에 추가
     thread_messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread_id, 
@@ -243,19 +239,18 @@ if st.session_state.get('logged_in'):
                     if text_content:
                         if latest_message.role == "assistant":
                             st.session_state.message_box += f"🤖: {text_content}\n\n"
+                        else:
+                            st.session_state.message_box += f"**{latest_message.role}:** {text_content}\n\n"
+                        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+                
                 # 이미지 처리
                 elif hasattr(content, 'image_file'):
-                    image_id = content.image_file.file_id
-                    image_data = client.files.content(image_id)
-                    # 이미지를 세션 상태에 추가
-                    st.session_state.displayed_images.append(image_data.content)
-
-    # 저장된 모든 이미지를 세로로 표시
-    for img_data in st.session_state.displayed_images:
-        message_container.image(img_data)
-
-    # 메시지 박스 업데이트
-    message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
+                    try:
+                        image_response = client.files.content(content.image_file.file_id)
+                        image_data = image_response.read()
+                        st.image(image_data)
+                    except Exception as e:
+                        st.error(f"이미지를 불러오는 중 오류가 발생했습니다: {str(e)}")
 
     st.sidebar.divider()
 
