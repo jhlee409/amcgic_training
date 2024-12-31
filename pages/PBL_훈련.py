@@ -144,11 +144,11 @@ if st.session_state.get('logged_in'):
 
         # Display Form Title
         main_container.subheader("AMC GI 상부 전임의 2년차 대상 PBL 훈련 챗봇&emsp;&emsp;v 1.0")
-        with main_container.expander("정상적이 작동을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
+        with main_container.expander("원활한 이용을 위해, 반드시 먼저 여길 눌러서 사용방법을 읽어 주세요."):
             st.write("- 처음에는 왼쪽 sidebar에서 증례 파일을 선택해 주세요.")
             st.write("- case가 준비되면 맨 처음은 입력창에 '로딩'을 입력하세요. 관련 자료를 로딩해야 하는데, 좀 오래 걸립니다 ^^;")
             st.write("- 처음부터 이전 대화가 많이 쌓여 있으면, 왼쪽에 있는 '이전 대화기록 삭제버튼'을 눌러 청소하세요.")
-            st.write("- 가끔 엉뚱한 이미지를 보여줄 때가 있습니다. 그럴 땐 '이건 1번이 아니라 3번 이미지 아닌가요?'라고 지적하면 교정해서 다시 보여줍니다.")
+            st.write("- 이미지를 보여달라고 할 때, 번호와 이름을 적어야 제대로 보여줍니다. 아니면 엉뚱한 이미지를 보여 줄 수 있습니다.")
             st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
            
         # Manage thread id
