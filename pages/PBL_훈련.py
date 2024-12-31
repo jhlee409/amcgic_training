@@ -252,7 +252,9 @@ if st.session_state.get('logged_in'):
 
     # 저장된 모든 이미지를 세로로 표시
     for img_data in st.session_state.displayed_images:
-        message_container.image(img_data)
+        # 각 이미지를 위한 단일 컬럼 생성
+        col1 = message_container.columns([1])  # 하나의 컬럼만 사용
+        col1[0].image(img_data, use_column_width=True)
 
     # 메시지 박스 업데이트
     message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
