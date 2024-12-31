@@ -193,13 +193,14 @@ if st.session_state.get('logged_in'):
 
     #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
     messages = client.beta.threads.messages.list(
-        thread_id=thread_id
+        thread_id=thread_id,
+        order='desc'  # 최신 메시지가 먼저 오도록 설정
     )
 
     # 메시지 표시
     thread_messages = client.beta.threads.messages.list(
         thread_id=st.session_state.thread_id, 
-        order="asc"
+        order="desc"
     )
 
     st.sidebar.divider()
