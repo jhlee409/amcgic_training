@@ -172,8 +172,8 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
         logout_time = datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')
         if login_time:
-            # 경과 시간을 분 단위로 계산하고 반올림
-            duration = round((logout_time - login_time).total_seconds() / 60)
+            # 경과 시간을 시간과 분으로 계산하고 반올림
+            duration = round((logout_time - login_time).total_seconds() / 3600, 1)
         else:
             duration = 0
 
