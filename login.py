@@ -28,7 +28,7 @@ if not firebase_admin._apps:
 
 st.set_page_config(page_title="GI_training")
 
-# 제목 및 서브헤딩 설정
+# 제목 및 서브헤딩 설정.
 st.title("GI training programs")
 
 # 설명 텍스트
