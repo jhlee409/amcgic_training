@@ -26,18 +26,14 @@ if not firebase_admin._apps:
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
 
-st.set_page_config(page_title="GI_training")
+st.set_page_config(page_title="amcgic_education")
 
 # 제목 및 서브헤딩 설정.
-st.title("GI training programs")
-
+st.title("AMC GI 상부 Education Program")
 # 설명 텍스트
 with st.expander("**이 프로그램 사용 방법**"):
     st.write("* 로그인이 제대로 안되면 왼쪽 증례 페이지에 접근할 수 없습니다.")
     st.write("* 등록된  이메일 주소와 PW, 한글이름, postion으로 로그인 하신 후 왼쪽 sidebar에서 원하는 프로그램을 선택하면 그 페이지로 이동합니다.")
-    st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
-    st.write("* 이 프로그램은 울산의대 서울아산병원 이진혁과 의대 관계자 및 여러 서울아산병원 소화기 선생님들의 참여에 의해 제작되었습니다.")
-st.divider()
 
 # 한글 이름 확인 함수
 def is_korean_name(name):
