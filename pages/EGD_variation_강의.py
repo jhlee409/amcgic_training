@@ -60,7 +60,7 @@ if st.session_state.get('logged_in'):
         '전정부에서 노브를 up을 했는데도, antrum에 붙어서, angle을 관찰할 수 없다 Q',
         '환자의 belcing이 너무 심해 공기가 빠져 fold가 펴지지 않는다 R',
         'proximal gastrectomy with double tract reconstruction에서 검사 전과정 S',
-        'McKeown op 받은 환자에서 EGD 검사 T'
+        'McKeown/Ivor_Lewis op 받은 환자에서 EGD 검사 T'
     ]
     
     st.session_state.video_states = {}
