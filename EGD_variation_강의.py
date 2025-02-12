@@ -129,23 +129,18 @@ if st.session_state.get('logged_in'):
 
                     # 버튼 생성 및 클릭 처리
                     if st.button(f"{video_name}"):
-                        # 비디오 이름에서 숫자 추출
-                        video_number = ''.join(filter(str.isdigit, video_name))
-                        
-                        # 숫자가 1인 경우에만 로그 파일 생성
-                        if video_number == '1':
-                            # 사용자 이름과 직책, 접속 날짜 기록
-                            user_name = st.session_state.get('user_name', 'unknown')
-                            user_position = st.session_state.get('user_position', 'unknown')
-                            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
-                            access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
+                        # 사용자 이름과 직책, 접속 날짜 기록
+                        user_name = st.session_state.get('user_name', 'unknown')
+                        user_position = st.session_state.get('user_position', 'unknown')
+                        position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
+                        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
 
-                            # 로그 내용을 문자열로 생성
-                            log_entry = f"User: {position_name}, Video: {video_name}, Access Date: {access_date}\n"
+                        # 로그 내용을 문자열로 생성
+                        log_entry = f"User: {position_name}, Video: {video_name}, Access Date: {access_date}\n"
 
-                            # Firebase Storage에 로그 파일 업로드
-                            log_blob = bucket.blob(f'log_EGD_variation/{position_name}*{video_name}')  # 로그 파일 경로 설정
-                            log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+                        # Firebase Storage에 로그 파일 업로드
+                        log_blob = bucket.blob(f'log_EGD_variation/{position_name}*{video_name}')  # 로그 파일 경로 설정
+                        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
                         
                         # 상태 반전
                         st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
