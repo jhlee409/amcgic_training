@@ -34,8 +34,8 @@ if st.session_state.get('logged_in'):
     # Display Form Title
     st.subheader("EGD_Hemostasis_lecture")
     with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-        st.write("- 가장 먼저 왼쪽 sidebar 선택버튼에서 default는 'Default'입니다. NVUGIB overview, cases 중 한 가지를 선택합니다.")
-        st.write("- 우선 EGD 지혈술의 overview 강의를 시청하고 싶으면, NVUGIB overview를 선택하고 '진행' 버튼을 누르면 강의 화면이 나타납니다. 클릭해서 시청하세요.")
+        st.write("- 가장 먼저 왼쪽 sidebar 선택버튼에서 default는 'Default'입니다. Hemostasis lecture, cases 중 한 가지를 선택합니다.")
+        st.write("- 우선 EGD 지혈술의 overview 강의를 시청하고 싶으면, Hemostasis lecture를 선택하고 '진행' 버튼을 누르면 강의 화면이 나타납니다. 클릭해서 시청하세요.")
         st.write("- EGD 지혈술 case를 시청하고 싶으면 cases 버튼을 선택하고 드롭다운 메뉴에서 case를 선택하면 치료전 case 동영상과 질문이 나타납니다.")
         st.write("- 잘 생각해 보고 '진행' 버튼을 누르면 답과 시술 동영상을 볼수있는 동영상 player가 나타납니다.")
         st.write("- 동영상을 클릭해서 보시면 됩니다.")
@@ -72,7 +72,7 @@ if st.session_state.get('logged_in'):
         return '\n'.join(full_text)
     
     # esophagus or stomach selection
-    folder_selection = st.sidebar.radio("선택 버튼", ["Default", "NVUGIB overview", "cases"])
+    folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
     
     directory_videos = "EGD_Hemostasis_training/videos/"
 
@@ -83,7 +83,7 @@ if st.session_state.get('logged_in'):
     if folder_selection == "Default":
         directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-    elif folder_selection == "NVUGIB overview":
+    elif folder_selection == "Hemostasis lecture":
         directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
         directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
     elif folder_selection == "cases":
@@ -99,7 +99,7 @@ if st.session_state.get('logged_in'):
 
     # List and select PNG files
     file_list_pre_videos = pre_videos_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
-    selected_pre_videos_file = st.sidebar.selectbox(f"pre_video를 선택하세요.", file_list_pre_videos)
+    selected_pre_videos_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_pre_videos)
 
     # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어 제거
     if st.session_state.get('previous_folder_selection', None) != folder_selection:
