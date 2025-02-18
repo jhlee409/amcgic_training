@@ -124,6 +124,7 @@ if st.session_state.get('logged_in'):
         instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
     else:
+        instruction_file_name = None
         selected_instruction_file = None
 
     # 선택된 파일이 변경되었을 때
@@ -172,9 +173,6 @@ if st.session_state.get('logged_in'):
 
         if folder_selection == "Default":
             st.empty()  # 동영상 플레이어 제거
-
-    instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
-    selected_instruction_file = directory_instructions + instruction_file_name
 
     # '진행' 버튼 추가
     if st.sidebar.button('진행'):
