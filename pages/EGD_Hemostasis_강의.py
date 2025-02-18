@@ -126,7 +126,7 @@ if st.session_state.get('logged_in'):
         st.session_state.prevideo_url = prevideo_url
 
         # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
-        video_name = os.path.splitext(selected_prevideo_file)[0] + '_2' + '.mp4'
+        video_name = os.path.splitext(selected_prevideo_file)[0] + '_main' + '.mp4'
         selected_video_file = directory_videos + video_name
         st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
         
@@ -152,7 +152,7 @@ if st.session_state.get('logged_in'):
         
         # 새로운 동영상 플레이어 렌더링        
         with prevideos_container:
-            video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
+            video_html = f'<video width="500" height="500" controls><source src="{st.session_state.prevideo_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
         if folder_selection == "Default":
@@ -172,7 +172,7 @@ if st.session_state.get('logged_in'):
         file_name_without_extension = os.path.splitext(selected_prevideo_file)[0]
 
         # '_video' 글자와 확장자를 제거한 파일 이름 생성
-        file_name_without_extension_and_video = file_name_without_extension.replace('_video', '')
+        file_name_without_extension_and_video = file_name_without_extension.replace('_main', '')
         # 로그 내용을 문자열로 생성
         log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {file_name_without_extension_and_video}\n"
 
