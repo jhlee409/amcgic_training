@@ -129,7 +129,12 @@ if st.session_state.get('logged_in'):
             if st.session_state.get('selected_video_file'):
                 blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                video_url = blob.generate_signed_url(
+                    expiration=expiration_time, 
+                    method='GET',
+                    response_disposition='attachment; filename="stream.m3u8"',
+                    response_type='application/x-mpegURL'
+                )
                 
                 video_html = f"""
                     <div style="width: 1000px; margin: auto;">
@@ -137,82 +142,81 @@ if st.session_state.get('logged_in'):
                             .video-container {{
                                 position: relative;
                                 width: 100%;
-                                overflow: hidden;
+                                background: #000;
                             }}
-                            .video-overlay {{
+                            video {{
+                                width: 100%;
+                                height: auto;
+                                display: block;
+                            }}
+                            .video-shield {{
                                 position: absolute;
                                 top: 0;
                                 left: 0;
                                 width: 100%;
                                 height: 100%;
-                                pointer-events: none;
-                                z-index: 1;
-                            }}
-                            video {{
-                                width: 100%;
-                                height: auto;
-                                position: relative;
-                                z-index: 0;
-                                -webkit-user-select: none;
-                                -ms-user-select: none;
-                                user-select: none;
-                            }}
-                            video::-webkit-media-controls-enclosure {{
-                                overflow:hidden;
-                            }}
-                            video::-webkit-media-controls-panel {{
-                                width: calc(100% + 30px);
-                            }}
-                            video::-webkit-media-controls-download-button {{
-                                display: none !important;
-                            }}
-                            video::-internal-media-controls-download-button {{
-                                display: none !important;
+                                background: transparent;
+                                z-index: 2;
                             }}
                         </style>
-                        <div class="video-container">
-                            <div class="video-overlay"></div>
+                        <div class="video-container" id="videoContainer">
                             <video 
+                                id="secureVideo"
                                 controls 
                                 controlsList="nodownload noplaybackrate nofullscreen"
                                 disablePictureInPicture
-                                oncontextmenu="return false;"
-                                onselectstart="return false;"
-                                ondragstart="return false;"
-                                onplay="this.playsInline=true;"
-                                webkit-playsinline
-                                playsinline>
-                                <source src="{video_url}" type="video/mp4">
-                                Your browser does not support the video element.
+                                webkit-playsinline 
+                                playsinline
+                                crossorigin="anonymous">
                             </video>
+                            <div class="video-shield"></div>
                         </div>
+                        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
                         <script>
                             (function() {{
-                                // 모든 키보드 단축키 비활성화
-                                document.addEventListener('keydown', function(e) {{
-                                    if ((e.ctrlKey || e.metaKey) || e.key === 'F12') {{
+                                const video = document.getElementById('secureVideo');
+                                const videoUrl = "{video_url}";
+                                
+                                // HLS 설정
+                                if (Hls.isSupported()) {{
+                                    const hls = new Hls({{
+                                        debug: false,
+                                        enableWorker: true,
+                                        lowLatencyMode: true,
+                                    }});
+                                    
+                                    hls.loadSource(videoUrl);
+                                    hls.attachMedia(video);
+                                    
+                                    hls.on(Hls.Events.MANIFEST_PARSED, function() {{
+                                        video.play();
+                                    }});
+                                }}
+                                
+                                // 보안 설정
+                                document.addEventListener('contextmenu', e => e.preventDefault(), true);
+                                document.addEventListener('keydown', e => {{
+                                    if (e.ctrlKey || e.metaKey || e.key === 'F12') {{
                                         e.preventDefault();
-                                        return false;
                                     }}
                                 }}, true);
                                 
-                                // 마우스 우클릭 방지
-                                document.addEventListener('contextmenu', function(e) {{
-                                    e.preventDefault();
-                                    return false;
-                                }}, true);
+                                // 추가 보안 레이어
+                                video.addEventListener('loadedmetadata', () => {{
+                                    video.style.filter = 'none';
+                                }});
                                 
-                                // 드래그 방지
-                                document.addEventListener('dragstart', function(e) {{
-                                    e.preventDefault();
-                                    return false;
-                                }}, true);
+                                // 캡처 방지
+                                setInterval(() => {{
+                                    if (document.pictureInPictureElement) {{
+                                        document.exitPictureInPicture();
+                                    }}
+                                }}, 100);
                                 
-                                // 선택 방지
-                                document.addEventListener('selectstart', function(e) {{
-                                    e.preventDefault();
-                                    return false;
-                                }}, true);
+                                // 화면 녹화 방지
+                                if (navigator.mediaDevices) {{
+                                    navigator.mediaDevices.getDisplayMedia = undefined;
+                                }}
                             }})();
                         </script>
                     </div>
