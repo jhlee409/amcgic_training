@@ -76,53 +76,38 @@ if st.session_state.get('logged_in'):
     folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
-    prevideo_container = st.container()
-    video_player_container = st.container()
+    if 'prevideo_container' not in st.session_state:
+        st.session_state.prevideo_container = st.container()
+    if 'video_player_container' not in st.session_state:
+        st.session_state.video_player_container = st.container()
+    if 'instruction_container' not in st.session_state:
+        st.session_state.instruction_container = st.container()
 
-    if folder_selection == "Default":
-        directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
-        directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-        directory_videos = "EGD_Hemostasis_training/default/videos/"
-    elif folder_selection == "Hemostasis lecture":
-        directory_prevideos = "EGD_Hemostasis_training/lecture/prevideos/"
-        directory_instructions = "EGD_Hemostasis_training/lecture/instructions/"
-        directory_videos = "EGD_Hemostasis_training/lecture/videos/"
-    elif folder_selection == "cases":
-        directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
-        directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
-        directory_videos = "EGD_Hemostasis_training/cases/videos/"
-
-    st.sidebar.divider()
-
-    # 선택한 동영상 파일을 세션 상태에 저장
-    if 'selected_prevideo_file' not in st.session_state:
+    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
+    if st.session_state.get('previous_folder_selection', None) != folder_selection:
+        # 상태 초기화
+        st.session_state.previous_folder_selection = folder_selection
         st.session_state.selected_prevideo_file = None
-
+        st.session_state.prevideo_url = None
+        
+        # 모든 컨테이너 비우기
+        st.session_state.prevideo_container.empty()
+        st.session_state.video_player_container.empty()
+        st.session_state.instruction_container.empty()
+        
+        # 페이지 새로고침
+        st.rerun()
 
     # List and select PNG files
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
     selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
-    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
-    if st.session_state.get('previous_folder_selection', None) != folder_selection:
-        st.session_state.previous_folder_selection = folder_selection
-        st.session_state.selected_prevideo_file = None  # 선택된 파일 초기화
-        prevideo_container.empty()
-        video_player_container.empty()
-        prevideo_container.empty()
-        st.rerun()  # experimental_rerun 대신 rerun 사용
-
-    # 동영상 플레이어를 렌더링할 컨테이너 생성
-    prevideos_container = st.container()
-    video_player_container = st.container()
-    instruction_container = st.container()  # instruction을 위한 새 컨테이너
-
     # 선택된 파일이 변경되었을 때
     if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
-        # 이전 컨텐츠 모두 제거
-        prevideos_container.empty()
-        video_player_container.empty()
-        instruction_container.empty()
+        # 모든 컨테이너 비우기
+        st.session_state.prevideo_container.empty()
+        st.session_state.video_player_container.empty()
+        st.session_state.instruction_container.empty()
         
         st.session_state.selected_prevideo_file = selected_prevideo_file
         selected_prevideo_path = directory_prevideos + selected_prevideo_file
@@ -146,7 +131,7 @@ if st.session_state.get('logged_in'):
         # Read and display the content of the selected DOCX file
         if selected_instruction_file:
             try:
-                with instruction_container:  # instruction 컨테이너 사용
+                with st.session_state.instruction_container:  # instruction 컨테이너 사용
                     full_path = selected_instruction_file
                     prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
                     if prompt:  # 내용이 있는 경우에만 표시
@@ -157,7 +142,7 @@ if st.session_state.get('logged_in'):
                 st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
         
         # 새로운 동영상 플레이어 렌더링        
-        with prevideos_container:
+        with st.session_state.prevideo_container:
             video_html = f'<video width="500" height="500" controls><source src="{st.session_state.prevideo_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
@@ -195,7 +180,7 @@ if st.session_state.get('logged_in'):
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
             # 비디오 플레이어 삽입
-            with video_player_container:
+            with st.session_state.video_player_container:
                 video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
 
