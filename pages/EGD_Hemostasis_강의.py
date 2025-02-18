@@ -95,8 +95,8 @@ if st.session_state.get('logged_in'):
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
         directory_videos = "EGD_Hemostasis_training/default/videos/"
     elif folder_selection == "Hemostasis lecture":
-        directory_prevideos = "EGD_Hemostasis_training/lecture/video/"
-        directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
+        directory_prevideos = "EGD_Hemostasis_training/lecture/prevideos/"
+        directory_instructions = "EGD_Hemostasis_training/lecture/instructions/"
         directory_videos = "EGD_Hemostasis_training/lecture/videos/"
     elif folder_selection == "cases":
         directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
