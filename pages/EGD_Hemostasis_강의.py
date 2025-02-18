@@ -132,7 +132,7 @@ if st.session_state.get('logged_in'):
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                 # 다운로드 방지 기능이 추가된 비디오 플레이어
                 video_html = f"""
-                    <div style="width: 300px; margin: auto;">
+                    <div style="width: 1000px; margin: auto;">
                         <video 
                             style="width: 100%; height: auto;" 
                             controls 
