@@ -42,7 +42,7 @@ if st.session_state.get('logged_in'):
         st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
           
     # Function to list files in a specific directory in Firebase Storage
-    def pre_videos_list_files(bucket_name, directory):
+    def prevideo_list_files(bucket_name, directory):
         bucket = storage.bucket(bucket_name)
         blobs = bucket.list_blobs(prefix=directory)
         file_names = []
@@ -73,63 +73,64 @@ if st.session_state.get('logged_in'):
     
     # esophagus or stomach selection
     folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
-    
-    directory_videos = "EGD_Hemostasis_training/videos/"
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
-    pre_video_container = st.container()
+    prevideo_container = st.container()
     video_player_container = st.container()
 
     if folder_selection == "Default":
-        directory_pre_videos = "EGD_Hemostasis_training/default/pre_videos/"
+        directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+        directory_videos = "EGD_Hemostasis_training/default/videos/"
     elif folder_selection == "Hemostasis lecture":
-        directory_pre_videos = "EGD_Hemostasis_training/lecture/video/"
-        directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
+        directory_prevideos = "EGD_Hemostasis_training/lecture/prevideos/"
+        directory_instructions = "EGD_Hemostasis_training/lecture/instructions/"
+        directory_videos = "EGD_Hemostasis_training/lecture/videos/"
     elif folder_selection == "cases":
-        directory_pre_videos = "EGD_Hemostasis_training/cases/pre_videos/"
+        directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
         directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
+        directory_videos = "EGD_Hemostasis_training/cases/videos/"
 
     st.sidebar.divider()
 
     # 선택한 동영상 파일을 세션 상태에 저장
-    if 'selected_pre_videos_file' not in st.session_state:
-        st.session_state.selected_pre_videos_file = None
+    if 'selected_prevideo_file' not in st.session_state:
+        st.session_state.selected_prevideo_file = None
 
 
     # List and select PNG files
-    file_list_pre_videos = pre_videos_list_files('amcgi-bulletin.appspot.com', directory_pre_videos)
-    selected_pre_videos_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_pre_videos)
+    file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
+    selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
     # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어 제거
     if st.session_state.get('previous_folder_selection', None) != folder_selection:
         st.session_state.previous_folder_selection = folder_selection
-        pre_video_container.empty()
+        prevideo_container.empty()
         video_player_container.empty()
         folder_selection == "Default"
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
-    pre_video_container = st.container()
+    prevideos_container = st.container()
     video_player_container = st.container()
 
-    if selected_pre_videos_file != st.session_state.get('selected_pre_videos_file', ''):
-        st.session_state.selected_pre_videos_file = selected_pre_videos_file
-        selected_pre_videos_path = directory_pre_videos + selected_pre_videos_file
+    if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
+        st.session_state.selected_prevideo_file = selected_prevideo_file
+        selected_prevideo_path = directory_prevideos + selected_prevideo_file
         
         # Firebase Storage 참조 생성
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        blob = bucket.blob(selected_pre_videos_path)
+        blob = bucket.blob(selected_prevideo_path)
         expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-        pre_video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-        st.session_state.pre_video_url = pre_video_url
+        prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        st.session_state.prevideo_url = prevideo_url
 
         # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
-        video_name = os.path.splitext(selected_pre_videos_file)[0] + '_2' + '.mp4'
+        video_name = os.path.splitext(selected_prevideo_file)[0] + '_2' + '.mp4'
         selected_video_file = directory_videos + video_name
         st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
         
         # 선택한 pre_video와 같은 이름의 docx 파일 찾기
-        instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+        instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
         
         # Read and display the content of the selected DOCX file
@@ -141,18 +142,18 @@ if st.session_state.get('logged_in'):
             st.markdown(prompt_markdown)
         
         # 이전 동영상 플레이어 지우기
-        pre_video_container.empty()
+        prevideo_container.empty()
         video_player_container.empty()
         
         # 새로운 동영상 플레이어 렌더링        
-        with pre_video_container:
+        with prevideos_container:
             video_html = f'<video width="500" height="500" controls><source src="{st.session_state.pre_video_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
         if folder_selection == "Default":
             st.empty()  # 동영상 플레이어 제거
 
-    instruction_file_name = os.path.splitext(selected_pre_videos_file)[0] + '.docx'
+    instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
     selected_instruction_file = directory_instructions + instruction_file_name
 
     # '진행' 버튼 추가
@@ -163,10 +164,12 @@ if st.session_state.get('logged_in'):
         access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
         # 파일 이름에서 확장자(.mp4) 제거
-        file_name_without_extension = os.path.splitext(selected_pre_videos_file)[0]
+        file_name_without_extension = os.path.splitext(selected_prevideo_file)[0]
 
+        # '_video' 글자와 확장자를 제거한 파일 이름 생성
+        file_name_without_extension_and_video = file_name_without_extension.replace('_video', '')
         # 로그 내용을 문자열로 생성
-        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {file_name_without_extension}\n"
+        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {file_name_without_extension_and_video}\n"
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')
