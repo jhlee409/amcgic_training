@@ -118,6 +118,7 @@ if st.session_state.get('logged_in'):
         
         if st.session_state.get('selected_video_file'):
             blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
+            expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             # 두 번째 동영상도 60% 크기로 조정
             video_html = f"""
