@@ -112,8 +112,8 @@ if st.session_state.get('logged_in'):
         st.session_state.video_player_container.empty()
         st.session_state.instruction_container.empty()
         
-        # # 페이지 새로고침
-        # st.rerun()
+        # 페이지 새로고침
+        st.rerun()
 
     # List and select PNG files
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
