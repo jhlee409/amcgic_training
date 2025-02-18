@@ -116,66 +116,66 @@ if st.session_state.get('logged_in'):
         # 페이지 새로고침
         st.rerun()
 
-    # # List and select prevideo files
-    # file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
-    # selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
+    # List and select prevideo files
+    file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
+    selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
-    # # 선택된 파일이 있을 때만 instruction 파일 이름 생성
-    # if selected_prevideo_file:
-    #     instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
-    #     selected_instruction_file = directory_instructions + instruction_file_name
-        
-    #     # Default 폴더인 경우 아무 작업도 하지 않음
-    #     if folder_selection == "Default":
-    #         pass
-    # else:
-    #     instruction_file_name = None
-    #     selected_instruction_file = None
-
-    # 선택된 파일이 변경되었을 때
-    if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
-        # 모든 컨테이너 비우기
-        st.session_state.prevideo_container.empty()
-        st.session_state.video_player_container.empty()
-        st.session_state.instruction_container.empty()
-        
-        st.session_state.selected_prevideo_file = selected_prevideo_file
-        selected_prevideo_path = directory_prevideos + selected_prevideo_file
-        
-        # Firebase Storage 참조 생성
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')
-        blob = bucket.blob(selected_prevideo_path)
-        expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-        prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-        st.session_state.prevideo_url = prevideo_url
-
-        # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
-        video_name = os.path.splitext(selected_prevideo_file)[0] + '_main' + '.mp4'
-        selected_video_file = directory_videos + video_name
-        st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
-        
-        # 선택한 pre_video와 같은 이름의 docx 파일 찾기
+    # 선택된 파일이 있을 때만 instruction 파일 이름 생성
+    if selected_prevideo_file:
         instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
         
-        # Read and display the content of the selected DOCX file
-        if selected_instruction_file:
-            try:
-                with st.session_state.instruction_container:  # instruction 컨테이너 사용
-                    full_path = selected_instruction_file
-                    prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-                    if prompt:  # 내용이 있는 경우에만 표시
-                        prompt_lines = prompt.split('\n')
-                        prompt_markdown = '\n'.join(prompt_lines)
-                        st.markdown(prompt_markdown)
-            except Exception as e:
-                st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
+        # Default 폴더인 경우 아무 작업도 하지 않음
+        if folder_selection == "Default":
+            pass
+    else:
+        instruction_file_name = None
+        selected_instruction_file = None
+
+    # 선택된 파일이 변경되었을 때
+    # if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
+    #     # 모든 컨테이너 비우기
+    #     st.session_state.prevideo_container.empty()
+    #     st.session_state.video_player_container.empty()
+    #     st.session_state.instruction_container.empty()
+        
+    #     st.session_state.selected_prevideo_file = selected_prevideo_file
+    #     selected_prevideo_path = directory_prevideos + selected_prevideo_file
+        
+    #     # Firebase Storage 참조 생성
+    #     bucket = storage.bucket('amcgi-bulletin.appspot.com')
+    #     blob = bucket.blob(selected_prevideo_path)
+    #     expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
+    #     prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+    #     st.session_state.prevideo_url = prevideo_url
+
+    #     # 선택한 pre_video와 같은 이름의 mp4 파일 찾기
+    #     video_name = os.path.splitext(selected_prevideo_file)[0] + '_main' + '.mp4'
+    #     selected_video_file = directory_videos + video_name
+    #     st.session_state.selected_video_file = selected_video_file  # 세션 상태에 저장
+        
+    #     # 선택한 pre_video와 같은 이름의 docx 파일 찾기
+    #     instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
+    #     selected_instruction_file = directory_instructions + instruction_file_name
+        
+    #     # Read and display the content of the selected DOCX file
+    #     if selected_instruction_file:
+    #         try:
+    #             with st.session_state.instruction_container:  # instruction 컨테이너 사용
+    #                 full_path = selected_instruction_file
+    #                 prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+    #                 if prompt:  # 내용이 있는 경우에만 표시
+    #                     prompt_lines = prompt.split('\n')
+    #                     prompt_markdown = '\n'.join(prompt_lines)
+    #                     st.markdown(prompt_markdown)
+    #         except Exception as e:
+    #             st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
         
 
-        # 새로운 동영상 플레이어 렌더링        
-        with st.session_state.prevideo_container:
-            video_html = f'<video width="500" height="500" controls><source src="{st.session_state.prevideo_url}" type="video/mp4"></video>'
-            st.markdown(video_html, unsafe_allow_html=True)
+    #     # 새로운 동영상 플레이어 렌더링        
+    #     with st.session_state.prevideo_container:
+    #         video_html = f'<video width="500" height="500" controls><source src="{st.session_state.prevideo_url}" type="video/mp4"></video>'
+    #         st.markdown(video_html, unsafe_allow_html=True)
 
     # '진행' 버튼 추가
     if st.sidebar.button('진행'):
