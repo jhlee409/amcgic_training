@@ -76,10 +76,8 @@ if st.session_state.get('logged_in'):
     folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
 
     # 비디오와 텍스트 표시를 위한 컨테이너 생성
-    if 'video_container' not in st.session_state:
-        st.session_state.video_container = st.container()  # 비디오 재생용
-    if 'text_container' not in st.session_state:
-        st.session_state.text_container = st.container()   # instruction 텍스트 표시용
+    video_container = st.container()  # 비디오 재생용
+    text_container = st.container()   # instruction 텍스트 표시용
 
     if folder_selection == "Default":
         directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
