@@ -137,41 +137,23 @@ if st.session_state.get('logged_in'):
                             .video-container {{
                                 position: relative;
                                 width: 100%;
-                                overflow: hidden;
                             }}
                             video {{
                                 width: 100%;
                                 height: auto;
-                                display: block;
-                            }}
-                            .video-shield {{
-                                position: absolute;
-                                top: 0;
-                                left: 0;
-                                width: 100%;
-                                height: 100%;
-                                z-index: 2;
                             }}
                         </style>
                         <div class="video-container">
                             <video 
                                 controls 
-                                controlsList="nodownload noplaybackrate nofullscreen"
-                                disablePictureInPicture
+                                controlsList="nodownload"
                                 oncontextmenu="return false;"
-                                webkit-playsinline 
-                                playsinline
                                 src="{video_url}">
+                                Your browser does not support the video element.
                             </video>
-                            <div class="video-shield"></div>
                         </div>
                         <script>
                             document.addEventListener('contextmenu', e => e.preventDefault());
-                            document.addEventListener('keydown', e => {{
-                                if (e.ctrlKey || e.metaKey || e.key === 'F12') {{
-                                    e.preventDefault();
-                                }}
-                            }});
                         </script>
                     </div>
                 """
