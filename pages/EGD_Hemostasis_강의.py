@@ -53,25 +53,43 @@ if st.session_state.get('logged_in'):
                 file_names.append(file_name)
         return file_names
     
+    # # Function to read file content from Firebase Storage
+    # def read_docx_file(bucket_name, file_name):
+    #     try:
+    #         bucket = storage.bucket(bucket_name)
+    #         blob = bucket.blob(file_name)
+            
+    #         # 임시 파일을 메모리에서 처리
+    #         content = blob.download_as_bytes()
+    #         doc = docx.Document(io.BytesIO(content))
+            
+    #         full_text = []
+    #         for para in doc.paragraphs:
+    #             full_text.append(para.text)
+            
+    #         return '\n'.join(full_text)
+    #     except Exception as e:
+    #         st.error(f"문서를 읽는 중 오류가 발생했습니다: {str(e)}")
+    #         return ""
+           
     # Function to read file content from Firebase Storage
     def read_docx_file(bucket_name, file_name):
-        try:
-            bucket = storage.bucket(bucket_name)
-            blob = bucket.blob(file_name)
-            
-            # 임시 파일을 메모리에서 처리
-            content = blob.download_as_bytes()
-            doc = docx.Document(io.BytesIO(content))
-            
-            full_text = []
-            for para in doc.paragraphs:
-                full_text.append(para.text)
-            
-            return '\n'.join(full_text)
-        except Exception as e:
-            st.error(f"문서를 읽는 중 오류가 발생했습니다: {str(e)}")
-            return ""
-           
+        bucket = storage.bucket(bucket_name)
+        blob = bucket.blob(file_name)
+        
+        # Download the file to a temporary location
+        temp_file_path = "/tmp/tempfile.docx"
+        blob.download_to_filename(temp_file_path)
+        
+        # Read the content of the DOCX file
+        doc = docx.Document(temp_file_path)
+        full_text = []
+        for para in doc.paragraphs:
+            full_text.append(para.text)
+        
+        # Join the text into a single string
+        return '\n'.join(full_text)
+
     # esophagus or stomach selection
     folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
 
