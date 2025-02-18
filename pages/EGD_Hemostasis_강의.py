@@ -105,7 +105,7 @@ if st.session_state.get('logged_in'):
     with left_col:
         if st.session_state.get('prevideo_url'):
             video_html = f"""
-                <div style="width: 300px; margin: auto;">
+                <div style="width: 600px; margin: auto;">
                     <video style="width: 100%; height: auto;" controls src="{st.session_state.prevideo_url}">
                         Your browser does not support the video element.
                     </video>
@@ -131,7 +131,7 @@ if st.session_state.get('logged_in'):
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                 video_html = f"""
-                    <div style="width: 300px; margin: auto;">
+                    <div style="width: 700px; margin: auto;">
                         <video style="width: 100%; height: auto;" controls src="{video_url}">
                             Your browser does not support the video element.
                         </video>
