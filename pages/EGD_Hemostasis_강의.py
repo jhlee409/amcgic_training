@@ -79,42 +79,42 @@ if st.session_state.get('logged_in'):
     video_container = st.container()  # 비디오 재생용
     text_container = st.container()   # instruction 텍스트 표시용
 
-    # # 폴더 선택 로직
-    # if folder_selection == "Default":
-    #     directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
-    #     directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-    #     directory_videos = "EGD_Hemostasis_training/default/videos/"
-    # elif folder_selection == "Hemostasis lecture":
-    #     directory_prevideos = "EGD_Hemostasis_training/lecture/video/"
-    #     directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
-    #     directory_videos = "EGD_Hemostasis_training/lecture/videos/"
-    # elif folder_selection == "cases":
-    #     directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
-    #     directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
-    #     directory_videos = "EGD_Hemostasis_training/cases/videos/"
+    # 폴더 선택 로직
+    if folder_selection == "Default":
+        directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
+        directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+        directory_videos = "EGD_Hemostasis_training/default/videos/"
+    elif folder_selection == "Hemostasis lecture":
+        directory_prevideos = "EGD_Hemostasis_training/lecture/video/"
+        directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
+        directory_videos = "EGD_Hemostasis_training/lecture/videos/"
+    elif folder_selection == "cases":
+        directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
+        directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
+        directory_videos = "EGD_Hemostasis_training/cases/videos/"
 
-    # 동영상 플레이어를 렌더링할 컨테이너 생성
-    if 'prevideo_container' not in st.session_state:
-        st.session_state.prevideo_container = st.container()
-    if 'video_player_container' not in st.session_state:
-        st.session_state.video_player_container = st.container()
-    if 'instruction_container' not in st.session_state:
-        st.session_state.instruction_container = st.container()
+    # # 동영상 플레이어를 렌더링할 컨테이너 생성
+    # if 'prevideo_container' not in st.session_state:
+    #     st.session_state.prevideo_container = st.container()
+    # if 'video_player_container' not in st.session_state:
+    #     st.session_state.video_player_container = st.container()
+    # if 'instruction_container' not in st.session_state:
+    #     st.session_state.instruction_container = st.container()
 
-    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
-    if st.session_state.get('previous_folder_selection', None) != folder_selection:
-        # 상태 초기화
-        st.session_state.previous_folder_selection = folder_selection
-        st.session_state.selected_prevideo_file = None
-        st.session_state.prevideo_url = None
+    # # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
+    # if st.session_state.get('previous_folder_selection', None) != folder_selection:
+    #     # 상태 초기화
+    #     st.session_state.previous_folder_selection = folder_selection
+    #     st.session_state.selected_prevideo_file = None
+    #     st.session_state.prevideo_url = None
         
-        # 모든 컨테이너 비우기
-        st.session_state.prevideo_container.empty()
-        st.session_state.video_player_container.empty()
-        st.session_state.instruction_container.empty()
+    #     # 모든 컨테이너 비우기
+    #     st.session_state.prevideo_container.empty()
+    #     st.session_state.video_player_container.empty()
+    #     st.session_state.instruction_container.empty()
         
-        # 페이지 새로고침
-        st.rerun()
+    #     # 페이지 새로고침
+    #     st.rerun()
 
     # List and select prevideo files
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
