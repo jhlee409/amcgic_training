@@ -93,44 +93,44 @@ if st.session_state.get('logged_in'):
         directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
         directory_videos = "EGD_Hemostasis_training/cases/videos/"
 
-    # # 동영상 플레이어를 렌더링할 컨테이너 생성
-    # if 'prevideo_container' not in st.session_state:
-    #     st.session_state.prevideo_container = st.container()
-    # if 'video_player_container' not in st.session_state:
-    #     st.session_state.video_player_container = st.container()
-    # if 'instruction_container' not in st.session_state:
-    #     st.session_state.instruction_container = st.container()
+    # 동영상 플레이어를 렌더링할 컨테이너 생성
+    if 'prevideo_container' not in st.session_state:
+        st.session_state.prevideo_container = st.container()
+    if 'video_player_container' not in st.session_state:
+        st.session_state.video_player_container = st.container()
+    if 'instruction_container' not in st.session_state:
+        st.session_state.instruction_container = st.container()
 
-    # # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
-    # if st.session_state.get('previous_folder_selection', None) != folder_selection:
-    #     # 상태 초기화
-    #     st.session_state.previous_folder_selection = folder_selection
-    #     st.session_state.selected_prevideo_file = None
-    #     st.session_state.prevideo_url = None
+    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
+    if st.session_state.get('previous_folder_selection', None) != folder_selection:
+        # 상태 초기화
+        st.session_state.previous_folder_selection = folder_selection
+        st.session_state.selected_prevideo_file = None
+        st.session_state.prevideo_url = None
         
-    #     # 모든 컨테이너 비우기
-    #     st.session_state.prevideo_container.empty()
-    #     st.session_state.video_player_container.empty()
-    #     st.session_state.instruction_container.empty()
+        # 모든 컨테이너 비우기
+        st.session_state.prevideo_container.empty()
+        st.session_state.video_player_container.empty()
+        st.session_state.instruction_container.empty()
         
-    #     # 페이지 새로고침
-    #     st.rerun()
+        # 페이지 새로고침
+        st.rerun()
 
-    # List and select prevideo files
-    file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
-    selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
+    # # List and select prevideo files
+    # file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
+    # selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
-    # 선택된 파일이 있을 때만 instruction 파일 이름 생성
-    if selected_prevideo_file:
-        instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
-        selected_instruction_file = directory_instructions + instruction_file_name
+    # # 선택된 파일이 있을 때만 instruction 파일 이름 생성
+    # if selected_prevideo_file:
+    #     instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
+    #     selected_instruction_file = directory_instructions + instruction_file_name
         
-        # Default 폴더인 경우 아무 작업도 하지 않음
-        if folder_selection == "Default":
-            pass
-    else:
-        instruction_file_name = None
-        selected_instruction_file = None
+    #     # Default 폴더인 경우 아무 작업도 하지 않음
+    #     if folder_selection == "Default":
+    #         pass
+    # else:
+    #     instruction_file_name = None
+    #     selected_instruction_file = None
 
     # 선택된 파일이 변경되었을 때
     if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
