@@ -119,6 +119,13 @@ if st.session_state.get('logged_in'):
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
     selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
+    # 선택된 파일이 있을 때만 instruction 파일 이름 생성
+    if selected_prevideo_file:
+        instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
+        selected_instruction_file = directory_instructions + instruction_file_name
+    else:
+        selected_instruction_file = None
+
     # 선택된 파일이 변경되었을 때
     if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
         # 모든 컨테이너 비우기
