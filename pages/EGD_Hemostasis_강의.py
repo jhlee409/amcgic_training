@@ -129,12 +129,7 @@ if st.session_state.get('logged_in'):
             if st.session_state.get('selected_video_file'):
                 blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-                video_url = blob.generate_signed_url(
-                    expiration=expiration_time, 
-                    method='GET',
-                    response_disposition='attachment; filename="stream.m3u8"',
-                    response_type='application/x-mpegURL'
-                )
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
                 
                 video_html = f"""
                     <div style="width: 1000px; margin: auto;">
@@ -142,7 +137,7 @@ if st.session_state.get('logged_in'):
                             .video-container {{
                                 position: relative;
                                 width: 100%;
-                                background: #000;
+                                overflow: hidden;
                             }}
                             video {{
                                 width: 100%;
@@ -155,69 +150,28 @@ if st.session_state.get('logged_in'):
                                 left: 0;
                                 width: 100%;
                                 height: 100%;
-                                background: transparent;
                                 z-index: 2;
                             }}
                         </style>
-                        <div class="video-container" id="videoContainer">
+                        <div class="video-container">
                             <video 
-                                id="secureVideo"
                                 controls 
                                 controlsList="nodownload noplaybackrate nofullscreen"
                                 disablePictureInPicture
+                                oncontextmenu="return false;"
                                 webkit-playsinline 
                                 playsinline
-                                crossorigin="anonymous">
+                                src="{video_url}">
                             </video>
                             <div class="video-shield"></div>
                         </div>
-                        <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
                         <script>
-                            (function() {{
-                                const video = document.getElementById('secureVideo');
-                                const videoUrl = "{video_url}";
-                                
-                                // HLS 설정
-                                if (Hls.isSupported()) {{
-                                    const hls = new Hls({{
-                                        debug: false,
-                                        enableWorker: true,
-                                        lowLatencyMode: true,
-                                    }});
-                                    
-                                    hls.loadSource(videoUrl);
-                                    hls.attachMedia(video);
-                                    
-                                    hls.on(Hls.Events.MANIFEST_PARSED, function() {{
-                                        video.play();
-                                    }});
+                            document.addEventListener('contextmenu', e => e.preventDefault());
+                            document.addEventListener('keydown', e => {{
+                                if (e.ctrlKey || e.metaKey || e.key === 'F12') {{
+                                    e.preventDefault();
                                 }}
-                                
-                                // 보안 설정
-                                document.addEventListener('contextmenu', e => e.preventDefault(), true);
-                                document.addEventListener('keydown', e => {{
-                                    if (e.ctrlKey || e.metaKey || e.key === 'F12') {{
-                                        e.preventDefault();
-                                    }}
-                                }}, true);
-                                
-                                // 추가 보안 레이어
-                                video.addEventListener('loadedmetadata', () => {{
-                                    video.style.filter = 'none';
-                                }});
-                                
-                                // 캡처 방지
-                                setInterval(() => {{
-                                    if (document.pictureInPictureElement) {{
-                                        document.exitPictureInPicture();
-                                    }}
-                                }}, 100);
-                                
-                                // 화면 녹화 방지
-                                if (navigator.mediaDevices) {{
-                                    navigator.mediaDevices.getDisplayMedia = undefined;
-                                }}
-                            }})();
+                            }});
                         </script>
                     </div>
                 """
