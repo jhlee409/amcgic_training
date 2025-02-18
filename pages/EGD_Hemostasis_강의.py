@@ -110,7 +110,7 @@ if st.session_state.get('logged_in'):
         prevideo_container.empty()
         video_player_container.empty()
         prevideo_container.empty()
-        st.experimental_rerun()  # 페이지 리프레시
+        st.rerun()  # experimental_rerun 대신 rerun 사용
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     prevideos_container = st.container()
