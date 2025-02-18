@@ -99,10 +99,10 @@ if st.session_state.get('logged_in'):
         st.rerun()
     
     if st.session_state.get('prevideo_url'):
-        # 동영상 크기를 60%로 조정하기 위한 HTML 코드
+        # 첫 번째 동영상 크기를 300px로 설정
         video_html = f"""
-            <div style="width: 60%; margin: auto;">
-                <video controls src="{st.session_state.prevideo_url}">
+            <div style="width: 300px; margin: auto;">
+                <video style="width: 100%; height: auto;" controls src="{st.session_state.prevideo_url}">
                     Your browser does not support the video element.
                 </video>
             </div>
@@ -124,10 +124,10 @@ if st.session_state.get('logged_in'):
             blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
             expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            # 두 번째 동영상도 60% 크기로 조정
+            # 두 번째 동영상도 300px로 설정
             video_html = f"""
-                <div style="width: 60%; margin: auto;">
-                    <video controls src="{video_url}">
+                <div style="width: 300px; margin: auto;">
+                    <video style="width: 100%; height: auto;" controls src="{video_url}">
                         Your browser does not support the video element.
                     </video>
                 </div>
