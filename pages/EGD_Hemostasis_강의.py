@@ -177,37 +177,37 @@ if st.session_state.get('logged_in'):
             video_html = f'<video width="500" height="500" controls><source src="{st.session_state.prevideo_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
-    # # '진행' 버튼 추가
-    # if st.sidebar.button('진행'):
-    #     # 사용자 이름과 직책과 접속 날짜 기록
-    #     user_name = st.session_state.get('user_name', 'unknown')
-    #     user_position = st.session_state.get('user_position', 'unknown')
-    #     access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    # '진행' 버튼 추가
+    if st.sidebar.button('진행'):
+        # 사용자 이름과 직책과 접속 날짜 기록
+        user_name = st.session_state.get('user_name', 'unknown')
+        user_position = st.session_state.get('user_position', 'unknown')
+        access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-    #     # 파일 이름에서 확장자(.mp4) 제거
-    #     file_name_without_extension = os.path.splitext(selected_prevideo_file)[0]
+        # 파일 이름에서 확장자(.mp4) 제거
+        file_name_without_extension = os.path.splitext(selected_prevideo_file)[0]
 
-    #     # '_video' 글자와 확장자를 제거한 파일 이름 생성
-    #     file_name_without_extension_and_video = file_name_without_extension.replace('_main', '')
-    #     # 로그 내용을 문자열로 생성
-    #     log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {file_name_without_extension_and_video}\n"
+        # '_video' 글자와 확장자를 제거한 파일 이름 생성
+        file_name_without_extension_and_video = file_name_without_extension.replace('_main', '')
+        # 로그 내용을 문자열로 생성
+        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {file_name_without_extension_and_video}\n"
 
-    #     # Firebase Storage에 로그 파일 업로드
-    #     bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    #     log_blob = bucket.blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{file_name_without_extension}')
-    #     log_blob.upload_from_string(log_entry, content_type='text/plain')
+        # Firebase Storage에 로그 파일 업로드
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        log_blob = bucket.blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{file_name_without_extension}')
+        log_blob.upload_from_string(log_entry, content_type='text/plain')
 
-    #     if st.session_state.get('selected_video_file'):
-    #         # Firebase Storage 참조 생성
-    #         bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    #         blob = bucket.blob(st.session_state.selected_video_file)
-    #         expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-    #         video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        if st.session_state.get('selected_video_file'):
+            # Firebase Storage 참조 생성
+            bucket = storage.bucket('amcgi-bulletin.appspot.com')
+            blob = bucket.blob(st.session_state.selected_video_file)
+            expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
+            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
 
-    #         # 비디오 플레이어 삽입
-    #         with st.session_state.video_player_container:
-    #             video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
-    #             st.markdown(video_html, unsafe_allow_html=True)
+            # 비디오 플레이어 삽입
+            with st.session_state.video_player_container:
+                video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
+                st.markdown(video_html, unsafe_allow_html=True)
 
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
