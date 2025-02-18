@@ -103,18 +103,27 @@ if st.session_state.get('logged_in'):
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
     selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
-    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어 제거
+    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
     if st.session_state.get('previous_folder_selection', None) != folder_selection:
         st.session_state.previous_folder_selection = folder_selection
+        st.session_state.selected_prevideo_file = None  # 선택된 파일 초기화
         prevideo_container.empty()
         video_player_container.empty()
-        folder_selection == "Default"
+        prevideo_container.empty()
+        st.experimental_rerun()  # 페이지 리프레시
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     prevideos_container = st.container()
     video_player_container = st.container()
+    instruction_container = st.container()  # instruction을 위한 새 컨테이너
 
+    # 선택된 파일이 변경되었을 때
     if selected_prevideo_file != st.session_state.get('selected_prevideo_file', ''):
+        # 이전 컨텐츠 모두 제거
+        prevideos_container.empty()
+        video_player_container.empty()
+        instruction_container.empty()
+        
         st.session_state.selected_prevideo_file = selected_prevideo_file
         selected_prevideo_path = directory_prevideos + selected_prevideo_file
         
@@ -137,18 +146,15 @@ if st.session_state.get('logged_in'):
         # Read and display the content of the selected DOCX file
         if selected_instruction_file:
             try:
-                full_path = selected_instruction_file
-                prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-                if prompt:  # 내용이 있는 경우에만 표시
-                    prompt_lines = prompt.split('\n')
-                    prompt_markdown = '\n'.join(prompt_lines)
-                    st.markdown(prompt_markdown)
+                with instruction_container:  # instruction 컨테이너 사용
+                    full_path = selected_instruction_file
+                    prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                    if prompt:  # 내용이 있는 경우에만 표시
+                        prompt_lines = prompt.split('\n')
+                        prompt_markdown = '\n'.join(prompt_lines)
+                        st.markdown(prompt_markdown)
             except Exception as e:
                 st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
-        
-        # 이전 동영상 플레이어 지우기
-        prevideo_container.empty()
-        video_player_container.empty()
         
         # 새로운 동영상 플레이어 렌더링        
         with prevideos_container:
