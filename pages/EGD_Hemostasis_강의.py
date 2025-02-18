@@ -101,7 +101,7 @@ if st.session_state.get('logged_in'):
     if st.session_state.get('prevideo_url'):
         # 첫 번째 동영상 크기를 300px로 설정
         video_html = f"""
-            <div style="width: 300px; margin: auto;">
+            <div style="width: 600px; margin: auto;">
                 <video style="width: 100%; height: auto;" controls src="{st.session_state.prevideo_url}">
                     Your browser does not support the video element.
                 </video>
@@ -126,7 +126,7 @@ if st.session_state.get('logged_in'):
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             # 두 번째 동영상도 300px로 설정
             video_html = f"""
-                <div style="width: 300px; margin: auto;">
+                <div style="width: 600px; margin: auto;">
                     <video style="width: 100%; height: auto;" controls src="{video_url}">
                         Your browser does not support the video element.
                     </video>
