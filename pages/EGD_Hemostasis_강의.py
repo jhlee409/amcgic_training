@@ -130,20 +130,32 @@ if st.session_state.get('logged_in'):
                 blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                # 강화된 다운로드 방지 기능
+                
                 video_html = f"""
-                    <div style="width: 300px; margin: auto;">
+                    <div style="width: 1000px; margin: auto;">
                         <style>
-                            /* 비디오 요소에 대한 보호 스타일 */
-                            video {{
+                            .video-container {{
+                                position: relative;
+                                width: 100%;
+                                overflow: hidden;
+                            }}
+                            .video-overlay {{
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
                                 pointer-events: none;
+                                z-index: 1;
+                            }}
+                            video {{
+                                width: 100%;
+                                height: auto;
+                                position: relative;
+                                z-index: 0;
                                 -webkit-user-select: none;
                                 -ms-user-select: none;
                                 user-select: none;
-                            }}
-                            /* 컨트롤러만 이벤트 허용 */
-                            video::-webkit-media-controls {{
-                                pointer-events: auto;
                             }}
                             video::-webkit-media-controls-enclosure {{
                                 overflow:hidden;
@@ -151,31 +163,57 @@ if st.session_state.get('logged_in'):
                             video::-webkit-media-controls-panel {{
                                 width: calc(100% + 30px);
                             }}
-                            /* 다운로드 버튼 숨기기 */
-                            video::-internal-media-controls-download-button {{
-                                display:none !important;
-                            }}
                             video::-webkit-media-controls-download-button {{
-                                display:none !important;
+                                display: none !important;
+                            }}
+                            video::-internal-media-controls-download-button {{
+                                display: none !important;
                             }}
                         </style>
-                        <video 
-                            style="width: 100%; height: auto;" 
-                            controls 
-                            controlsList="nodownload noplaybackrate"
-                            disablePictureInPicture
-                            oncontextmenu="return false;"
-                            onselectstart="return false;"
-                            ondragstart="return false;"
-                            src="{video_url}">
-                            Your browser does not support the video element.
-                        </video>
+                        <div class="video-container">
+                            <div class="video-overlay"></div>
+                            <video 
+                                controls 
+                                controlsList="nodownload noplaybackrate nofullscreen"
+                                disablePictureInPicture
+                                oncontextmenu="return false;"
+                                onselectstart="return false;"
+                                ondragstart="return false;"
+                                onplay="this.playsInline=true;"
+                                webkit-playsinline
+                                playsinline>
+                                <source src="{video_url}" type="video/mp4">
+                                Your browser does not support the video element.
+                            </video>
+                        </div>
                         <script>
-                            document.addEventListener('keydown', function(e) {{
-                                if (e.key === 's' && (e.ctrlKey || e.metaKey)) {{
+                            (function() {{
+                                // 모든 키보드 단축키 비활성화
+                                document.addEventListener('keydown', function(e) {{
+                                    if ((e.ctrlKey || e.metaKey) || e.key === 'F12') {{
+                                        e.preventDefault();
+                                        return false;
+                                    }}
+                                }}, true);
+                                
+                                // 마우스 우클릭 방지
+                                document.addEventListener('contextmenu', function(e) {{
                                     e.preventDefault();
-                                }}
-                            }});
+                                    return false;
+                                }}, true);
+                                
+                                // 드래그 방지
+                                document.addEventListener('dragstart', function(e) {{
+                                    e.preventDefault();
+                                    return false;
+                                }}, true);
+                                
+                                // 선택 방지
+                                document.addEventListener('selectstart', function(e) {{
+                                    e.preventDefault();
+                                    return false;
+                                }}, true);
+                            }})();
                         </script>
                     </div>
                 """
