@@ -95,9 +95,9 @@ if st.session_state.get('logged_in'):
         st.rerun()
     
     if st.session_state.get('prevideo_url'):
-        # 동영상 크기를 60%로 조정하기 위한 HTML 코드
+        # 첫 번째 동영상 크기를 10%로 조정
         video_html = f"""
-            <div style="width: 60%; margin: auto;">
+            <div style="width: 10%; margin: auto;">
                 <video controls src="{st.session_state.prevideo_url}">
                     Your browser does not support the video element.
                 </video>
@@ -108,26 +108,30 @@ if st.session_state.get('logged_in'):
         st.markdown(st.session_state.instruction_text)
     
     if st.sidebar.button('진행'):
-        user_name = st.session_state.get('user_name', 'unknown')
-        user_position = st.session_state.get('user_position', 'unknown')
-        access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
-        
-        log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{os.path.splitext(selected_prevideo_file)[0]}')
-        log_blob.upload_from_string(log_entry, content_type='text/plain')
-        
-        if st.session_state.get('selected_video_file'):
-            blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
-            expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            video_html = f"""
-                <div style="width: 60%; margin: auto;">
-                    <video controls src="{video_url}">
-                        Your browser does not support the video element.
-                    </video>
-                </div>
-            """
-            st.markdown(video_html, unsafe_allow_html=True)
+        # 이전 내용을 지우기 위해 st.empty() 사용
+        main_container = st.empty()
+        with main_container.container():
+            user_name = st.session_state.get('user_name', 'unknown')
+            user_position = st.session_state.get('user_position', 'unknown')
+            access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
+            
+            log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{os.path.splitext(selected_prevideo_file)[0]}')
+            log_blob.upload_from_string(log_entry, content_type='text/plain')
+            
+            if st.session_state.get('selected_video_file'):
+                blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
+                expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                # 두 번째 동영상 크기를 90%로 조정
+                video_html = f"""
+                    <div style="width: 90%; margin: auto;">
+                        <video controls src="{video_url}">
+                            Your browser does not support the video element.
+                        </video>
+                    </div>
+                """
+                st.markdown(video_html, unsafe_allow_html=True)
     
     if st.sidebar.button("Logout"):
         logout_time = datetime.now(timezone.utc)
