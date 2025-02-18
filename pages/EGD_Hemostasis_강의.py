@@ -101,6 +101,20 @@ if st.session_state.get('logged_in'):
     if 'instruction_container' not in st.session_state:
         st.session_state.instruction_container = st.container()
 
+    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
+    if st.session_state.get('previous_folder_selection', None) != folder_selection:
+        # 상태 초기화
+        st.session_state.previous_folder_selection = folder_selection
+        st.session_state.selected_prevideo_file = None
+        st.session_state.prevideo_url = None
+        
+        # 모든 컨테이너 비우기
+        st.session_state.prevideo_container.empty()
+        st.session_state.video_player_container.empty()
+        st.session_state.instruction_container.empty()
+        
+        # 페이지 새로고침
+        st.rerun()
 
     # List and select prevideo files
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
@@ -194,22 +208,6 @@ if st.session_state.get('logged_in'):
             with st.session_state.video_player_container:
                 video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
-
-    
-    # 라디오 버튼 선택이 변경될 때마다 동영상 플레이어와 컨텐츠 제거
-    if st.session_state.get('previous_folder_selection', None) != folder_selection:
-        # 상태 초기화
-        st.session_state.previous_folder_selection = folder_selection
-        st.session_state.selected_prevideo_file = None
-        st.session_state.prevideo_url = None
-        
-        # 모든 컨테이너 비우기
-        st.session_state.prevideo_container.empty()
-        st.session_state.video_player_container.empty()
-        st.session_state.instruction_container.empty()
-        
-        # 페이지 새로고침
-        st.rerun()
 
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
