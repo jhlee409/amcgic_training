@@ -55,21 +55,22 @@ if st.session_state.get('logged_in'):
     
     # Function to read file content from Firebase Storage
     def read_docx_file(bucket_name, file_name):
-        bucket = storage.bucket(bucket_name)
-        blob = bucket.blob(file_name)
-        
-        # Download the file to a temporary location
-        temp_file_path = "/tmp/tempfile.docx"
-        blob.download_to_filename(temp_file_path)
-        
-        # Read the content of the DOCX file
-        doc = docx.Document(temp_file_path)
-        full_text = []
-        for para in doc.paragraphs:
-            full_text.append(para.text)
-        
-        # Join the text into a single string
-        return '\n'.join(full_text)
+        try:
+            bucket = storage.bucket(bucket_name)
+            blob = bucket.blob(file_name)
+            
+            # 임시 파일을 메모리에서 처리
+            content = blob.download_as_bytes()
+            doc = docx.Document(io.BytesIO(content))
+            
+            full_text = []
+            for para in doc.paragraphs:
+                full_text.append(para.text)
+            
+            return '\n'.join(full_text)
+        except Exception as e:
+            st.error(f"문서를 읽는 중 오류가 발생했습니다: {str(e)}")
+            return ""
     
     # esophagus or stomach selection
     folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
@@ -135,11 +136,15 @@ if st.session_state.get('logged_in'):
         
         # Read and display the content of the selected DOCX file
         if selected_instruction_file:
-            full_path = selected_instruction_file
-            prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-            prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
-            prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-            st.markdown(prompt_markdown)
+            try:
+                full_path = selected_instruction_file
+                prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                if prompt:  # 내용이 있는 경우에만 표시
+                    prompt_lines = prompt.split('\n')
+                    prompt_markdown = '\n'.join(prompt_lines)
+                    st.markdown(prompt_markdown)
+            except Exception as e:
+                st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
         
         # 이전 동영상 플레이어 지우기
         prevideo_container.empty()
