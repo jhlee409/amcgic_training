@@ -95,7 +95,15 @@ if st.session_state.get('logged_in'):
         st.rerun()
     
     if st.session_state.get('prevideo_url'):
-        st.video(st.session_state.prevideo_url)
+        # 동영상 크기를 60%로 조정하기 위한 HTML 코드
+        video_html = f"""
+            <div style="width: 60%; margin: auto;">
+                <video controls src="{st.session_state.prevideo_url}">
+                    Your browser does not support the video element.
+                </video>
+            </div>
+        """
+        st.markdown(video_html, unsafe_allow_html=True)
     if st.session_state.get('instruction_text'):
         st.markdown(st.session_state.instruction_text)
     
@@ -111,7 +119,15 @@ if st.session_state.get('logged_in'):
         if st.session_state.get('selected_video_file'):
             blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            st.video(video_url)
+            # 두 번째 동영상도 60% 크기로 조정
+            video_html = f"""
+                <div style="width: 60%; margin: auto;">
+                    <video controls src="{video_url}">
+                        Your browser does not support the video element.
+                    </video>
+                </div>
+            """
+            st.markdown(video_html, unsafe_allow_html=True)
     
     if st.sidebar.button("Logout"):
         logout_time = datetime.now(timezone.utc)
