@@ -99,7 +99,7 @@ if st.session_state.get('logged_in'):
         st.rerun()
     
     # 좌우 컨테이너 생성
-    left_col, right_col = st.columns(2)
+    left_col, right_col = st.columns([2, 3])
     
     # 왼쪽 컨테이너에 첫 번째 동영상과 설명 표시
     with left_col:
