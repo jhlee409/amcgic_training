@@ -68,13 +68,17 @@ if st.session_state.get('logged_in'):
     directory = directories[folder_selection]
     prevideo_dir, instruction_dir, video_dir = directory + "prevideos/", directory + "instructions/", directory + "videos/"
     
+    # 폴더 선택이 변경되었을 때 상태 초기화
     if st.session_state.get('previous_folder_selection') != folder_selection:
         st.session_state.previous_folder_selection = folder_selection
         st.session_state.selected_prevideo_file = None
         st.session_state.prevideo_url = None
+        # 현재 선택된 폴더의 파일 목록을 가져오기
+        st.session_state.current_file_list = list_files('amcgi-bulletin.appspot.com', prevideo_dir)
         st.rerun()
     
-    file_list_prevideo = list_files('amcgi-bulletin.appspot.com', prevideo_dir)
+    # 현재 폴더의 파일 목록 사용
+    file_list_prevideo = st.session_state.get('current_file_list', list_files('amcgi-bulletin.appspot.com', prevideo_dir))
     selected_prevideo_file = st.sidebar.selectbox("파일 선택", file_list_prevideo)
     
     if selected_prevideo_file and selected_prevideo_file != st.session_state.get('selected_prevideo_file'):
