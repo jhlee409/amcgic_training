@@ -79,6 +79,7 @@ if st.session_state.get('logged_in'):
     video_container = st.container()  # 비디오 재생용
     text_container = st.container()   # instruction 텍스트 표시용
 
+    # 폴더 선택 로직
     if folder_selection == "Default":
         directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
         directory_instructions = "EGD_Hemostasis_training/default/instructions/"
