@@ -75,23 +75,23 @@ if st.session_state.get('logged_in'):
     # esophagus or stomach selection
     folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
 
-    # # 비디오와 텍스트 표시를 위한 컨테이너 생성
-    # video_container = st.container()  # 비디오 재생용
-    # text_container = st.container()   # instruction 텍스트 표시용
+    # 비디오와 텍스트 표시를 위한 컨테이너 생성
+    video_container = st.container()  # 비디오 재생용
+    text_container = st.container()   # instruction 텍스트 표시용
 
-    # 폴더 선택 로직
-    if folder_selection == "Default":
-        directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
-        directory_instructions = "EGD_Hemostasis_training/default/instructions/"
-        directory_videos = "EGD_Hemostasis_training/default/videos/"
-    elif folder_selection == "Hemostasis lecture":
-        directory_prevideos = "EGD_Hemostasis_training/lecture/video/"
-        directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
-        directory_videos = "EGD_Hemostasis_training/lecture/videos/"
-    elif folder_selection == "cases":
-        directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
-        directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
-        directory_videos = "EGD_Hemostasis_training/cases/videos/"
+    # # 폴더 선택 로직
+    # if folder_selection == "Default":
+    #     directory_prevideos = "EGD_Hemostasis_training/default/prevideos/"
+    #     directory_instructions = "EGD_Hemostasis_training/default/instructions/"
+    #     directory_videos = "EGD_Hemostasis_training/default/videos/"
+    # elif folder_selection == "Hemostasis lecture":
+    #     directory_prevideos = "EGD_Hemostasis_training/lecture/video/"
+    #     directory_instructions = "EGD_Hemostasis_training/lecture/instruction/"
+    #     directory_videos = "EGD_Hemostasis_training/lecture/videos/"
+    # elif folder_selection == "cases":
+    #     directory_prevideos = "EGD_Hemostasis_training/cases/prevideos/"
+    #     directory_instructions = "EGD_Hemostasis_training/cases/instructions/"
+    #     directory_videos = "EGD_Hemostasis_training/cases/videos/"
 
     # 동영상 플레이어를 렌더링할 컨테이너 생성
     if 'prevideo_container' not in st.session_state:
