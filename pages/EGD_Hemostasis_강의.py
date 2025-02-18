@@ -157,30 +157,19 @@ if st.session_state.get('logged_in'):
         instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
         
-        # # Read and display the content of the selected DOCX file
-        # if selected_instruction_file:
-        #     try:
-        #         with st.session_state.instruction_container:  # instruction 컨테이너 사용
-        #             full_path = selected_instruction_file
-        #             prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-        #             if prompt:  # 내용이 있는 경우에만 표시
-        #                 prompt_lines = prompt.split('\n')
-        #                 prompt_markdown = '\n'.join(prompt_lines)
-        #                 st.markdown(prompt_markdown)
-        #     except Exception as e:
-        #         st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
-        
         # Read and display the content of the selected DOCX file
         if selected_instruction_file:
-            full_path = selected_instruction_file
-            prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
-            prompt_lines = prompt.split('\n')  # 내용을 줄 바꿈 문자로 분리
-            prompt_markdown = '\n'.join(prompt_lines)  # 분리된 내용을 다시 합치면서 줄 바꿈 적용
-            st.markdown(prompt_markdown)
+            try:
+                with st.session_state.instruction_container:  # instruction 컨테이너 사용
+                    full_path = selected_instruction_file
+                    prompt = read_docx_file('amcgi-bulletin.appspot.com', full_path)
+                    if prompt:  # 내용이 있는 경우에만 표시
+                        prompt_lines = prompt.split('\n')
+                        prompt_markdown = '\n'.join(prompt_lines)
+                        st.markdown(prompt_markdown)
+            except Exception as e:
+                st.error(f"문서 처리 중 오류가 발생했습니다: {str(e)}")
         
-        # 이전 동영상 플레이어 지우기
-        pre_video_container.empty()
-        video_player_container.empty()
 
         # 새로운 동영상 플레이어 렌더링        
         with st.session_state.prevideo_container:
