@@ -115,7 +115,7 @@ if st.session_state.get('logged_in'):
         # 페이지 새로고침
         st.rerun()
 
-    # List and select PNG files
+    # List and select prevideo files
     file_list_prevideo = prevideo_list_files('amcgi-bulletin.appspot.com', directory_prevideos)
     selected_prevideo_file = st.sidebar.selectbox(f"파일 제목을 선택하세요..", file_list_prevideo)
 
