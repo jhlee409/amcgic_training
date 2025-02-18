@@ -98,42 +98,47 @@ if st.session_state.get('logged_in'):
         
         st.rerun()
     
-    if st.session_state.get('prevideo_url'):
-        # 첫 번째 동영상 크기를 300px로 설정
-        video_html = f"""
-            <div style="width: 600px; margin: auto;">
-                <video style="width: 100%; height: auto;" controls src="{st.session_state.prevideo_url}">
-                    Your browser does not support the video element.
-                </video>
-            </div>
-        """
-        st.markdown(video_html, unsafe_allow_html=True)
-    if st.session_state.get('instruction_text'):
-        st.markdown(st.session_state.instruction_text)
+    # 좌우 컨테이너 생성
+    left_col, right_col = st.columns([2, 3])
     
-    if st.sidebar.button('진행'):
-        user_name = st.session_state.get('user_name', 'unknown')
-        user_position = st.session_state.get('user_position', 'unknown')
-        access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
-        
-        log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{os.path.splitext(selected_prevideo_file)[0]}')
-        log_blob.upload_from_string(log_entry, content_type='text/plain')
-        
-        if st.session_state.get('selected_video_file'):
-            blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
-            expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-            video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-            # 두 번째 동영상도 300px로 설정
+    # 왼쪽 컨테이너에 첫 번째 동영상과 설명 표시
+    with left_col:
+        if st.session_state.get('prevideo_url'):
             video_html = f"""
                 <div style="width: 600px; margin: auto;">
-                    <video style="width: 100%; height: auto;" controls src="{video_url}">
+                    <video style="width: 100%; height: auto;" controls src="{st.session_state.prevideo_url}">
                         Your browser does not support the video element.
                     </video>
                 </div>
             """
             st.markdown(video_html, unsafe_allow_html=True)
+        if st.session_state.get('instruction_text'):
+            st.markdown(st.session_state.instruction_text)
     
+    # 오른쪽 컨테이너에 '진행' 버튼 클릭 시 나타나는 동영상 표시
+    with right_col:
+        if st.sidebar.button('진행'):
+            user_name = st.session_state.get('user_name', 'unknown')
+            user_position = st.session_state.get('user_position', 'unknown')
+            access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
+            
+            log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{os.path.splitext(selected_prevideo_file)[0]}')
+            log_blob.upload_from_string(log_entry, content_type='text/plain')
+            
+            if st.session_state.get('selected_video_file'):
+                blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
+                expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
+                video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                video_html = f"""
+                    <div style="width: 1000px; margin: auto;">
+                        <video style="width: 100%; height: auto;" controls src="{video_url}">
+                            Your browser does not support the video element.
+                        </video>
+                    </div>
+                """
+                st.markdown(video_html, unsafe_allow_html=True)
+
     if st.sidebar.button("Logout"):
         logout_time = datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')

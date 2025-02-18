@@ -130,12 +130,26 @@ if st.session_state.get('logged_in'):
                 blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+                # 다운로드 방지 기능이 추가된 비디오 플레이어
                 video_html = f"""
-                    <div style="width: 1000px; margin: auto;">
-                        <video style="width: 100%; height: auto;" controls src="{video_url}">
+                    <div style="width: 300px; margin: auto;">
+                        <video 
+                            style="width: 100%; height: auto;" 
+                            controls 
+                            controlsList="nodownload"
+                            oncontextmenu="return false;"
+                            src="{video_url}">
                             Your browser does not support the video element.
                         </video>
                     </div>
+                    <style>
+                        video::-webkit-media-controls-enclosure {{
+                            overflow:hidden;
+                        }}
+                        video::-webkit-media-controls-panel {{
+                            width: calc(100% + 30px);
+                        }}
+                    </style>
                 """
                 st.markdown(video_html, unsafe_allow_html=True)
 
