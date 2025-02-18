@@ -123,6 +123,9 @@ if st.session_state.get('logged_in'):
     if selected_prevideo_file:
         instruction_file_name = os.path.splitext(selected_prevideo_file)[0] + '.docx'
         selected_instruction_file = directory_instructions + instruction_file_name
+        
+        if folder_selection == "Default":
+            st.empty()  # 동영상 플레이어 제거
     else:
         instruction_file_name = None
         selected_instruction_file = None
@@ -171,9 +174,6 @@ if st.session_state.get('logged_in'):
             video_html = f'<video width="500" height="500" controls><source src="{st.session_state.prevideo_url}" type="video/mp4"></video>'
             st.markdown(video_html, unsafe_allow_html=True)
 
-        if folder_selection == "Default":
-            st.empty()  # 동영상 플레이어 제거
-
     # '진행' 버튼 추가
     if st.sidebar.button('진행'):
         # 사용자 이름과 직책과 접속 날짜 기록
@@ -206,11 +206,6 @@ if st.session_state.get('logged_in'):
                 video_html = f'<video width="1000" height="800" controls><source src="{video_url}" type="video/mp4"></video>'
                 st.markdown(video_html, unsafe_allow_html=True)
 
-        if folder_selection == "Default":
-            st.empty()  # 동영상 플레이어 제거
-                
-        st.sidebar.divider()
-        
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
         logout_time = datetime.now(timezone.utc)
