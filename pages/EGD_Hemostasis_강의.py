@@ -130,26 +130,54 @@ if st.session_state.get('logged_in'):
                 blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                # 다운로드 방지 기능이 추가된 비디오 플레이어
+                # 강화된 다운로드 방지 기능
                 video_html = f"""
-                    <div style="width: 1000px; margin: auto;">
+                    <div style="width: 300px; margin: auto;">
+                        <style>
+                            /* 비디오 요소에 대한 보호 스타일 */
+                            video {{
+                                pointer-events: none;
+                                -webkit-user-select: none;
+                                -ms-user-select: none;
+                                user-select: none;
+                            }}
+                            /* 컨트롤러만 이벤트 허용 */
+                            video::-webkit-media-controls {{
+                                pointer-events: auto;
+                            }}
+                            video::-webkit-media-controls-enclosure {{
+                                overflow:hidden;
+                            }}
+                            video::-webkit-media-controls-panel {{
+                                width: calc(100% + 30px);
+                            }}
+                            /* 다운로드 버튼 숨기기 */
+                            video::-internal-media-controls-download-button {{
+                                display:none !important;
+                            }}
+                            video::-webkit-media-controls-download-button {{
+                                display:none !important;
+                            }}
+                        </style>
                         <video 
                             style="width: 100%; height: auto;" 
                             controls 
-                            controlsList="nodownload"
+                            controlsList="nodownload noplaybackrate"
+                            disablePictureInPicture
                             oncontextmenu="return false;"
+                            onselectstart="return false;"
+                            ondragstart="return false;"
                             src="{video_url}">
                             Your browser does not support the video element.
                         </video>
+                        <script>
+                            document.addEventListener('keydown', function(e) {{
+                                if (e.key === 's' && (e.ctrlKey || e.metaKey)) {{
+                                    e.preventDefault();
+                                }}
+                            }});
+                        </script>
                     </div>
-                    <style>
-                        video::-webkit-media-controls-enclosure {{
-                            overflow:hidden;
-                        }}
-                        video::-webkit-media-controls-panel {{
-                            width: calc(100% + 30px);
-                        }}
-                    </style>
                 """
                 st.markdown(video_html, unsafe_allow_html=True)
 
