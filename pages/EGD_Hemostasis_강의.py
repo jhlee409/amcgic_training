@@ -130,31 +130,11 @@ if st.session_state.get('logged_in'):
                 blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
                 expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
                 video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-                
                 video_html = f"""
                     <div style="width: 1000px; margin: auto;">
-                        <style>
-                            .video-container {{
-                                position: relative;
-                                width: 100%;
-                            }}
-                            video {{
-                                width: 100%;
-                                height: auto;
-                            }}
-                        </style>
-                        <div class="video-container">
-                            <video 
-                                controls 
-                                controlsList="nodownload"
-                                oncontextmenu="return false;"
-                                src="{video_url}">
-                                Your browser does not support the video element.
-                            </video>
-                        </div>
-                        <script>
-                            document.addEventListener('contextmenu', e => e.preventDefault());
-                        </script>
+                        <video style="width: 100%; height: auto;" controls src="{video_url}">
+                            Your browser does not support the video element.
+                        </video>
                     </div>
                 """
                 st.markdown(video_html, unsafe_allow_html=True)
