@@ -49,7 +49,7 @@ position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Stud
 login_disabled = True  # 초기값 설정
 
 # 유효성 검사 및 로그인 버튼
-if st.button("Login"):
+if st.button("Login Check"):  # 버튼 이름을 변경하여 ID 충돌 방지
     login_disabled = False
     if position == "":
         st.error("position을 선택해 주세요")
@@ -172,7 +172,7 @@ def handle_login(email, password, name, position):
         st.error(f"An error occurred: {str(e)}")
 
 # 로그인 버튼
-if st.button("Login", disabled=login_disabled):
+if st.button("Login", disabled=login_disabled):  # 원래 버튼 유지
     handle_login(email, password, name, position)
 
 # 로그 아웃 버튼
