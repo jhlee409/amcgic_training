@@ -50,22 +50,26 @@ login_disabled = True  # 초기값 설정
 
 # 유효성 검사 및 로그인 버튼
 if st.button("입력 확인"):  # 버튼 이름을 변경하여 ID 충돌 방지
-    login_disabled = False
-    if email == "":
-        st.error("이메일을 입력해 주세요")
-    login_disabled = True
-    if  password == "":
-        st.error("비밀번호를 입력해 주세요")
+    # 모든 조건이 충족되면 login_disabled를 False로 설정
+    if (email != "" and 
+        password != "" and 
+        position != "" and 
+        name != "" and 
+        is_korean_name(name)):
+        login_disabled = False
+        st.success("입력이 확인되었습니다. 로그인 버튼을 클릭해주세요.")
+    else:
         login_disabled = True
-    if position == "":
-        st.error("position을 선택해 주세요")
-        login_disabled = True
-    if name== "":
-        st.error("한글 이름을 입력해 주세요")
-        login_disabled = True
-    elif not is_korean_name(name):
-        st.error("한글 이름을 입력해 주세요")
-        login_disabled = True
+        if email == "":
+            st.error("이메일을 입력해 주세요")
+        if password == "":
+            st.error("비밀번호를 입력해 주세요")
+        if position == "":
+            st.error("position을 선택해 주세요")
+        if name == "":
+            st.error("한글 이름을 입력해 주세요")
+        elif not is_korean_name(name):
+            st.error("한글 이름을 입력해 주세요")
 
 def handle_login(email, password, name, position):
     try:
