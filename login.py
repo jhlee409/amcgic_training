@@ -51,10 +51,16 @@ login_disabled = True  # 초기값 설정
 # 유효성 검사 및 로그인 버튼
 if st.button("입력 확인"):  # 버튼 이름을 변경하여 ID 충돌 방지
     login_disabled = False
+    if email == "":
+        st.error("이메일을 입력해 주세요")
+    login_disabled = True
+    if  password == "":
+        st.error("비밀번호를 입력해 주세요")
+        login_disabled = True
     if position == "":
         st.error("position을 선택해 주세요")
         login_disabled = True
-    if not name:
+    if name== "":
         st.error("한글 이름을 입력해 주세요")
         login_disabled = True
     elif not is_korean_name(name):
