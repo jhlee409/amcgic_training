@@ -49,15 +49,17 @@ position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Stud
 login_disabled = True  # 초기값 설정
 
 # 유효성 검사 및 로그인 버튼
-if st.button("입력 확인"):
+if st.button("입력 확인"):  # 버튼 이름을 변경하여 ID 충돌 방지
+    login_disabled = False
     if position == "":
         st.error("position을 선택해 주세요")
-    elif not name:
+        login_disabled = True
+    if not name:
         st.error("한글 이름을 입력해 주세요")
+        login_disabled = True
     elif not is_korean_name(name):
         st.error("한글 이름을 입력해 주세요")
-    else:
-        st.button("Login", on_click=lambda: handle_login(email, password, name, position))
+        login_disabled = True
 
 def handle_login(email, password, name, position):
     try:
@@ -198,14 +200,3 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
         
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
-
-# Supabase 관련 함수 추가
-def send_to_supabase(data):
-    supabase_url = st.secrets["supabase_url"]
-    supabase_key = st.secrets["supabase_key"]
-    supabase_headers = {
-        "Content-Type": "application/json",
-        "apikey": supabase_key,
-        "Authorization": f"Bearer {supabase_key}"
-    }
-    return requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=data)
