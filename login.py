@@ -48,16 +48,15 @@ position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Stud
 #  유효성 검사 및 로그인 버튼
 
 login_disabled = False
-if st.button("Login"):
-    if position == "":
-        st.error("position을 선택해 주세요")
-        login_disabled = True
-    if not name:
-        st.error("한글 이름을 입력해 주세요")
-        login_disabled = True
-    elif not name or not is_korean_name(name):
-        st.error("한글 이름을 입력해 주세요")
-        login_disabled = True
+if position == "":
+    st.error("position을 선택해 주세요")
+    login_disabled = True
+if not name:
+    st.error("한글 이름을 입력해 주세요")
+    login_disabled = True
+elif not name or not is_korean_name(name):
+    st.error("한글 이름을 입력해 주세요")
+    login_disabled = True
 
 # # 로그인 버튼
 # if st.button("Login"):
