@@ -10,9 +10,7 @@ import pytz
 import requests
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD 강의", layout="wide")
-
-# if st.session_state.get('logged_in'):     
+st.set_page_config(page_title="EGD 강의", layout="wide") 
 
 # 로그인 상태 확인
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
@@ -157,7 +155,3 @@ if st.sidebar.button("Logout"):
     
     st.session_state.clear()
     st.success("로그아웃 되었습니다.")
-        
-# else:
-#     # 로그인이 되지 않은 경우, 로그인 페이지로 리디렉션 또는 메시지 표시 
-#     st.error("로그인이 필요합니다.")
