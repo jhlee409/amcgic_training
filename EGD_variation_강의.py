@@ -131,9 +131,6 @@ for letter, videos in grouped_videos.items():
 
                 # 버튼 생성 및 클릭 처리
                 if st.button(f"{video_name}"):
-                    # 현재 비디오의 상태만 토글하고, 다른 비디오는 그대로 유지
-                    st.session_state.video_states[video_name] = not st.session_state.video_states.get(video_name, False)
-                    
                     # 비디오 이름에서 숫자 추출
                     video_number = ''.join(filter(str.isdigit, video_name))
                     
@@ -151,9 +148,13 @@ for letter, videos in grouped_videos.items():
                         # Firebase Storage에 로그 파일 업로드
                         log_blob = bucket.blob(f'log_EGD_variation/{position_name}*{video_name}')  # 로그 파일 경로 설정
                         log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+                    
+                    # 상태 반전
+                    st.session_state.video_states[video_name] = not st.session_state.video_states[video_name]
 
                 # 동영상 재생 창
-                if st.session_state.video_states.get(video_name, False):
+                if st.session_state.video_states[video_name]:
+                    st.session_state.video_states = {}
                     blob = bucket.blob(video_file)
                     video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
                     st.markdown(
