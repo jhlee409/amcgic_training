@@ -160,7 +160,7 @@ for letter, videos in grouped_videos.items():
                     st.markdown(
                         f"""
                         <div style="display: flex; justify-content: center; align-items: center;">
-                            <video controls style="width: 600%; height: auto;">
+                            <video controls style="width: 700%; height: auto;">
                                 <source src="{video_url}" type="video/mp4">
                                 Your browser does not support the video tag.
                             </video>
