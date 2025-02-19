@@ -118,12 +118,12 @@ if st.session_state.get('logged_in'):
     # 오른쪽 컨테이너에 '진행' 버튼 클릭 시 나타나는 동영상 표시
     with right_col:
         if st.sidebar.button('진행'):
-            user_name = st.session_state.get('user_name', 'unknown')
-            user_position = st.session_state.get('user_position', 'unknown')
+            name = st.session_state.get('name', 'unknown')
+            position = st.session_state.get('position', 'unknown')
             access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-            log_entry = f"사용자: {user_name}\n직급: {user_position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
+            log_entry = f"사용자: {name}\n직급: {position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
             
-            log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{user_position}*{user_name}*{os.path.splitext(selected_prevideo_file)[0]}')
+            log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{position}*{name}*{os.path.splitext(selected_prevideo_file)[0]}')
             log_blob.upload_from_string(log_entry, content_type='text/plain')
             
             if st.session_state.get('selected_video_file'):
@@ -145,8 +145,8 @@ if st.session_state.get('logged_in'):
         duration = round((logout_time - login_time).total_seconds() / 60) if login_time else 0
         
         logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration

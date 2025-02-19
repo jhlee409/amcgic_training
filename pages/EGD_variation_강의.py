@@ -135,9 +135,9 @@ if st.session_state.get('logged_in'):
                         # 숫자가 1인 경우에만 로그 파일 생성
                         if video_number == '1':
                             # 사용자 이름과 직책, 접속 날짜 기록
-                            user_name = st.session_state.get('user_name', 'unknown')
-                            user_position = st.session_state.get('user_position', 'unknown')
-                            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
+                            name = st.session_state.get('name', 'unknown')
+                            position = st.session_state.get('position', 'unknown')
+                            position_name = f"{position}*{name}"  # 직책*이름 형식으로 저장
                             access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
 
                             # 로그 내용을 문자열로 생성
@@ -181,8 +181,8 @@ if st.session_state.get('logged_in'):
 
         # 로그아웃 이벤트 기록
         logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration

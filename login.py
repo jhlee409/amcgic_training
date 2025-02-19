@@ -149,8 +149,8 @@ def handle_login(email, password, name, position):
 
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
-            st.session_state['user_name'] = name
-            st.session_state['user_position'] = position
+            st.session_state['name'] = name
+            st.session_state['position'] = position
             st.session_state['user_id'] = user_id
         else:
             st.error(response_data["error"]["message"])
@@ -165,8 +165,8 @@ if st.button("Login", disabled=login_disabled):  # 원래 버튼 유지
 if "logged_in" in st.session_state and st.session_state['logged_in']:
     
     # 로그인된 사용자 정보 표시
-    st.sidebar.write(f"**사용자**: {st.session_state.get('user_name', '이름 없음')}")
-    st.sidebar.write(f"**직책**: {st.session_state.get('user_position', '직책 미지정')}")
+    st.sidebar.write(f"**사용자**: {st.session_state.get('name', '이름 없음')}")
+    st.sidebar.write(f"**직책**: {st.session_state.get('position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
         # 로그아웃 시간과 duration 계산
@@ -180,8 +180,8 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
 
         # 로그아웃 이벤트 기록
         logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
+            "user_position": st.session_state.get('position'),
+            "user_name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration

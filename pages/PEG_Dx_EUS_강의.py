@@ -65,9 +65,9 @@ if st.session_state.get('logged_in'):
     if selected_lecture:
         # 'Default'일 경우 로그 파일 생성하지 않음
         if selected_lecture != "Default":
-            user_name = st.session_state.get('user_name', 'unknown')
-            user_position = st.session_state.get('user_position', 'unknown')
-            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
+            name = st.session_state.get('name', 'unknown')
+            position = st.session_state.get('position', 'unknown')
+            position_name = f"{position}*{name}"  # 직책*이름 형식으로 저장
             access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
             # 로그 내용을 문자열로 생성
@@ -132,8 +132,8 @@ if st.session_state.get('logged_in'):
 
         # 로그아웃 이벤트 기록
         logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration

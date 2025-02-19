@@ -143,20 +143,20 @@ if st.session_state.get('logged_in'):
             st.markdown(docx_content_2)  # Show the content of _2.docx
             
             # 사용자 이름과 직책, 접속 날짜 기록
-            user_name = st.session_state.get('user_name', 'unknown')
-            user_position = st.session_state.get('user_position', 'unknown')
-            position_name = f"{user_position}*{user_name}"  # 직책*이름 형식으로 저장
+            name = st.session_state.get('name', 'unknown')
+            position = st.session_state.get('position', 'unknown')
+            position_name = f"{position}*{name}"  # 직책*이름 형식으로 저장
             access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
             # '.png' 확장자를 제거한 파일 이름
             selected_image_file_without_extension = selected_image_file.replace('.png', '')
 
             # 로그 내용을 문자열로 생성
-            log_entry = f"직급: {user_position}\n사용자: {user_name}\n메뉴: {folder_selection}\n파일: {selected_image_file_without_extension}\n날짜: {access_date}\n"
+            log_entry = f"직급: {position}\n사용자: {name}\n메뉴: {folder_selection}\n파일: {selected_image_file_without_extension}\n날짜: {access_date}\n"
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{user_position}*{user_name}*{folder_selection}_{selected_image_file_without_extension}')  # 로그 파일 경로 설정
+            log_blob = bucket.blob(f'log_EGD_Lesion_Dx/{position}*{name}*{folder_selection}_{selected_image_file_without_extension}')  # 로그 파일 경로 설정
             log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
     st.sidebar.divider()
@@ -174,8 +174,8 @@ if st.session_state.get('logged_in'):
 
         # 로그아웃 이벤트 기록
         logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration

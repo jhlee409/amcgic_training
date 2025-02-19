@@ -130,19 +130,19 @@ if st.session_state.get('logged_in'):
             # 000.docx 파일은 로그를 생성하지 않음
             if selected_case_file != "00.docx":
                 # 사용자 이름과 직책과 접속 날짜 기록
-                user_name = st.session_state.get('user_name', 'unknown')
-                user_position = st.session_state.get('user_position', 'unknown')
+                name = st.session_state.get('name', 'unknown')
+                position = st.session_state.get('position', 'unknown')
                 access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
                 # '.docx' 확장자를 제거한 파일 이름
                 file_name_without_extension = selected_case_file.replace('.docx', '')
 
                 # 로그 내용을 문자열로 생성
-                log_entry = f"직급: {user_position}\n사용자: {user_name}\n메뉴: {file_name_without_extension}\n날짜: {access_date}\n"
+                log_entry = f"직급: {position}\n사용자: {name}\n메뉴: {file_name_without_extension}\n날짜: {access_date}\n"
 
                 # Firebase Storage에 로그 파일 업로드
                 bucket = storage.bucket('amcgi-bulletin.appspot.com')
-                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{user_position}*{user_name}*{file_name_without_extension}')
+                log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{position}*{name}*{file_name_without_extension}')
                 log_blob.upload_from_string(log_entry, content_type='text/plain')
 
             # Include the directory in the path when reading the file
@@ -258,8 +258,8 @@ if st.session_state.get('logged_in'):
 
         # 로그아웃 이벤트 기록
         logout_data = {
-            "user_position": st.session_state.get('user_position'),
-            "user_name": st.session_state.get('user_name'),
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration
