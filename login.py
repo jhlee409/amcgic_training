@@ -45,8 +45,10 @@ password = st.text_input("Password", type="password")
 name = st.text_input("Name")  # 이름 입력 필드 추가
 position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
 
-#  유효성 검사 및 로그인 버튼
+# 로그인 버튼 클릭 전 초기화
+login_disabled = True  # 초기값 설정
 
+# 유효성 검사 및 로그인 버튼
 if st.button("Login"):
     login_disabled = False
     if position == "":
@@ -55,7 +57,7 @@ if st.button("Login"):
     if not name:
         st.error("한글 이름을 입력해 주세요")
         login_disabled = True
-    elif not name or not is_korean_name(name):
+    elif not is_korean_name(name):
         st.error("한글 이름을 입력해 주세요")
         login_disabled = True
 
@@ -169,6 +171,7 @@ def handle_login(email, password, name, position):
     except Exception as e:
         st.error(f"An error occurred: {str(e)}")
 
+# 로그인 버튼
 if st.button("Login", disabled=login_disabled):
     handle_login(email, password, name, position)
 
