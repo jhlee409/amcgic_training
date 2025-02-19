@@ -46,8 +46,9 @@ name = st.text_input("Name")  # 이름 입력 필드 추가
 position = st.selectbox("Select Position", ["", "Staff", "F1", "F2", "R3", "Student"])  # 직책 선택 필드 추가
 
 #  유효성 검사 및 로그인 버튼
+
+login_disabled = False
 if st.button("Login"):
-    login_disabled = False
     if position == "":
         st.error("position을 선택해 주세요")
         login_disabled = True
