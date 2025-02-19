@@ -133,8 +133,8 @@ def handle_login(email, password, name, position):
             login_time = datetime.now(timezone.utc)
             st.session_state['login_time'] = login_time.astimezone()  # Update login_time to be timezone-aware
             login_data = {
-                "user_position": position,
-                "user_name": name,
+                "position": position,
+                "name": name,
                 "time": login_time.isoformat(),
                 "event": "login",
                 "duration": 0
@@ -180,8 +180,8 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
 
         # 로그아웃 이벤트 기록
         logout_data = {
-            "user_position": st.session_state.get('position'),
-            "user_name": st.session_state.get('name'),
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
             "duration": duration
