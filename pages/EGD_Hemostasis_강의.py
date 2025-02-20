@@ -134,7 +134,7 @@ with right_col:
             expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             video_html = f"""
-                <div style="width: 1000px; margin: auto;">
+                <div style="width: 0000px; margin: auto;">
                     <video style="width: 100%; height: auto;" controls src="{video_url}">
                         Your browser does not support the video element.
                     </video>
