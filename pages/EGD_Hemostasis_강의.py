@@ -76,9 +76,9 @@ if st.session_state.get('previous_folder_selection') != folder_selection:
     st.session_state.selected_file = None
     st.session_state.prevideo_url = None
     st.session_state.video_url = None
-    # 현재 선택된 폴더의 파일 목록을 가져오기
+    # 현재 선택된 폴더의 파일 목록을 가져오기 (mp4 파일만, _main 제외)
     st.session_state.current_file_list = [f for f in list_files('amcgi-bulletin.appspot.com', directory) 
-                                        if not f.endswith('_main.mp4')]  # _main.mp4 파일 제외
+                                        if f.endswith('.mp4') and '_main' not in f]
     st.rerun()
 
 # 현재 폴더의 파일 목록 사용
