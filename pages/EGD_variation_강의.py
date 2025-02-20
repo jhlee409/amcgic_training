@@ -142,14 +142,13 @@ for letter, videos in grouped_videos.items():
                         # 사용자 이름과 직책, 접속 날짜 기록
                         name = st.session_state.get('name', 'unknown')
                         position = st.session_state.get('position', 'unknown')
-                        position_name = f"{position}*{name}"  # 직책*이름 형식으로 저장
                         access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기
 
                         # 로그 내용을 문자열로 생성
-                        log_entry = f"User: {position_name}, Video: {video_name}, Access Date: {access_date}\n"
+                        log_entry = f"Position: {position}, Name: {name}, Video: {video_name}, Access Date: {access_date}\n"
 
                         # Firebase Storage에 로그 파일 업로드
-                        log_blob = bucket.blob(f'log_EGD_variation/{position_name}*{video_name}')  # 로그 파일 경로 설정
+                        log_blob = bucket.blob(f'log_EGD_variation/{position}*{name}*{video_name}')  # 로그 파일 경로 설정
                         log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
                 # 동영상 재생 창
