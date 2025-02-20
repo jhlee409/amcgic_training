@@ -69,35 +69,42 @@ directories = {
 }
 
 directory = directories[folder_selection]
-prevideo_dir, instruction_dir, video_dir = directory + "prevideos/", directory + "instructions/", directory + "videos/"
 
 # 폴더 선택이 변경되었을 때 상태 초기화
 if st.session_state.get('previous_folder_selection') != folder_selection:
     st.session_state.previous_folder_selection = folder_selection
-    st.session_state.selected_prevideo_file = None
+    st.session_state.selected_file = None
     st.session_state.prevideo_url = None
-    # 현재 선택된 폴더의 파일 목록을 가져오기
-    st.session_state.current_file_list = list_files('amcgi-bulletin.appspot.com', prevideo_dir)
+    st.session_state.video_url = None
+    # 현재 선택된 폴더의 파일 목록을 가져오기 (mp4 파일만, _main 제외)
+    st.session_state.current_file_list = [f for f in list_files('amcgi-bulletin.appspot.com', directory) 
+                                        if f.endswith('.mp4') and '_main' not in f]
     st.rerun()
 
 # 현재 폴더의 파일 목록 사용
-file_list_prevideo = st.session_state.get('current_file_list', list_files('amcgi-bulletin.appspot.com', prevideo_dir))
-selected_prevideo_file = st.sidebar.selectbox("파일 선택", file_list_prevideo)
+file_list = st.session_state.get('current_file_list', [])
+selected_file = st.sidebar.selectbox("파일 선택", file_list)
 
-if selected_prevideo_file and selected_prevideo_file != st.session_state.get('selected_prevideo_file'):
-    st.session_state.selected_prevideo_file = selected_prevideo_file
-    prevideo_path = prevideo_dir + selected_prevideo_file
-    instruction_file = instruction_dir + os.path.splitext(selected_prevideo_file)[0] + '.docx'
+if selected_file and selected_file != st.session_state.get('selected_file'):
+    st.session_state.selected_file = selected_file
+    file_path = directory + selected_file
+    base_name = os.path.splitext(selected_file)[0]
     
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    blob = bucket.blob(prevideo_path)
     expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
-    st.session_state.prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
     
+    # 기본 동영상 URL 생성
+    if selected_file.endswith('.mp4'):
+        blob = bucket.blob(file_path)
+        st.session_state.prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        
+        # _main 동영상 경로 설정
+        main_video_path = directory + base_name + '_main.mp4'
+        st.session_state.main_video_path = main_video_path
+    
+    # instruction 파일 처리
+    instruction_file = directory + base_name + '.docx'
     st.session_state.instruction_text = read_docx('amcgi-bulletin.appspot.com', instruction_file)
-    
-    video_name = os.path.splitext(selected_prevideo_file)[0] + '_main.mp4'
-    st.session_state.selected_video_file = video_dir + video_name
     
     st.rerun()
 
@@ -121,16 +128,8 @@ with left_col:
 # 오른쪽 컨테이너에 '진행' 버튼 클릭 시 나타나는 동영상 표시
 with right_col:
     if st.sidebar.button('진행'):
-        name = st.session_state.get('name', 'unknown')
-        position = st.session_state.get('position', 'unknown')
-        access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-        log_entry = f"사용자: {name}\n직급: {position}\n날짜: {access_date}\n메뉴: {os.path.splitext(selected_prevideo_file)[0]}\n"
-        
-        log_blob = storage.bucket('amcgi-bulletin.appspot.com').blob(f'log_EGD_Hemostasis/{position}*{name}*{os.path.splitext(selected_prevideo_file)[0]}')
-        log_blob.upload_from_string(log_entry, content_type='text/plain')
-        
-        if st.session_state.get('selected_video_file'):
-            blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.selected_video_file)
+        if st.session_state.get('main_video_path'):
+            blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.main_video_path)
             expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             video_html = f"""

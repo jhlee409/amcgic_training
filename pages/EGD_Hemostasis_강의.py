@@ -7,6 +7,7 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta, timezone
 import requests
+import json
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_lecture", layout="wide")
@@ -140,6 +141,17 @@ with right_col:
                 </div>
             """
             st.markdown(video_html, unsafe_allow_html=True)
+
+            # 로그 정보 저장
+            base_name = os.path.splitext(selected_file)[0]  # .mp4 제외한 파일 이름
+            log_file_name = f"log_EGD_Hemostasis/{st.session_state.get('position')}*{st.session_state.get('name')}*{base_name}"
+            log_data = {
+                "file_name": selected_file,
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }
+            # Firebase에 로그 정보 저장
+            blob = storage.bucket('amcgi-bulletin.appspot.com').blob(log_file_name)
+            blob.upload_from_string(json.dumps(log_data), content_type='application/json')
 
 if st.sidebar.button("Logout"):
     logout_time = datetime.now(timezone.utc)
