@@ -70,15 +70,17 @@ if selected_lecture:
     if selected_lecture != "Default":
         name = st.session_state.get('name', 'unknown')
         position = st.session_state.get('position', 'unknown')
+        position_name = f"{position}*{name}"  # 직책*이름 형식으로 저장
         access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # 로그 내용을 문자열로 생성
-        log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
+        log_entry = f"User: {position_name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
 
         # Firebase Storage에 로그 파일 업로드
         bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}')  # 로그 파일 경로 설정
+        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position_name}*{selected_lecture}')  # 로그 파일 경로 설정
         log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
+
 
 # 선택된 강의와 같은 이름의 mp4 파일 찾기
 directory_lectures = "Lectures/"
