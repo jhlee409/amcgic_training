@@ -79,7 +79,7 @@ if st.session_state.get('previous_folder_selection') != folder_selection:
     st.session_state.video_url = None
     # 현재 선택된 폴더의 파일 목록을 가져오기 (mp4 파일만, _main 제외)
     st.session_state.current_file_list = [f for f in list_files('amcgi-bulletin.appspot.com', directory) 
-                                        if f.endswith('.mp4') and '_main' not in f]
+                                        if f.endswith('.mp4') and '_prevideo' not in f]
     st.rerun()
 
 # 현재 폴더의 파일 목록 사용
@@ -95,12 +95,12 @@ if selected_file and selected_file != st.session_state.get('selected_file'):
     expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
     
     # 기본 동영상 URL 생성
-    if selected_file.endswith('.mp4'):
+    if selected_file.endswith('_prevideo.mp4'):
         blob = bucket.blob(file_path)
         st.session_state.prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
         
         # _main 동영상 경로 설정
-        main_video_path = directory + base_name + '_main.mp4'
+        main_video_path = directory + base_name + '.mp4'
         st.session_state.main_video_path = main_video_path
     
     # instruction 파일 처리
