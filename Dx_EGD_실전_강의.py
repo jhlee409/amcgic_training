@@ -54,69 +54,131 @@ def list_mp4_files(bucket_name, directory):
             file_names.append(file_name)
     return file_names
 
-# 동영상 플레이어를 렌더링할 컨테이너 생성
-video_player_container = st.container()
-
-# 동영상 플레이어를 렌더링할 플레이스홀더 생성
-video_player_placeholder = st.empty()
-
 # 왼쪽 사이드바에서 강의 선택
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
-selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
-# 로그 파일 생성
-if selected_lecture:
-    # 'Default'일 경우 로그 파일 생성하지 않음
+# 현재 선택된 강의 저장 (selectbox 사용)
+selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
+
+# 선택된 강의가 변경되었을 때
+if selected_lecture != st.session_state.get('previous_lecture', 'Default'):
+    # 로그인 관련 정보 임시 저장
+    temp_login_info = {
+        'logged_in': st.session_state.get('logged_in', False),
+        'name': st.session_state.get('name'),
+        'position': st.session_state.get('position'),
+        'login_time': st.session_state.get('login_time')
+    }
+    
+    # session_state 초기화 (파일 관련 정보만)
+    st.session_state['prevideo_url'] = None
+    st.session_state['docx_content'] = None
+    st.session_state['main_video_url'] = None
+
+    # 로그인 정보 복원
+    st.session_state.update(temp_login_info)
+    
+    # 새로운 선택 저장
+    st.session_state['previous_lecture'] = selected_lecture
+    st.session_state['show_main_video'] = False
+    st.rerun() # 변경 후 즉시 업데이트
+
+# 2:3 비율의 두 컬럼 생성
+left_col, right_col = st.columns([2, 3])
+
+# 선택된 강의와 같은 이름의 파일들 찾기
+if selected_lecture != "Default":
+    try:
+        directory_lectures = "Lectures/"
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        expiration_time = datetime.now(pytz.UTC) + timedelta(seconds=1600)
+
+        # 모든 관련 파일 경로 새로 설정
+        prevideo_name = f"{selected_lecture}_prevideo.mp4"
+        prevideo_path = directory_lectures + prevideo_name
+        prevideo_blob = bucket.blob(prevideo_path)
+
+        docx_name = f"{selected_lecture}.docx"
+        docx_path = directory_lectures + docx_name
+        docx_blob = bucket.blob(docx_path)
+
+        main_video_name = f"{selected_lecture}.mp4"
+        main_video_path = directory_lectures + main_video_name
+        main_video_blob = bucket.blob(main_video_path)
+
+        # 왼쪽 컬럼에 prevideo와 docx 내용 표시
+        with left_col:
+            if prevideo_blob.exists():
+                prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
+                video_html = f'''
+                <div style="display: flex; justify-content: center;">
+                    <video width="500px" controls controlsList="nodownload">
+                        <source src="{prevideo_url}" type="video/mp4">
+                    </video>
+                </div>
+                <script>
+                var video_player = document.querySelector("video");
+                video_player.addEventListener('contextmenu', function(e) {{
+                    e.preventDefault();
+                }});
+                </script>
+                '''
+                st.markdown(video_html, unsafe_allow_html=True)
+                st.session_state['prevideo_url'] = prevideo_url  # Save URL to session state
+            else:
+                st.warning(f"미리보기 영상({prevideo_name})을 찾을 수 없습니다.")
+
+            if docx_blob.exists():
+                docx_content = docx_blob.download_as_bytes()
+                doc = docx.Document(io.BytesIO(docx_content))
+                text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+                st.write(text_content)
+                st.session_state['docx_content'] = text_content  # Save content to session state
+            else:
+                st.warning(f"강의 자료({docx_name})를 찾을 수 없습니다.")
+
+        # 오른쪽 컬럼은 본강의 재생을 위해 비워둠
+        with right_col:
+            if st.session_state.get('show_main_video', False):
+                if main_video_blob.exists():
+                    main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
+                    video_html = f'''
+                    <div style="display: flex; justify-content: center;">
+                        <video width="1000px" controls controlsList="nodownload">
+                            <source src="{main_video_url}" type="video/mp4">
+                        </video>
+                    </div>
+                    <script>
+                    var video_player = document.querySelector("video");
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                    </script>
+                    '''
+                    st.markdown(video_html, unsafe_allow_html=True)
+                    st.session_state['main_video_url'] = main_video_url # Save main video URL
+                else:
+                    st.warning(f"본 강의 영상({main_video_name})을 찾을 수 없습니다.")
+    except Exception as e:
+        st.error(f"오류가 발생했습니다: {str(e)}")
+
+# 사이드바에 본강의 시청 버튼 추가
+if st.sidebar.button("본강의 시청"):
+    st.session_state.show_main_video = True
+    
+    # 로그 파일 생성 및 전송
     if selected_lecture != "Default":
         name = st.session_state.get('name', 'unknown')
         position = st.session_state.get('position', 'unknown')
-        access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+        access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")
 
-        # 로그 내용을 문자열로 생성
         log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
 
-        # Firebase Storage에 로그 파일 업로드
-        bucket = storage.bucket('amcgi-bulletin.appspot.com')  # Firebase Storage 버킷 참조
-        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}')  # 로그 파일 경로 설정
-        log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
-
-# 선택된 강의와 같은 이름의 mp4 파일 찾기
-directory_lectures = "Lectures/"
-mp4_files = list_mp4_files('amcgi-bulletin.appspot.com', directory_lectures)
-
-# 선택된 강의에 해당하는 mp4 파일 찾기
-selected_mp4 = None
-for file_name in mp4_files:
-    if file_name.startswith(selected_lecture):
-        selected_mp4 = file_name
-        break
-
-if selected_mp4:
-    # Firebase Storage에서 선택된 mp4 파일의 URL 생성
-    selected_mp4_path = directory_lectures + selected_mp4
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    blob = bucket.blob(selected_mp4_path)
-    expiration_time = datetime.now(pytz.UTC) + timedelta(seconds=1600)
-    mp4_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}')
+        log_blob.upload_from_string(log_entry, content_type='text/plain')
     
-    # 동영상 플레이어 렌더링
-    with video_player_placeholder.container():
-        video_html = f'''
-        <div style="display: flex; justify-content: center;">
-            <video width="1000" height="800" controls controlsList="nodownload">
-                <source src="{mp4_url}" type="video/mp4">
-            </video>
-        </div>
-        <script>
-        var video_player = document.querySelector("video");
-        video_player.addEventListener('contextmenu', function(e) {{
-            e.preventDefault();
-        }});
-        </script>
-        '''
-        st.markdown(video_html, unsafe_allow_html=True)
-else:
-    st.sidebar.warning(f"{selected_lecture}에 해당하는 강의 파일을 찾을 수 없습니다.")
+    st.rerun()
 
 st.sidebar.divider()
 
