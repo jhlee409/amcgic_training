@@ -57,7 +57,7 @@ lectures = [
 ]
 
 # 사이드바에서 강의 선택
-selected_lecture = st.sidebar.selectbox("먼저 Default 선택해서 지운 후 다음 강의를 선택하세요", lectures, key='lecture_selector')
+selected_lecture = st.sidebar.selectbox("먼저 Default 선택해서 이전 화면 지운 후 다음 강의를 선택하세요", lectures, key='lecture_selector')
 
 # 선택이 바뀌었는지 확인하기 위해 previous_lecture 사용
 if 'previous_lecture' not in st.session_state:
