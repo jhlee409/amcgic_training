@@ -94,14 +94,14 @@ if selected_file and selected_file != st.session_state.get('selected_file'):
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
     expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
     
-    # 기본 동영상 URL 생성
-    if selected_file.endswith('_prevideo.mp4'):
-        blob = bucket.blob(file_path)
-        st.session_state.prevideo_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
-        
-        # _main 동영상 경로 설정
-        main_video_path = directory + base_name + '.mp4'
-        st.session_state.main_video_path = main_video_path
+    # prevideo 파일 경로 설정 및 URL 생성
+    prevideo_path = directory + base_name + '_prevideo.mp4'
+    prevideo_blob = bucket.blob(prevideo_path)
+    if prevideo_blob.exists():
+        st.session_state.prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
+    
+    # main 동영상 경로 설정
+    st.session_state.main_video_path = file_path
     
     # instruction 파일 처리
     instruction_file = directory + base_name + '.docx'
