@@ -166,86 +166,21 @@ if st.sidebar.button("본강의 시청"):
     # 본강의 보이도록 플래그 설정
     st.session_state['show_main_video'] = True
 
-    # 선택된 강의가 있고 Default가 아닐 때
-    if selected_lecture and selected_lecture != "Default":
-        try:
-            # main video 파일 경로 및 URL 생성
-            main_video_name = f"{selected_lecture}.mp4"
-            main_video_path = directory_lectures + main_video_name
-            main_video_blob = bucket.blob(main_video_path)
-            
-            if main_video_blob.exists():
-                # main video URL 생성
-                main_video_url = main_video_blob.generate_signed_url(
-                    expiration=expiration_time,
-                    method='GET'
-                )
-                st.session_state['main_video_url'] = main_video_url
+    # 로그 파일 생성 및 전송
+    if selected_lecture != "Default":
+        name = st.session_state.get('name', 'unknown')
+        position = st.session_state.get('position', 'unknown')
+        access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")
 
-                # prevideo도 함께 업데이트
-                prevideo_name = f"{selected_lecture}_prevideo.mp4"
-                prevideo_path = directory_lectures + prevideo_name
-                prevideo_blob = bucket.blob(prevideo_path)
-                
-                if prevideo_blob.exists():
-                    st.session_state['prevideo_url'] = prevideo_blob.generate_signed_url(
-                        expiration=expiration_time,
-                        method='GET'
-                    )
-            
-            # 로그 파일 생성 및 전송
-            name = st.session_state.get('name', 'unknown')
-            position = st.session_state.get('position', 'unknown')
-            access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")
+        log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
 
-            log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
-
-            log_blob = bucket.blob(
-                f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}'
-            )
-            log_blob.upload_from_string(log_entry, content_type='text/plain')
-        
-        except Exception as e:
-            st.error(f"비디오 로딩 중 오류 발생: {str(e)}")
+        log_blob = bucket.blob(
+            f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}'
+        )
+        log_blob.upload_from_string(log_entry, content_type='text/plain')
     
     # 화면 갱신
     st.rerun()
-
-# 왼쪽 컬럼에 prevideo와 docx 내용 표시
-with left_col:
-    if st.session_state.get('prevideo_url'):
-        video_html = f'''
-        <div style="display: flex; justify-content: center;">
-            <video width="500px" controls controlsList="nodownload">
-                <source src="{st.session_state['prevideo_url']}" type="video/mp4">
-            </video>
-        </div>
-        <script>
-        var video_player = document.querySelector("video");
-        video_player.addEventListener('contextmenu', function(e) {{
-            e.preventDefault();
-        }});
-        </script>
-        '''
-        st.markdown(video_html, unsafe_allow_html=True)
-
-# 오른쪽 컬럼에 본강의 영상 표시
-with right_col:
-    if st.session_state.get('show_main_video', False) and st.session_state.get('main_video_url'):
-        video_html = f'''
-        <div style="display: flex; justify-content: center;">
-            <video width="1300px" controls controlsList="nodownload">
-                <source src="{st.session_state['main_video_url']}" type="video/mp4">
-            </video>
-        </div>
-        <script>
-        var video_player = document.querySelector("video");
-        video_player.addEventListener('contextmenu', function(e) {{
-            e.preventDefault();
-        }});
-        </script>
-        '''
-        st.markdown(video_html, unsafe_allow_html=True)
 
 st.sidebar.divider()
 
