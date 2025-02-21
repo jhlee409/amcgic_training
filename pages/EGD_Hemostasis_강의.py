@@ -128,7 +128,7 @@ with left_col:
 
 # 오른쪽 컨테이너에 '진행' 버튼 클릭 시 나타나는 동영상 표시
 with right_col:
-    if st.sidebar.button('진행'):
+    if st.sidebar.button('본강의 시청'):
         if st.session_state.get('main_video_path'):
             blob = storage.bucket('amcgi-bulletin.appspot.com').blob(st.session_state.main_video_path)
             expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
