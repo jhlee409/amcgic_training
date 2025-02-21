@@ -83,7 +83,7 @@ if 'previous_lecture' not in st.session_state or selected_lecture != st.session_
     
     # 새로운 선택 저장
     st.session_state.previous_lecture = selected_lecture
-    st.experimental_rerun()
+    st.rerun()
 
 # 선택된 강의와 같은 이름의 파일들 찾기
 if selected_lecture != "Default":
