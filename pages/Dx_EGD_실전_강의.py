@@ -70,12 +70,13 @@ selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index
 # 선택된 강의가 변경되었을 때
 if selected_lecture != st.session_state.previous_lecture:
     # 모든 관련 상태 초기화
-    st.session_state.show_main_video = False
+    st.session_state.clear()  # 모든 session_state 초기화
     st.session_state.previous_lecture = selected_lecture
-    if 'prevideo_url' in st.session_state:
-        del st.session_state.prevideo_url
-    if 'main_video_url' in st.session_state:
-        del st.session_state.main_video_url
+    st.session_state.show_main_video = False
+    st.session_state.logged_in = True  # 로그인 상태 유지
+    st.session_state.name = st.session_state.get('name')  # 사용자 정보 유지
+    st.session_state.position = st.session_state.get('position')
+    st.session_state.login_time = st.session_state.get('login_time')
     # 페이지 리프레시
     st.rerun()
 
@@ -103,12 +104,12 @@ if selected_lecture != "Default":
     # 왼쪽 컬럼에 prevideo와 docx 내용 표시
     with left_col:
         if prevideo_blob.exists():
-            if 'prevideo_url' not in st.session_state:
-                st.session_state.prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
+            # 매번 새로운 URL 생성
+            prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
             video_html = f'''
             <div style="display: flex; justify-content: center;">
                 <video width="500px" controls controlsList="nodownload">
-                    <source src="{st.session_state.prevideo_url}" type="video/mp4">
+                    <source src="{prevideo_url}" type="video/mp4">
                 </video>
             </div>
             <script>
@@ -129,12 +130,12 @@ if selected_lecture != "Default":
 
     # 오른쪽 컬럼은 본강의 재생을 위해 비워둠
     with right_col:
-        if "show_main_video" in st.session_state and st.session_state.show_main_video:
+        if st.session_state.get('show_main_video', False):
             if main_video_blob.exists():
                 main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="1300px" controls controlsList="nodownload">
+                    <video width="1000px" controls controlsList="nodownload">
                         <source src="{main_video_url}" type="video/mp4">
                     </video>
                 </div>
