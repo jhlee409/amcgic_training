@@ -154,7 +154,7 @@ if st.sidebar.button("본강의 시청"):
         log_blob = bucket.blob(f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}')
         log_blob.upload_from_string(log_entry, content_type='text/plain')
 
-        st.experimental_rerun()
+        st.rerun()
 
 st.sidebar.divider()
 
