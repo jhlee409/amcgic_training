@@ -180,7 +180,7 @@ if st.sidebar.button("본강의 시청"):
         log_blob.upload_from_string(log_entry, content_type='text/plain')
     
     # 화면 갱신
-    st.experimental_rerun()
+    st.rerun()
 
 st.sidebar.divider()
 
