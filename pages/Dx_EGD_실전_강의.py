@@ -56,94 +56,61 @@ lectures = [
     "SET"
 ]
 
-# Firebase 관련 설정을 상단으로 이동
+# 사이드바에서 강의 선택
+selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
+
+# 선택이 바뀌었는지 확인하기 위해 previous_lecture 사용
+if 'previous_lecture' not in st.session_state:
+    st.session_state['previous_lecture'] = None
+
+# 만약 강의가 바뀌었다면, prevideo_url / docx_content / main_video_url / show_main_video 모두 초기화
+if st.session_state['previous_lecture'] != selected_lecture:
+    st.session_state['show_main_video'] = False
+    st.session_state['prevideo_url'] = None
+    st.session_state['docx_content'] = None
+    st.session_state['main_video_url'] = None
+
+# 이제 현재 선택을 previous_lecture에 업데이트
+st.session_state['previous_lecture'] = selected_lecture
+
+# 2:3 비율의 두 컬럼 생성
+left_col, right_col = st.columns([2, 3])
+
+# Lectures 폴더 내 mp4/docx 파일 경로 설정
 directory_lectures = "Lectures/"
 bucket_name = 'amcgi-bulletin.appspot.com'
 bucket = storage.bucket(bucket_name)
 expiration_time = datetime.now(pytz.UTC) + timedelta(seconds=1600)
 
-# 폴더 선택 라디오 버튼
-folder_selection = st.sidebar.radio("선택 버튼", ["Default", "본강의"])
+# 선택된 강의가 Default가 아닐 때에만 동작
+if selected_lecture != "Default":
+    try:
+        # 파일명 구성
+        prevideo_name = f"{selected_lecture}_prevideo.mp4"
+        docx_name = f"{selected_lecture}.docx"
+        main_video_name = f"{selected_lecture}.mp4"
 
-# 본강의가 선택된 경우에만 강의 선택 드롭다운 표시
-selected_lecture = None
-if folder_selection == "본강의":
-    selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
-    
-    # 강의 선택이 변경되었을 때
-    if selected_lecture != st.session_state.get('previous_lecture'):
-        st.session_state['previous_lecture'] = selected_lecture
-        st.session_state['show_main_video'] = False
-        
-        # 선택된 강의가 Default가 아닐 때 prevideo 로드
-        if selected_lecture != "Default":
-            try:
-                # prevideo 파일 경로 및 URL 생성
-                prevideo_name = f"{selected_lecture}_prevideo.mp4"
-                prevideo_path = directory_lectures + prevideo_name
-                prevideo_blob = bucket.blob(prevideo_path)
-                
-                if prevideo_blob.exists():
-                    st.session_state['prevideo_url'] = prevideo_blob.generate_signed_url(
-                        expiration=expiration_time,
-                        method='GET'
-                    )
-                else:
-                    st.session_state['prevideo_url'] = None
-                    
-                # docx 파일 로드
-                docx_name = f"{selected_lecture}.docx"
-                docx_path = directory_lectures + docx_name
-                docx_blob = bucket.blob(docx_path)
-                
-                if docx_blob.exists():
-                    content = docx_blob.download_as_bytes()
-                    doc = docx.Document(io.BytesIO(content))
-                    st.session_state['docx_content'] = '\n'.join([para.text for para in doc.paragraphs])
-                
-            except Exception as e:
-                st.error(f"파일 로딩 중 오류 발생: {str(e)}")
-        
-        st.rerun()
+        # Firebase 경로
+        prevideo_path = directory_lectures + prevideo_name
+        docx_path = directory_lectures + docx_name
+        main_video_path = directory_lectures + main_video_name
 
-# 좌우 컬럼 생성
-left_col, right_col = st.columns([2, 3])
+        # Blob 가져오기
+        prevideo_blob = bucket.blob(prevideo_path)
+        docx_blob = bucket.blob(docx_path)
+        main_video_blob = bucket.blob(main_video_path)
 
-# 왼쪽 컬럼에 prevideo와 docx 내용 표시
-with left_col:
-    if st.session_state.get('prevideo_url'):
-        video_html = f'''
-        <div style="display: flex; justify-content: center;">
-            <video width="500px" controls controlsList="nodownload">
-                <source src="{st.session_state['prevideo_url']}" type="video/mp4">
-            </video>
-        </div>
-        <script>
-        var video_player = document.querySelector("video");
-        video_player.addEventListener('contextmenu', function(e) {{
-            e.preventDefault();
-        }});
-        </script>
-        '''
-        st.markdown(video_html, unsafe_allow_html=True)
-    
-    if st.session_state.get('docx_content'):
-        st.write(st.session_state['docx_content'])
+        # 왼쪽 컬럼에 prevideo와 docx 내용 표시
+        with left_col:
+            # 미리보기 영상
+            if prevideo_blob.exists():
+                prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
+                st.session_state['prevideo_url'] = prevideo_url
 
-# 오른쪽 컬럼에 본강의 영상 표시
-with right_col:
-    if st.session_state.get('show_main_video', False) and selected_lecture and selected_lecture != "Default":
-        try:
-            main_video_name = f"{selected_lecture}.mp4"
-            main_video_path = directory_lectures + main_video_name
-            main_video_blob = bucket.blob(main_video_path)
-            
-            if main_video_blob.exists():
-                main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="1300px" controls controlsList="nodownload">
-                        <source src="{main_video_url}" type="video/mp4">
+                    <video width="500px" controls controlsList="nodownload">
+                        <source src="{prevideo_url}" type="video/mp4">
                     </video>
                 </div>
                 <script>
@@ -155,43 +122,62 @@ with right_col:
                 '''
                 st.markdown(video_html, unsafe_allow_html=True)
             else:
-                st.warning(f"본 강의 영상({main_video_name})을 찾을 수 없습니다.")
-        except Exception as e:
-            st.error(f"본 강의 영상 로딩 중 오류 발생: {str(e)}")
+                st.warning(f"미리보기 영상({prevideo_name})을 찾을 수 없습니다.")
+
+            # DOCX 자료
+            if docx_blob.exists():
+                docx_content = docx_blob.download_as_bytes()
+                doc = docx.Document(io.BytesIO(docx_content))
+                text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+                st.session_state['docx_content'] = text_content
+                st.write(text_content)
+            else:
+                st.warning(f"강의 자료({docx_name})를 찾을 수 없습니다.")
+
+        # 오른쪽 컬럼(본강의 영상)
+        with right_col:
+            if st.session_state.get('show_main_video', False):
+                if main_video_blob.exists():
+                    main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
+                    st.session_state['main_video_url'] = main_video_url
+
+                    video_html = f'''
+                    <div style="display: flex; justify-content: center;">
+                        <video width="1300px" controls controlsList="nodownload">
+                            <source src="{main_video_url}" type="video/mp4">
+                        </video>
+                    </div>
+                    <script>
+                    var video_player = document.querySelector("video");
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                    </script>
+                    '''
+                    st.markdown(video_html, unsafe_allow_html=True)
+                else:
+                    st.warning(f"본 강의 영상({main_video_name})을 찾을 수 없습니다.")
+
+    except Exception as e:
+        st.error(f"오류가 발생했습니다: {str(e)}")
 
 # 사이드바에 본강의 시청 버튼
 if st.sidebar.button("본강의 시청"):
     # 본강의 보이도록 플래그 설정
     st.session_state['show_main_video'] = True
 
-    # 선택된 강의가 있고 Default가 아닐 때
-    if selected_lecture and selected_lecture != "Default":
-        try:
-            # prevideo 파일 경로 및 URL 생성
-            prevideo_name = f"{selected_lecture}_prevideo.mp4"
-            prevideo_path = directory_lectures + prevideo_name
-            prevideo_blob = bucket.blob(prevideo_path)
-            
-            if prevideo_blob.exists():
-                st.session_state['prevideo_url'] = prevideo_blob.generate_signed_url(
-                    expiration=expiration_time,
-                    method='GET'
-                )
-            
-            # 로그 파일 생성 및 전송
-            name = st.session_state.get('name', 'unknown')
-            position = st.session_state.get('position', 'unknown')
-            access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")
+    # 로그 파일 생성 및 전송
+    if selected_lecture != "Default":
+        name = st.session_state.get('name', 'unknown')
+        position = st.session_state.get('position', 'unknown')
+        access_date = datetime.now(pytz.UTC).strftime("%Y-%m-%d")
 
-            log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
+        log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, 실전강의: {selected_lecture}\n"
 
-            log_blob = bucket.blob(
-                f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}'
-            )
-            log_blob.upload_from_string(log_entry, content_type='text/plain')
-        
-        except Exception as e:
-            st.error(f"prevideo 로딩 중 오류 발생: {str(e)}")
+        log_blob = bucket.blob(
+            f'log_Dx_EGD_실전_강의/{position}*{name}*{selected_lecture}'
+        )
+        log_blob.upload_from_string(log_entry, content_type='text/plain')
     
     # 화면 갱신
     st.rerun()
