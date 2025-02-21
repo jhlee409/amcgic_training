@@ -103,71 +103,44 @@ if selected_lecture != "Default":
         docx_path = directory_lectures + docx_name
         main_video_path = directory_lectures + main_video_name
 
-        # Blob 가져오기
+        # Blob 가져오기 및 URL 생성
         prevideo_blob = bucket.blob(prevideo_path)
         docx_blob = bucket.blob(docx_path)
-        main_video_blob = bucket.blob(main_video_path)
-
-        # 왼쪽 컬럼에 prevideo와 docx 내용 표시
-        with left_col:
-            # 미리보기 영상
-            if prevideo_blob.exists():
-                prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
-                st.session_state['prevideo_url'] = prevideo_url
-
-                video_html = f'''
-                <div style="display: flex; justify-content: center;">
-                    <video width="500px" controls controlsList="nodownload">
-                        <source src="{prevideo_url}" type="video/mp4">
-                    </video>
-                </div>
-                <script>
-                var video_player = document.querySelector("video");
-                video_player.addEventListener('contextmenu', function(e) {{
-                    e.preventDefault();
-                }});
-                </script>
-                '''
-                st.markdown(video_html, unsafe_allow_html=True)
-            else:
-                st.warning(f"미리보기 영상({prevideo_name})을 찾을 수 없습니다.")
-
-            # DOCX 자료
-            if docx_blob.exists():
-                docx_content = docx_blob.download_as_bytes()
-                doc = docx.Document(io.BytesIO(docx_content))
-                text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
-                st.session_state['docx_content'] = text_content
-                st.write(text_content)
-            else:
-                st.warning(f"강의 자료({docx_name})를 찾을 수 없습니다.")
-
-        # 오른쪽 컬럼(본강의 영상)
-        with right_col:
-            if st.session_state.get('show_main_video', False):
-                if main_video_blob.exists():
-                    main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
-                    st.session_state['main_video_url'] = main_video_url
-
-                    video_html = f'''
-                    <div style="display: flex; justify-content: center;">
-                        <video width="1300px" controls controlsList="nodownload">
-                            <source src="{main_video_url}" type="video/mp4">
-                        </video>
-                    </div>
-                    <script>
-                    var video_player = document.querySelector("video");
-                    video_player.addEventListener('contextmenu', function(e) {{
-                        e.preventDefault();
-                    }});
-                    </script>
-                    '''
-                    st.markdown(video_html, unsafe_allow_html=True)
-                else:
-                    st.warning(f"본 강의 영상({main_video_name})을 찾을 수 없습니다.")
+        if prevideo_blob.exists():
+            st.session_state['prevideo_url'] = prevideo_blob.generate_signed_url(
+                expiration=expiration_time,
+                method='GET'
+            )
+        
+        # docx 파일 읽기
+        if docx_blob.exists():
+            content = docx_blob.download_as_bytes()
+            doc = docx.Document(io.BytesIO(content))
+            st.session_state['instruction_text'] = '\n'.join([para.text for para in doc.paragraphs])
+        
+        # main video 경로 저장
+        st.session_state['main_video_path'] = main_video_path
 
     except Exception as e:
-        st.error(f"오류가 발생했습니다: {str(e)}")
+        st.error(f"파일을 불러오는 중 오류가 발생했습니다: {str(e)}")
+
+# 좌우 컨테이너에 콘텐츠 표시
+left_col, right_col = st.columns([2, 3])
+
+# 왼쪽 컨테이너에 prevideo와 설명 표시
+with left_col:
+    if 'prevideo_url' in st.session_state and st.session_state['prevideo_url']:
+        video_html = f"""
+            <div style="width: 500px; margin: auto;">
+                <video style="width: 100%; height: auto;" controls src="{st.session_state['prevideo_url']}">
+                    Your browser does not support the video element.
+                </video>
+            </div>
+        """
+        st.markdown(video_html, unsafe_allow_html=True)
+    
+    if 'instruction_text' in st.session_state:
+        st.markdown(st.session_state['instruction_text'])
 
 # 사이드바에 본강의 시청 버튼
 if st.sidebar.button("본강의 시청"):
