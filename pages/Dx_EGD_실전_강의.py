@@ -70,15 +70,18 @@ if selected_lecture != st.session_state.get('previous_lecture', 'Default'):
         'login_time': st.session_state.get('login_time')
     }
     
-    # session_state 초기화
-    st.session_state.clear()
-    
+    # session_state 초기화 (파일 관련 정보만)
+    st.session_state['prevideo_url'] = None
+    st.session_state['docx_content'] = None
+    st.session_state['main_video_url'] = None
+
     # 로그인 정보 복원
     st.session_state.update(temp_login_info)
     
     # 새로운 선택 저장
     st.session_state['previous_lecture'] = selected_lecture
     st.session_state['show_main_video'] = False
+    st.rerun() # 변경 후 즉시 업데이트
 
 # 2:3 비율의 두 컬럼 생성
 left_col, right_col = st.columns([2, 3])
@@ -121,6 +124,7 @@ if selected_lecture != "Default":
                 </script>
                 '''
                 st.markdown(video_html, unsafe_allow_html=True)
+                st.session_state['prevideo_url'] = prevideo_url  # Save URL to session state
             else:
                 st.warning(f"미리보기 영상({prevideo_name})을 찾을 수 없습니다.")
 
@@ -129,6 +133,7 @@ if selected_lecture != "Default":
                 doc = docx.Document(io.BytesIO(docx_content))
                 text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
                 st.write(text_content)
+                st.session_state['docx_content'] = text_content  # Save content to session state
             else:
                 st.warning(f"강의 자료({docx_name})를 찾을 수 없습니다.")
 
@@ -151,6 +156,7 @@ if selected_lecture != "Default":
                     </script>
                     '''
                     st.markdown(video_html, unsafe_allow_html=True)
+                    st.session_state['main_video_url'] = main_video_url # Save main video URL
                 else:
                     st.warning(f"본 강의 영상({main_video_name})을 찾을 수 없습니다.")
     except Exception as e:
