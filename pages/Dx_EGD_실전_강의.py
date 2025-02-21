@@ -59,19 +59,27 @@ lectures = [
 # 사이드바에서 강의 선택
 selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
 
-# 선택이 바뀌었는지 확인하기 위해 previous_lecture 사용
-if 'previous_lecture' not in st.session_state:
-    st.session_state['previous_lecture'] = None
-
-# 만약 강의가 바뀌었다면, prevideo_url / docx_content / main_video_url / show_main_video 모두 초기화
-if st.session_state['previous_lecture'] != selected_lecture:
+# 강의 선택이 변경되었을 때 상태 초기화
+if st.session_state.get('previous_lecture') != selected_lecture:
+    # 로그인 관련 정보만 유지
+    temp_login_info = {
+        'logged_in': st.session_state.get('logged_in', False),
+        'name': st.session_state.get('name'),
+        'position': st.session_state.get('position'),
+        'login_time': st.session_state.get('login_time')
+    }
+    
+    # 세션 상태 초기화
+    st.session_state.clear()
+    
+    # 로그인 정보 복원
+    for key, value in temp_login_info.items():
+        st.session_state[key] = value
+    
+    # 새로운 선택 저장
+    st.session_state['previous_lecture'] = selected_lecture
     st.session_state['show_main_video'] = False
-    st.session_state['prevideo_url'] = None
-    st.session_state['docx_content'] = None
-    st.session_state['main_video_url'] = None
-
-# 이제 현재 선택을 previous_lecture에 업데이트
-st.session_state['previous_lecture'] = selected_lecture
+    st.rerun()
 
 # 2:3 비율의 두 컬럼 생성
 left_col, right_col = st.columns([2, 3])
