@@ -60,30 +60,18 @@ left_col, right_col = st.columns([2, 3])
 # 왼쪽 사이드바에서 강의 선택
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
 
-# 현재 선택된 강의 저장
+# 이전 선택값 확인을 위해 session_state에 저장된 값 가져오기
+previous_lecture = st.session_state.get('previous_lecture', 'Default')
 selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
 # 선택된 강의가 변경되었을 때
-if 'previous_lecture' not in st.session_state or selected_lecture != st.session_state.previous_lecture:
-    # 로그인 관련 정보 임시 저장
-    temp_login_info = {
-        'logged_in': st.session_state.get('logged_in', False),
-        'name': st.session_state.get('name'),
-        'position': st.session_state.get('position'),
-        'login_time': st.session_state.get('login_time')
-    }
-    
-    # session_state 완전 초기화
-    st.session_state.clear()
-    
-    # 로그인 정보 복원
-    for key, value in temp_login_info.items():
-        st.session_state[key] = value
-    
-    # 새로운 선택 저장
-    st.session_state.previous_lecture = selected_lecture
+if selected_lecture != previous_lecture:
+    st.session_state.prevideo_url = None
+    st.session_state.main_video_url = None
+    # show_main_video 상태 초기화
     st.session_state.show_main_video = False
-    
+    # 현재 선택을 저장
+    st.session_state.previous_lecture = selected_lecture
     # 페이지 리프레시
     st.rerun()
 
@@ -93,15 +81,17 @@ if selected_lecture != "Default":
     bucket = storage.bucket('amcgi-bulletin.appspot.com')
     expiration_time = datetime.now(pytz.UTC) + timedelta(seconds=1600)
 
-    # 모든 관련 파일 경로 새로 설정
+    # prevideo 파일 경로
     prevideo_name = f"{selected_lecture}_prevideo.mp4"
     prevideo_path = directory_lectures + prevideo_name
     prevideo_blob = bucket.blob(prevideo_path)
 
+    # docx 파일 경로
     docx_name = f"{selected_lecture}.docx"
     docx_path = directory_lectures + docx_name
     docx_blob = bucket.blob(docx_path)
 
+    # 메인 비디오 파일 경로
     main_video_name = f"{selected_lecture}.mp4"
     main_video_path = directory_lectures + main_video_name
     main_video_blob = bucket.blob(main_video_path)
