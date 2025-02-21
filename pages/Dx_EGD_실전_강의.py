@@ -61,7 +61,7 @@ left_col, right_col = st.columns([2, 3])
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
 
 # 현재 선택된 강의 저장
-selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
+selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0, key='lecture_selector')
 
 # 선택된 강의가 변경되었을 때
 if 'previous_lecture' not in st.session_state or selected_lecture != st.session_state.previous_lecture:
@@ -74,7 +74,8 @@ if 'previous_lecture' not in st.session_state or selected_lecture != st.session_
     }
     
     # session_state 완전 초기화
-    st.session_state.clear()
+    for key in list(st.session_state.keys()):
+        del st.session_state[key]
     
     # 로그인 정보 복원
     for key, value in temp_login_info.items():
@@ -82,10 +83,7 @@ if 'previous_lecture' not in st.session_state or selected_lecture != st.session_
     
     # 새로운 선택 저장
     st.session_state.previous_lecture = selected_lecture
-    st.session_state.show_main_video = False
-    
-    # 페이지 리프레시
-    st.rerun()
+    st.experimental_rerun()
 
 # 선택된 강의와 같은 이름의 파일들 찾기
 if selected_lecture != "Default":
@@ -112,7 +110,7 @@ if selected_lecture != "Default":
             prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
             video_html = f'''
             <div style="display: flex; justify-content: center;">
-                <video width="500px" controls controlsList="nodownload">
+                <video width="500px" controls controlsList="nodownload" key="{selected_lecture}_prevideo">
                     <source src="{prevideo_url}" type="video/mp4">
                 </video>
             </div>
@@ -126,11 +124,10 @@ if selected_lecture != "Default":
             st.markdown(video_html, unsafe_allow_html=True)
 
         if docx_blob.exists():
-            # docx 파일 읽기
             docx_content = docx_blob.download_as_bytes()
             doc = docx.Document(io.BytesIO(docx_content))
             text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
-            st.write(text_content)
+            st.markdown(text_content, key=f"{selected_lecture}_docx")
 
     # 오른쪽 컬럼은 본강의 재생을 위해 비워둠
     with right_col:
@@ -139,7 +136,7 @@ if selected_lecture != "Default":
                 main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="1300px" controls controlsList="nodownload">
+                    <video width="1300px" controls controlsList="nodownload" key="{selected_lecture}_main">
                         <source src="{main_video_url}" type="video/mp4">
                     </video>
                 </div>
