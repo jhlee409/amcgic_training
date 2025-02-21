@@ -44,7 +44,6 @@ with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하�
 
 # 강의 목록
 lectures = [
-    "Default",
     "Description_Impression", 
     "Photo_Report", 
     "Complication_Sedation", 
