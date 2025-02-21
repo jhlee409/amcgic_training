@@ -59,7 +59,19 @@ left_col, right_col = st.columns([2, 3])
 
 # 왼쪽 사이드바에서 강의 선택
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
+
+# 이전 선택값 확인을 위해 session_state에 저장된 값 가져오기
+previous_lecture = st.session_state.get('previous_lecture', 'Default')
 selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
+
+# 선택된 강의가 변경되었을 때
+if selected_lecture != previous_lecture:
+    # show_main_video 상태 초기화
+    st.session_state.show_main_video = False
+    # 현재 선택을 저장
+    st.session_state.previous_lecture = selected_lecture
+    # 페이지 리프레시
+    st.rerun()
 
 # 선택된 강의와 같은 이름의 파일들 찾기
 if selected_lecture != "Default":
