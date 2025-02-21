@@ -65,7 +65,6 @@ if 'previous_lecture' not in st.session_state:
 
 # 만약 강의가 바뀌었다면, prevideo_url / docx_content / main_video_url / show_main_video 모두 초기화
 if st.session_state['previous_lecture'] != selected_lecture:
-    st.rerun()
     st.session_state['show_main_video'] = False
     st.session_state['prevideo_url'] = None
     st.session_state['docx_content'] = None
