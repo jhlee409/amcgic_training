@@ -60,28 +60,19 @@ left_col, right_col = st.columns([2, 3])
 # 왼쪽 사이드바에서 강의 선택
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
 
-# 현재 선택된 강의 저장 (라디오 버튼을 selectbox로 변경)
-selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
+# 이전 선택값 확인을 위해 session_state에 저장된 값 가져오기
+previous_lecture = st.session_state.get('previous_lecture', 'Default')
+selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
 # 선택된 강의가 변경되었을 때
-if selected_lecture != st.session_state.get('previous_lecture', 'Default'):
-    # 로그인 관련 정보 임시 저장
-    temp_login_info = {
-        'logged_in': st.session_state.get('logged_in', False),
-        'name': st.session_state.get('name'),
-        'position': st.session_state.get('position'),
-        'login_time': st.session_state.get('login_time')
-    }
-    
-    # session_state 완전 초기화
-    st.session_state.clear()
-    
-    # 로그인 정보 복원
-    st.session_state.update(temp_login_info)
-    
-    # 새로운 선택 저장
-    st.session_state['previous_lecture'] = selected_lecture
-    st.session_state['show_main_video'] = False
+if selected_lecture != previous_lecture:
+    st.session_state.prevideo_url = None
+    st.session_state.main_video_url = None
+    # show_main_video 상태 초기화
+    st.session_state.show_main_video = False
+    # 현재 선택을 저장
+    st.session_state.previous_lecture = selected_lecture
+    # 페이지 리프레시
     st.rerun()
 
 # 선택된 강의와 같은 이름의 파일들 찾기
