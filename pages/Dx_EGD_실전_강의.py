@@ -91,20 +91,24 @@ if selected_lecture != "Default":
             main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
             st.session_state['main_video_url'] = main_video_url
 
-            video_html = f'''
-            <div style="display: flex; justify-content: center;">
-                <video width="1300px" controls controlsList="nodownload">
-                    <source src="{main_video_url}" type="video/mp4">
-                </video>
-            </div>
-            <script>
-            var video_player = document.querySelector("video");
-            video_player.addEventListener('contextmenu', function(e) {{
-                e.preventDefault();
-            }});
-            </script>
-            '''
-            st.markdown(video_html, unsafe_allow_html=True)
+            # 본강의 시청 버튼이 눌렸을 때만 비디오 표시
+            if 'show_main_video' in st.session_state and st.session_state['show_main_video']:
+                video_html = f'''
+                <div style="display: flex; justify-content: center;">
+                    <video width="1300px" controls controlsList="nodownload">
+                        <source src="{main_video_url}" type="video/mp4">
+                    </video>
+                </div>
+                <script>
+                var video_player = document.querySelector("video");
+                video_player.addEventListener('contextmenu', function(e) {{
+                    e.preventDefault();
+                }});
+                </script>
+                '''
+                st.markdown(video_html, unsafe_allow_html=True)
+            else:
+                st.info("본강의 시청 버튼을 눌러주세요.")
         else:
             st.warning(f"강의 영상({main_video_name})을 찾을 수 없습니다.")
 
