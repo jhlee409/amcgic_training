@@ -66,6 +66,8 @@ selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index
 
 # 선택된 강의가 변경되었을 때
 if selected_lecture != previous_lecture:
+    st.session_state.prevideo_url = None
+    st.session_state.main_video_url = None
     # show_main_video 상태 초기화
     st.session_state.show_main_video = False
     # 현재 선택을 저장
