@@ -70,18 +70,20 @@ if selected_lecture != st.session_state.get('previous_lecture', 'Default'):
         'login_time': st.session_state.get('login_time')
     }
     
-    # session_state 초기화 (파일 관련 정보만)
-    st.session_state['prevideo_url'] = None
-    st.session_state['docx_content'] = None
-    st.session_state['main_video_url'] = None
-
-    # 로그인 정보 복원
-    st.session_state.update(temp_login_info)
+    # session_state 초기화
+    for key in list(st.session_state.keys()):
+        if key not in ['logged_in', 'name', 'position', 'login_time']:
+            del st.session_state[key]
     
-    # 새로운 선택 저장
+    # Default로 한번 초기화
+    st.session_state['previous_lecture'] = 'Default'
+    st.rerun()
+
+# Default를 거친 후 실제 선택된 강의로 변경
+if st.session_state.get('previous_lecture') == 'Default' and selected_lecture != 'Default':
     st.session_state['previous_lecture'] = selected_lecture
     st.session_state['show_main_video'] = False
-    st.rerun() # 변경 후 즉시 업데이트
+    st.rerun()
 
 # 2:3 비율의 두 컬럼 생성
 left_col, right_col = st.columns([2, 3])
