@@ -54,9 +54,6 @@ def list_mp4_files(bucket_name, directory):
             file_names.append(file_name)
     return file_names
 
-# 2:3 비율의 두 컬럼 생성
-left_col, right_col = st.columns([2, 3])
-
 # 왼쪽 사이드바에서 강의 선택
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
 
@@ -64,7 +61,7 @@ lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_S
 selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0, key='lecture_selector')
 
 # 선택된 강의가 변경되었을 때
-if 'previous_lecture' not in st.session_state or selected_lecture != st.session_state.previous_lecture:
+if selected_lecture != st.session_state.get('previous_lecture', 'Default'):
     # 로그인 관련 정보 임시 저장
     temp_login_info = {
         'logged_in': st.session_state.get('logged_in', False),
@@ -74,16 +71,18 @@ if 'previous_lecture' not in st.session_state or selected_lecture != st.session_
     }
     
     # session_state 완전 초기화
-    for key in list(st.session_state.keys()):
-        del st.session_state[key]
+    st.session_state.clear()
     
     # 로그인 정보 복원
-    for key, value in temp_login_info.items():
-        st.session_state[key] = value
+    st.session_state.update(temp_login_info)
     
     # 새로운 선택 저장
-    st.session_state.previous_lecture = selected_lecture
+    st.session_state['previous_lecture'] = selected_lecture
+    st.session_state['show_main_video'] = False
     st.rerun()
+
+# 2:3 비율의 두 컬럼 생성
+left_col, right_col = st.columns([2, 3])
 
 # 선택된 강의와 같은 이름의 파일들 찾기
 if selected_lecture != "Default":
@@ -131,12 +130,12 @@ if selected_lecture != "Default":
 
     # 오른쪽 컬럼은 본강의 재생을 위해 비워둠
     with right_col:
-        if "show_main_video" in st.session_state and st.session_state.show_main_video:
+        if st.session_state.get('show_main_video', False):
             if main_video_blob.exists():
                 main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="1300px" controls controlsList="nodownload" key="{selected_lecture}_main">
+                    <video width="1000px" controls controlsList="nodownload" key="{selected_lecture}_main">
                         <source src="{main_video_url}" type="video/mp4">
                     </video>
                 </div>
@@ -147,7 +146,7 @@ if selected_lecture != "Default":
                 }});
                 </script>
                 '''
-                st.markdown(video_html, unsafe_allow_html=True)
+            st.markdown(video_html, unsafe_allow_html=True)
 
 # 사이드바에 본강의 시청 버튼 추가
 if st.sidebar.button("본강의 시청"):
