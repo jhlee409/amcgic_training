@@ -54,83 +54,66 @@ def list_mp4_files(bucket_name, directory):
             file_names.append(file_name)
     return file_names
 
-# 2:3 비율의 두 컬럼 생성
-left_col, right_col = st.columns([2, 3])
-
 # 왼쪽 사이드바에서 강의 선택
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
 
-# 이전 선택값 확인을 위해 session_state에 저장된 값 가져오기
-previous_lecture = st.session_state.get('previous_lecture', 'Default')
-selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
+# 현재 선택된 강의 저장 (selectbox 사용)
+selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
 
 # 선택된 강의가 변경되었을 때
-if selected_lecture != previous_lecture:
-    st.session_state.prevideo_url = None
-    st.session_state.main_video_url = None
-    # show_main_video 상태 초기화
-    st.session_state.show_main_video = False
-    # 현재 선택을 저장
-    st.session_state.previous_lecture = selected_lecture
-    # 페이지 리프레시
-    st.rerun()
+if selected_lecture != st.session_state.get('previous_lecture', 'Default'):
+    # 로그인 관련 정보 임시 저장
+    temp_login_info = {
+        'logged_in': st.session_state.get('logged_in', False),
+        'name': st.session_state.get('name'),
+        'position': st.session_state.get('position'),
+        'login_time': st.session_state.get('login_time')
+    }
+    
+    # session_state 초기화 (파일 관련 정보만)
+    st.session_state['prevideo_url'] = None
+    st.session_state['docx_content'] = None
+    st.session_state['main_video_url'] = None
+
+    # 로그인 정보 복원
+    st.session_state.update(temp_login_info)
+    
+    # 새로운 선택 저장
+    st.session_state['previous_lecture'] = selected_lecture
+    st.session_state['show_main_video'] = False
+    st.rerun() # 변경 후 즉시 업데이트
+
+# 2:3 비율의 두 컬럼 생성
+left_col, right_col = st.columns([2, 3])
 
 # 선택된 강의와 같은 이름의 파일들 찾기
 if selected_lecture != "Default":
-    directory_lectures = "Lectures/"
-    bucket = storage.bucket('amcgi-bulletin.appspot.com')
-    expiration_time = datetime.now(pytz.UTC) + timedelta(seconds=1600)
+    try:
+        directory_lectures = "Lectures/"
+        bucket = storage.bucket('amcgi-bulletin.appspot.com')
+        expiration_time = datetime.now(pytz.UTC) + timedelta(seconds=1600)
 
-    # prevideo 파일 경로
-    prevideo_name = f"{selected_lecture}_prevideo.mp4"
-    prevideo_path = directory_lectures + prevideo_name
-    prevideo_blob = bucket.blob(prevideo_path)
+        # 모든 관련 파일 경로 새로 설정
+        prevideo_name = f"{selected_lecture}_prevideo.mp4"
+        prevideo_path = directory_lectures + prevideo_name
+        prevideo_blob = bucket.blob(prevideo_path)
 
-    # docx 파일 경로
-    docx_name = f"{selected_lecture}.docx"
-    docx_path = directory_lectures + docx_name
-    docx_blob = bucket.blob(docx_path)
+        docx_name = f"{selected_lecture}.docx"
+        docx_path = directory_lectures + docx_name
+        docx_blob = bucket.blob(docx_path)
 
-    # 메인 비디오 파일 경로
-    main_video_name = f"{selected_lecture}.mp4"
-    main_video_path = directory_lectures + main_video_name
-    main_video_blob = bucket.blob(main_video_path)
+        main_video_name = f"{selected_lecture}.mp4"
+        main_video_path = directory_lectures + main_video_name
+        main_video_blob = bucket.blob(main_video_path)
 
-    # 왼쪽 컬럼에 prevideo와 docx 내용 표시
-    with left_col:
-        if prevideo_blob.exists():
-            prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
-            video_html = f'''
-            <div style="display: flex; justify-content: center;">
-                <video width="500px" controls controlsList="nodownload">
-                    <source src="{prevideo_url}" type="video/mp4">
-                </video>
-            </div>
-            <script>
-            var video_player = document.querySelector("video");
-            video_player.addEventListener('contextmenu', function(e) {{
-                e.preventDefault();
-            }});
-            </script>
-            '''
-            st.markdown(video_html, unsafe_allow_html=True)
-
-        if docx_blob.exists():
-            # docx 파일 읽기
-            docx_content = docx_blob.download_as_bytes()
-            doc = docx.Document(io.BytesIO(docx_content))
-            text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
-            st.write(text_content)
-
-    # 오른쪽 컬럼은 본강의 재생을 위해 비워둠
-    with right_col:
-        if "show_main_video" in st.session_state and st.session_state.show_main_video:
-            if main_video_blob.exists():
-                main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
+        # 왼쪽 컬럼에 prevideo와 docx 내용 표시
+        with left_col:
+            if prevideo_blob.exists():
+                prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="1300px" controls controlsList="nodownload">
-                        <source src="{main_video_url}" type="video/mp4">
+                    <video width="500px" controls controlsList="nodownload">
+                        <source src="{prevideo_url}" type="video/mp4">
                     </video>
                 </div>
                 <script>
@@ -141,6 +124,43 @@ if selected_lecture != "Default":
                 </script>
                 '''
                 st.markdown(video_html, unsafe_allow_html=True)
+                st.session_state['prevideo_url'] = prevideo_url  # Save URL to session state
+            else:
+                st.warning(f"미리보기 영상({prevideo_name})을 찾을 수 없습니다.")
+
+            if docx_blob.exists():
+                docx_content = docx_blob.download_as_bytes()
+                doc = docx.Document(io.BytesIO(docx_content))
+                text_content = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+                st.write(text_content)
+                st.session_state['docx_content'] = text_content  # Save content to session state
+            else:
+                st.warning(f"강의 자료({docx_name})를 찾을 수 없습니다.")
+
+        # 오른쪽 컬럼은 본강의 재생을 위해 비워둠
+        with right_col:
+            if st.session_state.get('show_main_video', False):
+                if main_video_blob.exists():
+                    main_video_url = main_video_blob.generate_signed_url(expiration=expiration_time, method='GET')
+                    video_html = f'''
+                    <div style="display: flex; justify-content: center;">
+                        <video width="1000px" controls controlsList="nodownload">
+                            <source src="{main_video_url}" type="video/mp4">
+                        </video>
+                    </div>
+                    <script>
+                    var video_player = document.querySelector("video");
+                    video_player.addEventListener('contextmenu', function(e) {{
+                        e.preventDefault();
+                    }});
+                    </script>
+                    '''
+                    st.markdown(video_html, unsafe_allow_html=True)
+                    st.session_state['main_video_url'] = main_video_url # Save main video URL
+                else:
+                    st.warning(f"본 강의 영상({main_video_name})을 찾을 수 없습니다.")
+    except Exception as e:
+        st.error(f"오류가 발생했습니다: {str(e)}")
 
 # 사이드바에 본강의 시청 버튼 추가
 if st.sidebar.button("본강의 시청"):
