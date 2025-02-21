@@ -163,7 +163,6 @@ if selected_lecture != "Default":
 
 # 사이드바에 본강의 시청 버튼
 if st.sidebar.button("본강의 시청"):
-    st.session_state['prevideo_url'] = None
     # 본강의 보이도록 플래그 설정
     st.session_state['show_main_video'] = True
 
