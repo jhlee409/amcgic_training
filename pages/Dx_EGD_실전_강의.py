@@ -61,21 +61,15 @@ left_col, right_col = st.columns([2, 3])
 lectures = ["Default", "Description_Impression", "Photo_Report", "Complication_Sedation", "Biopsy_NBI", "Stomach_benign", "Stomach_malignant", "Duodenum", "Lx_Phx_Esophagus", "SET"]
 
 # 이전 선택값 확인을 위해 session_state에 저장된 값 가져오기
-if 'previous_lecture' not in st.session_state:
-    st.session_state.previous_lecture = 'Default'
-    st.session_state.show_main_video = False
-
+previous_lecture = st.session_state.get('previous_lecture', 'Default')
 selected_lecture = st.sidebar.radio("강의를 선택하세요", lectures, index=0)
 
 # 선택된 강의가 변경되었을 때
-if selected_lecture != st.session_state.previous_lecture:
-    # 모든 관련 상태 초기화
+if selected_lecture != previous_lecture:
+    # show_main_video 상태 초기화
     st.session_state.show_main_video = False
+    # 현재 선택을 저장
     st.session_state.previous_lecture = selected_lecture
-    if 'prevideo_url' in st.session_state:
-        del st.session_state.prevideo_url
-    if 'main_video_url' in st.session_state:
-        del st.session_state.main_video_url
     # 페이지 리프레시
     st.rerun()
 
@@ -103,12 +97,11 @@ if selected_lecture != "Default":
     # 왼쪽 컬럼에 prevideo와 docx 내용 표시
     with left_col:
         if prevideo_blob.exists():
-            if 'prevideo_url' not in st.session_state:
-                st.session_state.prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
+            prevideo_url = prevideo_blob.generate_signed_url(expiration=expiration_time, method='GET')
             video_html = f'''
             <div style="display: flex; justify-content: center;">
                 <video width="500px" controls controlsList="nodownload">
-                    <source src="{st.session_state.prevideo_url}" type="video/mp4">
+                    <source src="{prevideo_url}" type="video/mp4">
                 </video>
             </div>
             <script>
