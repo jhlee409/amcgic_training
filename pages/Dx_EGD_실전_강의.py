@@ -44,6 +44,7 @@ with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하�
 
 # 강의 목록
 lectures = [
+    "Default", 
     "Description_Impression", 
     "Photo_Report", 
     "Complication_Sedation", 
@@ -55,33 +56,8 @@ lectures = [
     "SET"
 ]
 
-# 폴더 선택 라디오 버튼
-folder_selection = st.sidebar.radio("선택 버튼", ["Default", "본강의"])
-
-# 폴더 선택이 변경되었을 때 상태 초기화
-if st.session_state.get('previous_folder_selection') != folder_selection:
-    # 로그인 관련 정보 임시 저장
-    temp_login_info = {
-        'logged_in': st.session_state.get('logged_in', False),
-        'name': st.session_state.get('name'),
-        'position': st.session_state.get('position'),
-        'login_time': st.session_state.get('login_time')
-    }
-    
-    # 세션 상태 초기화
-    st.session_state.clear()
-    
-    # 로그인 정보 복원
-    for key, value in temp_login_info.items():
-        st.session_state[key] = value
-    
-    st.session_state['previous_folder_selection'] = folder_selection
-    st.rerun()
-
-# 본강의가 선택된 경우에만 강의 선택 드롭다운 표시
-selected_lecture = None
-if folder_selection == "본강의":
-    selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
+# 사이드바에서 강의 선택
+selected_lecture = st.sidebar.selectbox("강의를 선택하세요", lectures, key='lecture_selector')
 
 # 선택이 바뀌었는지 확인하기 위해 previous_lecture 사용
 if 'previous_lecture' not in st.session_state:
