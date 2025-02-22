@@ -75,7 +75,7 @@ if st.session_state['previous_lecture'] != selected_lecture:
 st.session_state['previous_lecture'] = selected_lecture
 
 # 2:3 비율의 두 컬럼 생성
-left_col, right_col = st.columns([2, 3])
+left_col, right_col = st.columns([1, 14])
 
 # Lectures 폴더 내 mp4/docx 파일 경로 설정
 directory_lectures = "Lectures/"
@@ -110,7 +110,7 @@ if selected_lecture != "Default":
 
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="500px" controls controlsList="nodownload">
+                    <video width="50px" controls controlsList="nodownload">
                         <source src="{prevideo_url}" type="video/mp4">
                     </video>
                 </div>
