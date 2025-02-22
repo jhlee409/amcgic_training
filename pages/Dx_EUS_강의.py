@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 import requests
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD 강의", layout="wide")
+st.set_page_config(page_title="Dx EUS 강의", layout="wide")
 
 # 로그인 상태 확인
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
@@ -35,16 +35,16 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 
 # Display Form Title
-st.subheader("PEG와 진단 EUS 강의 모음")
+st.subheader("진단 EUS 강의 모음")
 with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
-    st.write("- 이 강의 모음은 PEG와 진단 EUS 강의 동영상 모음입니다.")
+    st.write("- 이 강의 모음은 진단 EUS 강의 동영상 모음입니다.")
     st.write("- 왼쪽에서 시청하고자 하는 강의를 선택한 후 prevvideo가 나타나면 '본강의 시청' 버튼을 누르세요. 그러면 본강의를 시청할 수 있습니다.")
     st.write("- 화면을 클릭하면 play 되고, 화면 왼쪽 아래 전체 화면 버튼 누르면 전체 화면을 볼 수 있습니다.")
     st.write("- 다른 강의를 보려면 우선 Default를 선택해서 이전 강의 화면을 지운 후, 다른 강의를 선택해야 합니다. 그냥 다른 강의 선택하면 화면이 안넘어 갑니다.")
     st.write("* 이 웹페이지의 출석이 기록됩니다. 끝낼 때는 반드시 좌측 하단 로그아웃 버튼을 눌러서 종결하세요.")
 
 # 강의 목록
-lectures = ["Default", "PEG", "EUS_basic", "EUS_SET", "EUS_case"]
+lectures = ["Default", "EUS_basic", "EUS_SET", "EUS_case"]
 
 # 사이드바에서 강의 선택
 selected_lecture = st.sidebar.selectbox("먼저 Default 선택해서 이전 화면 지운 후 다음 강의를 선택하세요", lectures, key='lecture_selector')
