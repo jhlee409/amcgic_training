@@ -64,7 +64,7 @@ if st.session_state['previous_lecture'] != selected_lecture:
 st.session_state['previous_lecture'] = selected_lecture
 
 # 2:3 비율의 두 컬럼 생성
-left_col, right_col = st.columns([1, 9])
+left_col, right_col = st.columns([1, 10])
 
 # Lectures 폴더 내 mp4/docx 파일 경로 설정
 directory_lectures = "Lectures/"
