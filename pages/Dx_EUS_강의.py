@@ -162,10 +162,10 @@ if st.sidebar.button("본강의 시청"):
         position = st.session_state.get('position', 'unknown')
         access_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-        log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, PEG_EUS강의: {selected_lecture}\n"
+        log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, EUS강의: {selected_lecture}\n"
 
         log_blob = bucket.blob(
-            f'log_PEG_EUS/{position}*{name}*{selected_lecture}'
+            f'log_EUS/{position}*{name}*{selected_lecture}'
         )
         log_blob.upload_from_string(log_entry, content_type='text/plain')
     
