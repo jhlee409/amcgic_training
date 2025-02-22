@@ -99,7 +99,7 @@ if selected_lecture != "Default":
 
                 video_html = f'''
                 <div style="display: flex; justify-content: center;">
-                    <video width="100px" controls controlsList="nodownload">
+                    <video width="50px" controls controlsList="nodownload">
                         <source src="{prevideo_url}" type="video/mp4">
                     </video>
                 </div>
