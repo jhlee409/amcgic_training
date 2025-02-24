@@ -110,7 +110,7 @@ if selected_file and selected_file != st.session_state.get('selected_file'):
     st.rerun()
 
 # 좌우 컨테이너 생성
-left_col, right_col = st.columns([2, 3])
+left_col, right_col = st.columns([2, 4])
 
 # 왼쪽 컨테이너에 첫 번째 동영상과 설명 표시
 with left_col:
@@ -134,7 +134,7 @@ with right_col:
             expiration_time = datetime.now(timezone.utc) + timedelta(seconds=1600)
             video_url = blob.generate_signed_url(expiration=expiration_time, method='GET')
             video_html = f"""
-                <div style="width: 1000px; margin: auto;">
+                <div style="width: 1100px; margin: auto;">
                     <video style="width: 100%; height: auto;" controls src="{video_url}">
                         Your browser does not support the video element.
                     </video>
