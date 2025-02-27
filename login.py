@@ -172,7 +172,7 @@ def handle_login(email, password, name, position):
                     
                     # Firebase Storage에 업로드
                     bucket = storage.bucket()
-                    log_filename = f"log_login/{timestamp}.txt"
+                    log_filename = f"log_login/{timestamp}"
                     blob = bucket.blob(log_filename)
                     blob.upload_from_filename(temp_file_path)
                     
@@ -234,6 +234,33 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
         }
         
         requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
+        
+        # 로그아웃 로그 파일 생성 및 Firebase Storage에 업로드
+        try:
+            # 현재 시간 가져오기 (초 단위까지)
+            now = datetime.now()
+            timestamp = now.strftime("%Y%m%d_%H%M%S")
+            
+            # 로그 파일 내용 생성
+            position = st.session_state.get('position', '')
+            name = st.session_state.get('name', '')
+            log_content = f"{position}*{name}*logout*{now.strftime('%Y-%m-%d %H:%M:%S')}"
+            
+            # 임시 파일 생성
+            with tempfile.NamedTemporaryFile(delete=False, mode='w') as temp_file:
+                temp_file.write(log_content)
+                temp_file_path = temp_file.name
+            
+            # Firebase Storage에 업로드
+            bucket = storage.bucket()
+            log_filename = f"log_logout/{timestamp}"  # .txt 확장자 제거
+            blob = bucket.blob(log_filename)
+            blob.upload_from_filename(temp_file_path)
+            
+            # 임시 파일 삭제
+            os.unlink(temp_file_path)
+        except Exception as e:
+            st.error(f"로그아웃 로그 파일 업로드 중 오류 발생: {str(e)}")
         
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
