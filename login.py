@@ -26,8 +26,8 @@ if not firebase_admin._apps:
     })
     firebase_admin.initialize_app(cred, {
         'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
+        'storageBucket': 'amcgi-bulletin.appspot.com'
     })
-storageBucket = "amcgi-bulletin.appspot.com"
 st.set_page_config(page_title="amcgic_education")
 
 # 제목 및 서브헤딩 설정.
