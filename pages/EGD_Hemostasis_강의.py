@@ -8,6 +8,7 @@ from firebase_admin import credentials, storage
 from datetime import datetime, timedelta, timezone
 import requests
 import json
+import os
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Hemostasis_lecture", layout="wide")

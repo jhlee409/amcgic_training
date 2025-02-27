@@ -7,6 +7,7 @@ import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timedelta, timezone
 import requests
+import os
 
 # Set page to wide mode
 st.set_page_config(page_title="Dx EUS 강의", layout="wide")

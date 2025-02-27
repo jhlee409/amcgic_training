@@ -8,6 +8,7 @@ from firebase_admin import credentials, storage
 from datetime import datetime, timedelta
 import pytz
 import requests
+import os
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD 강의", layout="wide") 

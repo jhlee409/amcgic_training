@@ -10,6 +10,7 @@ from firebase_admin import credentials, storage
 import datetime
 from datetime import timezone
 import requests
+import os
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Dx", layout="wide")
