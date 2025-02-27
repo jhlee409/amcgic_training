@@ -196,7 +196,7 @@ if st.sidebar.button("Logout"):
         # tz정보가 없으면 추가
         if not login_time.tzinfo:
             login_time = login_time.replace(tzinfo=timezone.utc)
-        duration = round((logout_time - login_time).total_seconds() / 60)
+        duration = round((logout_time - login_time).total_seconds())
     else:
         duration = 0
 
