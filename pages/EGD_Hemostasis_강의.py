@@ -156,6 +156,7 @@ with right_col:
             blob.upload_from_string(json.dumps(log_data), content_type='application/json')
 
 if st.sidebar.button("Logout"):
+    # 로그아웃 시간과 duration 계산
     logout_time = datetime.now(timezone.utc)
     login_time = st.session_state.get('login_time')
     if login_time:
@@ -164,7 +165,8 @@ if st.sidebar.button("Logout"):
         duration = round((logout_time - login_time).total_seconds() / 60)
     else:
         duration = 0
-    
+
+    # 로그아웃 이벤트 기록
     logout_data = {
         "position": st.session_state.get('position'),
         "name": st.session_state.get('name'),
@@ -173,11 +175,16 @@ if st.sidebar.button("Logout"):
         "duration": duration
     }
     
-    requests.post(f"{st.secrets['supabase_url']}/rest/v1/login", headers={
+    # Supabase에 로그아웃 기록 전송
+    supabase_url = st.secrets["supabase_url"]
+    supabase_key = st.secrets["supabase_key"]
+    supabase_headers = {
         "Content-Type": "application/json",
-        "apikey": st.secrets["supabase_key"],
-        "Authorization": f"Bearer {st.secrets['supabase_key']}"
-    }, json=logout_data)
+        "apikey": supabase_key,
+        "Authorization": f"Bearer {supabase_key}"
+    }
+    
+    requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
     
     try:
         # 현재 시간 가져오기 (초 단위까지)
