@@ -265,6 +265,14 @@ if st.sidebar.button("Logout"):
         
         # 시간 차이 계산 및 duration 로그 생성
         if login_timestamp:
+            # login_timestamp에 타임존 정보 추가
+            if not login_timestamp.tzinfo:
+                login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
+            
+            # now에 타임존 정보 추가
+            if not now.tzinfo:
+                now = now.replace(tzinfo=timezone.utc)
+                
             time_diff_seconds = int((now - login_timestamp).total_seconds())
             duration_log_content = f"{position}*{name}*{time_diff_seconds}*{now.strftime('%Y-%m-%d %H:%M:%S')}"
             
