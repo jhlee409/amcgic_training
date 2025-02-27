@@ -156,38 +156,6 @@ def handle_login(email, password, name, position):
             supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
 
             if supabase_response.status_code == 201:
-                # Firebase Storage에서 기존 로그 폴더 삭제
-                try:
-                    bucket = storage.bucket()
-                    
-                    # log_login 폴더 삭제
-                    login_blobs = list(bucket.list_blobs(prefix="log_login/"))
-                    for blob in login_blobs:
-                        try:
-                            blob.delete()
-                        except Exception as e:
-                            st.error(f"로그인 로그 파일 삭제 중 오류 발생: {str(e)}")
-                    
-                    # log_logout 폴더 삭제
-                    logout_blobs = list(bucket.list_blobs(prefix="log_logout/"))
-                    for blob in logout_blobs:
-                        try:
-                            blob.delete()
-                        except Exception as e:
-                            st.error(f"로그아웃 로그 파일 삭제 중 오류 발생: {str(e)}")
-                    
-                    # 폴더 자체를 삭제하기 위한 빈 폴더 표시자 삭제
-                    folder_markers = [
-                        bucket.blob("log_login/"),
-                        bucket.blob("log_logout/")
-                    ]
-                    for marker in folder_markers:
-                        if marker.exists():
-                            marker.delete()
-                
-                except Exception as e:
-                    st.error(f"로그 폴더 삭제 중 오류 발생: {str(e)}")
-
                 # 로그인 성공 시 로그 파일 생성 및 Firebase Storage에 업로드
                 try:
                     # 현재 시간 가져오기 (초 단위까지)
