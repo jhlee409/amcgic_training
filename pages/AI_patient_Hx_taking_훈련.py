@@ -7,6 +7,7 @@ from firebase_admin import credentials, storage
 from datetime import datetime, timedelta, timezone
 import requests
 import os
+import tempfile
 
 # Set page to wide mode
 st.set_page_config(page_title="AI Hx. taking", page_icon=":robot_face:", layout="wide")
