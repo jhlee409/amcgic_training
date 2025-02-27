@@ -23,7 +23,8 @@ if not firebase_admin._apps:
         "universe_domain": st.secrets["universe_domain"]
     })
     firebase_admin.initialize_app(cred, {
-        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
+        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
+        'storageBucket': 'amcgi-bulletin.appspot.com'
     })
 
 st.set_page_config(page_title="amcgic_education")
