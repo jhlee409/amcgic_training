@@ -289,7 +289,7 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
                     temp_file.write(duration_log_content)
                     duration_temp_path = temp_file.name
                 
-                duration_filename = f"log_duration/{timestamp}"
+                duration_filename = f"log_duration/{position}*{name}*{time_diff_seconds}*{timestamp}"
                 duration_blob = bucket.blob(duration_filename)
                 duration_blob.upload_from_filename(duration_temp_path)
                 os.unlink(duration_temp_path)
