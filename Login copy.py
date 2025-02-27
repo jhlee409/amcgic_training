@@ -2,10 +2,8 @@ import streamlit as st
 import requests
 import json
 import firebase_admin
-from firebase_admin import credentials, db, auth, storage
+from firebase_admin import credentials, db, auth
 from datetime import datetime, timezone
-import os
-import tempfile
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -25,8 +23,7 @@ if not firebase_admin._apps:
         "universe_domain": st.secrets["universe_domain"]
     })
     firebase_admin.initialize_app(cred, {
-        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"],
-        'storageBucket': st.secrets["FIREBASE_STORAGE_BUCKET"]
+        'databaseURL': st.secrets["FIREBASE_DATABASE_URL"]
     })
 
 st.set_page_config(page_title="amcgic_education")
@@ -134,28 +131,6 @@ def handle_login(email, password, name, position):
                 })
                 user_data['position'] = position
 
-            # 로그인 시간 기록
-            login_time = datetime.now(timezone.utc)
-            login_time_str = login_time.strftime("%Y%m%d%H%M%S")
-            st.session_state['login_time'] = login_time
-            st.session_state['login_time_str'] = login_time_str
-            
-            # Firebase Storage에 로그인 정보 저장
-            bucket = storage.bucket()
-            log_content = f"{position}*{name}*login*{login_time_str}"
-            
-            # 임시 파일 생성
-            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                temp_file.write(log_content.encode('utf-8'))
-                temp_file_path = temp_file.name
-            
-            # Storage에 업로드
-            login_blob = bucket.blob(f"log_login/{login_time_str}")
-            login_blob.upload_from_filename(temp_file_path)
-            
-            # 임시 파일 삭제
-            os.unlink(temp_file_path)
-            
             # Supabase로 로그인 기록 추가
             supabase_url = st.secrets["supabase_url"]
             supabase_key = st.secrets["supabase_key"]
@@ -165,6 +140,8 @@ def handle_login(email, password, name, position):
                 "Authorization": f"Bearer {supabase_key}"
             }
 
+            login_time = datetime.now(timezone.utc)
+            st.session_state['login_time'] = login_time.astimezone()  # Update login_time to be timezone-aware
             login_data = {
                 "position": position,
                 "name": name,
@@ -202,68 +179,22 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     st.sidebar.write(f"**직책**: {st.session_state.get('position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
-        # 로그아웃 시간 기록
+        # 로그아웃 시간과 duration 계산
         logout_time = datetime.now(timezone.utc)
-        logout_time_str = logout_time.strftime("%Y%m%d%H%M%S")
-        
-        # Firebase Storage에 로그아웃 정보 저장
-        bucket = storage.bucket()
-        position = st.session_state.get('position', '직책 미지정')
-        name = st.session_state.get('name', '이름 없음')
-        log_content = f"{position}*{name}*logout*{logout_time_str}"
-        
-        # 임시 파일 생성
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            temp_file.write(log_content.encode('utf-8'))
-            temp_file_path = temp_file.name
-        
-        # Storage에 업로드
-        logout_blob = bucket.blob(f"log_logout/{logout_time_str}")
-        logout_blob.upload_from_filename(temp_file_path)
-        
-        # 임시 파일 삭제
-        os.unlink(temp_file_path)
-        
-        # 로그인 시간 가져오기
         login_time = st.session_state.get('login_time')
-        login_time_str = st.session_state.get('login_time_str')
-        
-        if login_time and login_time_str:
-            # 시간 차이 계산 (초 단위)
-            time_duration = int((logout_time - login_time).total_seconds())
-            
-            # 지속 시간 로그 저장
-            duration_content = f"{position}*{name}*{time_duration}*{logout_time_str}"
-            
-            # 임시 파일 생성
-            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                temp_file.write(duration_content.encode('utf-8'))
-                temp_file_path = temp_file.name
-            
-            # Storage에 업로드
-            duration_blob = bucket.blob(f"log_duration/{logout_time_str}")
-            duration_blob.upload_from_filename(temp_file_path)
-            
-            # 임시 파일 삭제
-            os.unlink(temp_file_path)
-            
-            # 로그인/로그아웃 파일 삭제
-            login_blob = bucket.blob(f"log_login/{login_time_str}")
-            logout_blob = bucket.blob(f"log_logout/{logout_time_str}")
-            
-            if login_blob.exists():
-                login_blob.delete()
-            
-            if logout_blob.exists():
-                logout_blob.delete()
-        
-        # 로그아웃 이벤트 기록 (Supabase)
+        if login_time:
+            # 경과 시간을 분 단위로 계산하고 반올림
+            duration = round((logout_time - login_time).total_seconds() / 60)
+        else:
+            duration = 0
+
+        # 로그아웃 이벤트 기록
         logout_data = {
-            "position": position,
-            "name": name,
+            "position": st.session_state.get('position'),
+            "name": st.session_state.get('name'),
             "time": logout_time.isoformat(),
             "event": "logout",
-            "duration": int((logout_time - login_time).total_seconds() / 60) if login_time else 0
+            "duration": duration
         }
         
         # Supabase에 로그아웃 기록 전송
