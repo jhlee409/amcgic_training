@@ -7,12 +7,10 @@ import base64
 import os
 import firebase_admin
 from firebase_admin import credentials, storage
-import datetime
-from datetime import timezone
+from datetime import datetime, timezone, timedelta
 import requests
 import os
 import tempfile
-from datetime import datetime, timezone, timedelta
 
 # Set page to wide mode
 st.set_page_config(page_title="EGD_Dx", layout="wide")
@@ -152,7 +150,7 @@ if selected_image_file:
         name = st.session_state.get('name', 'unknown')
         position = st.session_state.get('position', 'unknown')
         position_name = f"{position}*{name}"  # 직책*이름 형식으로 저장
-        access_date = datetime.datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
+        access_date = datetime.now().strftime("%Y-%m-%d")  # 현재 날짜 가져오기 (시간 제외)
 
         # '.png' 확장자를 제거한 파일 이름
         selected_image_file_without_extension = selected_image_file.replace('.png', '')
