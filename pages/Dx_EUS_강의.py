@@ -232,6 +232,8 @@ if st.sidebar.button("Logout"):
                 parts = content.split('*')
                 if len(parts) >= 4 and parts[0] == position and parts[1] == name:
                     login_timestamp = datetime.strptime(parts[3], '%Y-%m-%d %H:%M:%S')
+                    # 타임존 정보 추가
+                    login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
                     blob.delete()  # 로그인 파일 삭제
                     break
             except Exception as e:
@@ -249,11 +251,10 @@ if st.sidebar.button("Logout"):
         
         # 8. 시간 차이 계산 및 duration 로그 생성
         if login_timestamp:
-            # 타임존 정보 추가
+            # login_timestamp에 타임존 정보가 없으면 추가
             if not login_timestamp.tzinfo:
                 login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
-            if not now.tzinfo:
-                now = now.replace(tzinfo=timezone.utc)
+            now = now.replace(tzinfo=timezone.utc)
                 
             time_diff_seconds = int((now - login_timestamp).total_seconds())
             duration_log_content = f"{position}*{name}*{time_diff_seconds}*{now.strftime('%Y-%m-%d %H:%M:%S')}"

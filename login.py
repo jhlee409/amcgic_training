@@ -144,7 +144,7 @@ def handle_login(email, password, name, position):
             }
 
             login_time = datetime.now(timezone.utc)
-            st.session_state['login_time'] = login_time.astimezone()  # Update login_time to be timezone-aware
+            st.session_state['login_time'] = login_time  # UTC 시간 그대로 저장
             login_data = {
                 "position": position,
                 "name": name,
@@ -191,7 +191,7 @@ def handle_login(email, password, name, position):
                 # 로그인 성공 시 로그 파일 생성 및 Firebase Storage에 업로드
                 try:
                     # 현재 시간 가져오기 (초 단위까지)
-                    now = datetime.now()
+                    now = datetime.now(timezone.utc)
                     timestamp = now.strftime("%Y%m%d_%H%M%S")
                     
                     # 로그 파일 내용 생성
@@ -269,7 +269,7 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
         
         try:
             # 현재 시간 가져오기 (초 단위까지)
-            now = datetime.now()
+            now = datetime.now(timezone.utc)
             timestamp = now.strftime("%Y%m%d_%H%M%S")
             position = st.session_state.get('position', '')
             name = st.session_state.get('name', '')
@@ -297,6 +297,8 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
                         login_timestamp = datetime.strptime(parts[3], '%Y-%m-%d %H:%M:%S')
                         # 로그인 파일 찾았으므로 삭제
                         blob.delete()
+                        # 타임존 정보 추가
+                        login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
                         break
                 except Exception as e:
                     st.error(f"로그인 로그 파일 처리 중 오류 발생: {str(e)}")
@@ -313,6 +315,9 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
             
             # 시간 차이 계산 및 duration 로그 생성
             if login_timestamp:
+                # login_timestamp에 타임존 정보가 없으면 추가
+                if not login_timestamp.tzinfo:
+                    login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
                 time_diff_seconds = int((now - login_timestamp).total_seconds())
                 duration_log_content = f"{position}*{name}*{time_diff_seconds}*{now.strftime('%Y-%m-%d %H:%M:%S')}"
                 
