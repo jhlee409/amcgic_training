@@ -6,8 +6,6 @@ from firebase_admin import credentials, db, auth, storage
 from datetime import datetime, timezone
 import os
 import tempfile
-import uuid
-import socket
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -76,62 +74,6 @@ if st.button("입력 확인"):  # 버튼 이름을 변경하여 ID 충돌 방지
         elif not is_korean_name(name):
             st.error("한글 이름을 입력해 주세요")
 
-# 세션 관리를 위한 유틸리티 함수들
-def generate_session_id():
-    return str(uuid.uuid4())
-
-def get_client_ip():
-    try:
-        hostname = socket.gethostname()
-        ip_address = socket.gethostbyname(hostname)
-        return ip_address
-    except:
-        return "unknown"
-
-def record_logout_event(session_data):
-    try:
-        logout_time = datetime.now(timezone.utc)
-        login_time = datetime.fromtimestamp(session_data.get('loginTime') / 1000, tz=timezone.utc)
-        duration = round((logout_time - login_time).total_seconds())
-
-        # Supabase에 로그아웃 기록
-        logout_data = {
-            "position": st.session_state.get('position'),
-            "name": st.session_state.get('name'),
-            "time": logout_time.isoformat(),
-            "event": "logout",
-            "duration": duration
-        }
-
-        supabase_url = st.secrets["supabase_url"]
-        supabase_key = st.secrets["supabase_key"]
-        supabase_headers = {
-            "Content-Type": "application/json",
-            "apikey": supabase_key,
-            "Authorization": f"Bearer {supabase_key}"
-        }
-        
-        requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
-    except Exception as e:
-        st.error(f"로그아웃 이벤트 기록 중 오류 발생: {str(e)}")
-
-def check_active_session():
-    try:
-        user_id = st.session_state.get('user_id')
-        if user_id:
-            user_session_ref = db.reference(f'users/{user_id}/activeSession')
-            current_session = user_session_ref.get()
-            
-            if current_session:
-                session_id = current_session.get('sessionId')
-                if session_id != st.session_state.get('session_id'):
-                    # 다른 세션에 의해 로그아웃됨
-                    st.warning("다른 기기에서 로그인이 감지되어 로그아웃됩니다.")
-                    handle_logout()
-                    st.experimental_rerun()
-    except Exception as e:
-        st.error(f"세션 확인 중 오류 발생: {str(e)}")
-
 def handle_login(email, password, name, position):
     try:
         # Streamlit secret에서 Firebase API 키 가져오기
@@ -146,29 +88,30 @@ def handle_login(email, password, name, position):
         if response.status_code == 200:
             # Firebase Authentication 성공 후 사용자 정보 가져오기
             user_id = response_data['localId']
-            id_token = response_data['idToken']
-
-            # 현재 활성 세션 확인
-            user_session_ref = db.reference(f'users/{user_id}/activeSession')
-            current_session = user_session_ref.get()
+            id_token = response_data['idToken']  # ID 토큰 저장
             
-            if current_session:
-                # 기존 세션이 있는 경우, 강제 종료 처리
-                record_logout_event(current_session)
-                user_session_ref.delete()
-            
-            # 새로운 세션 생성
-            session_id = generate_session_id()
-            new_session = {
-                'sessionId': session_id,
-                'ipAddress': get_client_ip(),
-                'loginTime': {'.sv': 'timestamp'},
-                'lastActive': {'.sv': 'timestamp'}
-            }
-            user_session_ref.set(new_session)
-            
-            # 세션 ID를 상태에 저장
-            st.session_state['session_id'] = session_id
+            # Authentication 사용자 정보 업데이트
+            try:
+                user = auth.update_user(
+                    user_id,
+                    display_name=name,
+                    custom_claims={'position': position}
+                )
+            except auth.UserNotFoundError:
+                # 사용자가 없는 경우, 새로운 사용자 생성
+                try:
+                    user = auth.create_user(
+                        uid=user_id,
+                        email=email,
+                        password=password,
+                        display_name=name
+                    )
+                    # 생성된 사용자에 대한 custom claims 설정
+                    auth.set_custom_user_claims(user_id, {'position': position})
+                    st.success("새로운 사용자가 생성되었습니다.")
+                except Exception as e:
+                    st.error(f"사용자 생성 중 오류 발생: {str(e)}")
+                    return
             
             # Realtime Database에도 정보 저장
             user_ref = db.reference(f'users/{user_id}')
@@ -278,7 +221,6 @@ def handle_login(email, password, name, position):
             st.session_state['name'] = name
             st.session_state['position'] = position
             st.session_state['user_id'] = user_id
-            st.session_state['login_time'] = datetime.now(timezone.utc)
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
@@ -288,10 +230,6 @@ def handle_login(email, password, name, position):
 if st.button("Login", disabled=login_disabled):  # 원래 버튼 유지
     handle_login(email, password, name, position)
 
-# 로그인된 상태에서 세션 체크
-if "logged_in" in st.session_state and st.session_state['logged_in']:
-    check_active_session()
-
 # 로그 아웃 버튼
 if "logged_in" in st.session_state and st.session_state['logged_in']:
     
@@ -300,20 +238,6 @@ if "logged_in" in st.session_state and st.session_state['logged_in']:
     st.sidebar.write(f"**직책**: {st.session_state.get('position', '직책 미지정')}")
     
     if st.sidebar.button("Logout"):
-        handle_logout()
-
-def handle_logout():
-    try:
-        user_id = st.session_state.get('user_id')
-        if user_id:
-            # 활성 세션 삭제
-            user_session_ref = db.reference(f'users/{user_id}/activeSession')
-            current_session = user_session_ref.get()
-            
-            if current_session:
-                record_logout_event(current_session)
-                user_session_ref.delete()
-        
         # 로그아웃 시간과 duration 계산
         logout_time = datetime.now(timezone.utc)
         login_time = st.session_state.get('login_time')
@@ -432,5 +356,3 @@ def handle_logout():
         
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
-    except Exception as e:
-        st.error(f"로그아웃 처리 중 오류 발생: {str(e)}")
