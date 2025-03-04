@@ -12,7 +12,7 @@ import os
 import tempfile
 
 # Set page to wide mode
-st.set_page_config(page_title="EGD_Hemostasis_lecture", layout="wide")
+st.set_page_config(page_title="Em_EGD_lecture", layout="wide")
 
 # 로그인 상태 확인
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
@@ -38,7 +38,7 @@ if not firebase_admin._apps:
     firebase_admin.initialize_app(cred)
 
 # Display Form Title
-st.subheader("EGD_Hemostasis_lecture")
+st.subheader("Em_EGD_lecture")
 with st.expander(" 필독!!! 먼저 여기를 눌러 사용방법을 확인하세요."):
     st.write("- 가장 먼저 왼쪽 sidebar 선택버튼에서 default는 'Default'입니다. Hemostasis lecture, cases 중 한 가지를 선택합니다.")
     st.write("- 우선 EGD 지혈술의 overview 강의를 시청하고 싶으면, Hemostasis lecture를 선택하고 '진행' 버튼을 누르면 강의 화면이 나타납니다. 클릭해서 시청하세요.")
@@ -63,11 +63,11 @@ def read_docx(bucket_name, file_name):
         st.error(f"문서를 읽는 중 오류 발생: {str(e)}")
         return ""
 
-folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Hemostasis lecture", "cases"])
+folder_selection = st.sidebar.radio("선택 버튼", ["Default", "Em_EGD_lecture", "cases"])
 
 directories = {
     "Default": "EGD_Hemostasis_training/default/",
-    "Hemostasis lecture": "EGD_Hemostasis_training/lecture/",
+    "Em_EGD_lecture": "EGD_Hemostasis_training/lecture/",
     "cases": "EGD_Hemostasis_training/cases/"
 }
 
