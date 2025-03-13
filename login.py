@@ -198,8 +198,21 @@ def handle_login(email, password, name, position):
             current_session = user_session_ref.get()
             
             if current_session:
-                # 기존 세션이 있는 경우, 강제 종료 처리
-                handle_logout()
+                # 기존 세션이 있는 경우, 조용히 종료 처리 (로그아웃 메시지 없이)
+                try:
+                    # 로그아웃 시간과 duration 계산
+                    logout_time = datetime.now(timezone.utc)
+                    login_time = datetime.fromtimestamp(current_session.get('loginTime') / 1000, tz=timezone.utc)
+                    duration = round((logout_time - login_time).total_seconds())
+                    
+                    # Supabase에 로그아웃 이벤트 전송
+                    send_logout_event_to_supabase(position, name, logout_time, duration)
+                    
+                    # 세션 삭제
+                    user_session_ref.delete()
+                except Exception as e:
+                    # 오류가 발생해도 사용자에게 표시하지 않음
+                    pass
             
             # 새로운 세션 생성
             session_id = generate_session_id()
