@@ -5,6 +5,5 @@ python-dotenv
 pillow
 firebase-admin
 pandas
-supabase
 uuid
 datetime

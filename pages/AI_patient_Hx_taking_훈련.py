@@ -251,7 +251,6 @@ if message.content and message.content[0].text.value and '전체 지시 사항' 
 st.sidebar.divider()
 
 if st.sidebar.button("Logout"):
-    # 로그아웃 시간과 duration 계산
     logout_time = datetime.now(timezone.utc)
     login_time = st.session_state.get('login_time')
     if login_time:
@@ -260,113 +259,6 @@ if st.sidebar.button("Logout"):
         duration = round((logout_time - login_time).total_seconds())
     else:
         duration = 0
-
-    # 로그아웃 이벤트 기록
-    logout_data = {
-        "position": st.session_state.get('position'),
-        "name": st.session_state.get('name'),
-        "time": logout_time.isoformat(),
-        "event": "logout",
-        "duration": duration
-    }
-    
-    # Supabase에 로그아웃 기록 전송
-    supabase_url = st.secrets["supabase_url"]
-    supabase_key = st.secrets["supabase_key"]
-    supabase_headers = {
-        "Content-Type": "application/json",
-        "apikey": supabase_key,
-        "Authorization": f"Bearer {supabase_key}"
-    }
-    
-    requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
-    
-    try:
-        # 현재 시간 가져오기 (초 단위까지)
-        now = datetime.now(timezone.utc)
-        timestamp = now.strftime("%Y%m%d_%H%M%S")
-        position = st.session_state.get('position', '')
-        name = st.session_state.get('name', '')
-        
-        # Firebase Storage 버킷 가져오기
-        bucket = storage.bucket()
-        
-        # 로그인 시간 가져오기
-        login_timestamp = None
-        login_blobs = list(bucket.list_blobs(prefix="log_login/"))
-        
-        # 현재 사용자의 가장 최근 로그인 찾기
-        for blob in sorted(login_blobs, key=lambda x: x.name, reverse=True):
-            try:
-                # 임시 파일에 다운로드
-                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                    blob.download_to_filename(temp_file.name)
-                    with open(temp_file.name, 'r') as f:
-                        content = f.read()
-                    os.unlink(temp_file.name)
-                
-                # 로그 내용 파싱
-                parts = content.split('*')
-                if len(parts) >= 4 and parts[0] == position and parts[1] == name:
-                    login_timestamp = datetime.strptime(parts[3], '%Y-%m-%d %H:%M:%S')
-                    # 타임존 정보 추가
-                    login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
-                    # 로그인 파일 찾았으므로 삭제
-                    blob.delete()
-                    break
-            except Exception as e:
-                st.error(f"로그인 로그 파일 처리 중 오류 발생: {str(e)}")
-        
-        # 로그아웃 로그 파일 생성 및 업로드
-        now = datetime.now(timezone.utc)
-        log_content = f"{position}*{name}*logout*{now.strftime('%Y-%m-%d %H:%M:%S')}"
-        with tempfile.NamedTemporaryFile(delete=False, mode='w') as temp_file:
-            temp_file.write(log_content)
-            temp_file_path = temp_file.name
-        
-        log_filename = f"log_logout/{timestamp}"
-        blob = bucket.blob(log_filename)
-        blob.upload_from_filename(temp_file_path)
-        
-        # 시간 차이 계산 및 duration 로그 생성
-        if login_timestamp:
-            # login_timestamp에 타임존 정보가 없으면 추가
-            if not login_timestamp.tzinfo:
-                login_timestamp = login_timestamp.replace(tzinfo=timezone.utc)
-            time_diff_seconds = int((now - login_timestamp).total_seconds())
-            
-            # duration 로그 파일 생성 및 업로드
-            with tempfile.NamedTemporaryFile(delete=False, mode='w') as temp_file:
-                temp_file.write(f"{position}*{name}*{time_diff_seconds}*{now.strftime('%Y-%m-%d %H:%M:%S')}")
-                duration_temp_path = temp_file.name
-            
-            duration_filename = f"log_duration/{position}*{name}*{time_diff_seconds}*{timestamp}"
-            duration_blob = bucket.blob(duration_filename)
-            duration_blob.upload_from_filename(duration_temp_path)
-            os.unlink(duration_temp_path)
-        
-        # 로그아웃 로그 파일 삭제 (업로드 후)
-        os.unlink(temp_file_path)
-        
-        # 모든 로그아웃 로그 파일 삭제
-        logout_blobs = list(bucket.list_blobs(prefix="log_logout/"))
-        for blob in logout_blobs:
-            try:
-                # 현재 사용자의 로그아웃 파일만 삭제
-                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-                    blob.download_to_filename(temp_file.name)
-                    with open(temp_file.name, 'r') as f:
-                        content = f.read()
-                    os.unlink(temp_file.name)
-                
-                parts = content.split('*')
-                if len(parts) >= 4 and parts[0] == position and parts[1] == name:
-                    blob.delete()
-            except Exception as e:
-                st.error(f"로그아웃 로그 파일 삭제 중 오류 발생: {str(e)}")
-        
-    except Exception as e:
-        st.error(f"로그 파일 처리 중 오류 발생: {str(e)}")
-    
+    # Supabase 관련 코드 삭제됨
     st.session_state.clear()
     st.success("로그아웃 되었습니다.")
