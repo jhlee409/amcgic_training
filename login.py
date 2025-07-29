@@ -88,27 +88,7 @@ def get_client_ip():
     except:
         return "unknown"
 
-def send_logout_event_to_supabase(position, name, logout_time, duration):
-    try:
-        logout_data = {
-            "position": position,
-            "name": name,
-            "time": logout_time.isoformat(),
-            "event": "logout",
-            "duration": duration
-        }
-
-        supabase_url = st.secrets["supabase_url"]
-        supabase_key = st.secrets["supabase_key"]
-        supabase_headers = {
-            "Content-Type": "application/json",
-            "apikey": supabase_key,
-            "Authorization": f"Bearer {supabase_key}"
-        }
-        
-        requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=logout_data)
-    except Exception as e:
-        st.error(f"Supabase 로그아웃 이벤트 기록 중 오류 발생: {str(e)}")
+# Supabase 관련 함수 삭제됨
 
 def handle_logout():
     try:
@@ -126,10 +106,7 @@ def handle_logout():
                 logout_time = datetime.now(timezone.utc)
                 login_time = datetime.fromtimestamp(current_session.get('loginTime') / 1000, tz=timezone.utc)
                 duration = round((logout_time - login_time).total_seconds())
-                
-                # Supabase에 로그아웃 이벤트 전송
-                send_logout_event_to_supabase(position, name, logout_time, duration)
-                
+                # Supabase 기록 삭제됨
                 # 세션 삭제
                 user_session_ref.delete()
 
@@ -137,24 +114,19 @@ def handle_logout():
         try:
             now = datetime.now(timezone.utc)
             timestamp = now.strftime("%Y%m%d_%H%M%S")
-            
             # Firebase Storage 버킷 가져오기
             bucket = storage.bucket()
-            
             # 로그아웃 로그 파일 생성 및 업로드
             log_content = f"{position}*{name}*logout*{now.strftime('%Y-%m-%d %H:%M:%S')}"
             with tempfile.NamedTemporaryFile(delete=False, mode='w') as temp_file:
                 temp_file.write(log_content)
                 temp_file_path = temp_file.name
-            
             log_filename = f"log_logout/{timestamp}"
             blob = bucket.blob(log_filename)
             blob.upload_from_filename(temp_file_path)
             os.unlink(temp_file_path)
-            
         except Exception as e:
             st.error(f"로그 파일 처리 중 오류 발생: {str(e)}")
-        
         st.session_state.clear()
         st.success("로그아웃 되었습니다.")
     except Exception as e:
@@ -204,16 +176,12 @@ def handle_login(email, password, name, position):
                     logout_time = datetime.now(timezone.utc)
                     login_time = datetime.fromtimestamp(current_session.get('loginTime') / 1000, tz=timezone.utc)
                     duration = round((logout_time - login_time).total_seconds())
-                    
-                    # Supabase에 로그아웃 이벤트 전송
-                    send_logout_event_to_supabase(position, name, logout_time, duration)
-                    
+                    # Supabase 기록 삭제됨
                     # 세션 삭제
                     user_session_ref.delete()
                 except Exception as e:
                     # 오류가 발생해도 사용자에게 표시하지 않음
                     pass
-            
             # 새로운 세션 생성
             session_id = generate_session_id()
             new_session = {
@@ -223,14 +191,11 @@ def handle_login(email, password, name, position):
                 'lastActive': {'.sv': 'timestamp'}
             }
             user_session_ref.set(new_session)
-            
             # 세션 ID를 상태에 저장
             st.session_state['session_id'] = session_id
-            
             # Realtime Database에도 정보 저장
             user_ref = db.reference(f'users/{user_id}')
             user_data = user_ref.get()
-
             if user_data is None:
                 # 새 사용자인 경우 정보 저장
                 user_ref.set({
@@ -240,96 +205,29 @@ def handle_login(email, password, name, position):
                     'created_at': {'.sv': 'timestamp'}  # 서버 타임스탬프 사용
                 })
                 user_data = {'name': name, 'position': position}
-            
             # position이 없는 경우 업데이트
             elif 'position' not in user_data:
                 user_ref.update({
                     'position': position
                 })
                 user_data['position'] = position
-
-            # Supabase로 로그인 기록 추가
-            supabase_url = st.secrets["supabase_url"]
-            supabase_key = st.secrets["supabase_key"]
-            supabase_headers = {
-                "Content-Type": "application/json",
-                "apikey": supabase_key,
-                "Authorization": f"Bearer {supabase_key}"
-            }
-
-            login_time = datetime.now(timezone.utc)
-            st.session_state['login_time'] = login_time  # UTC 시간 그대로 저장
-            login_data = {
-                "position": position,
-                "name": name,
-                "time": login_time.isoformat(),
-                "event": "login",
-                "duration": 0
-            }
-
-            supabase_response = requests.post(f"{supabase_url}/rest/v1/login", headers=supabase_headers, json=login_data)
-
-            if supabase_response.status_code == 201:
-                # Firebase Storage에서 기존 로그 폴더 삭제
-                try:
-                    bucket = storage.bucket()
-                    
-                    # log_login 폴더 삭제
-                    login_blobs = list(bucket.list_blobs(prefix="log_login/"))
-                    for blob in login_blobs:
-                        try:
-                            blob.delete()
-                        except Exception as e:
-                            st.error(f"로그인 로그 파일 삭제 중 오류 발생: {str(e)}")
-                    
-                    # log_logout 폴더 삭제
-                    logout_blobs = list(bucket.list_blobs(prefix="log_logout/"))
-                    for blob in logout_blobs:
-                        try:
-                            blob.delete()
-                        except Exception as e:
-                            st.error(f"로그아웃 로그 파일 삭제 중 오류 발생: {str(e)}")
-                    
-                    # 폴더 자체를 삭제하기 위한 빈 폴더 표시자 삭제
-                    folder_markers = [
-                        bucket.blob("log_login/"),
-                        bucket.blob("log_logout/")
-                    ]
-                    for marker in folder_markers:
-                        if marker.exists():
-                            marker.delete()
-                
-                except Exception as e:
-                    st.error(f"로그 폴더 삭제 중 오류 발생: {str(e)}")
-
-                # 로그인 성공 시 로그 파일 생성 및 Firebase Storage에 업로드
-                try:
-                    # 현재 시간 가져오기 (초 단위까지)
-                    now = datetime.now(timezone.utc)
-                    timestamp = now.strftime("%Y%m%d_%H%M%S")
-                    
-                    # 로그 파일 내용 생성
-                    log_content = f"{position}*{name}*login*{now.strftime('%Y-%m-%d %H:%M:%S')}"
-                    
-                    # 임시 파일 생성
-                    with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt') as temp_file:
-                        temp_file.write(log_content)
-                        temp_file_path = temp_file.name
-                    
-                    # Firebase Storage에 업로드
-                    bucket = storage.bucket()
-                    log_filename = f"log_login/{timestamp}"
-                    blob = bucket.blob(log_filename)
-                    blob.upload_from_filename(temp_file_path)
-                    
-                    # 임시 파일 삭제
-                    os.unlink(temp_file_path)
-                    
-                    st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
-                except Exception as e:
-                    st.error(f"로그 파일 업로드 중 오류 발생: {str(e)}")
-                    st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
-            
+            # 로그인 성공 시 로그 파일 생성 및 Firebase Storage에 업로드
+            try:
+                now = datetime.now(timezone.utc)
+                timestamp = now.strftime("%Y%m%d_%H%M%S")
+                log_content = f"{position}*{name}*login*{now.strftime('%Y-%m-%d %H:%M:%S')}"
+                with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt') as temp_file:
+                    temp_file.write(log_content)
+                    temp_file_path = temp_file.name
+                bucket = storage.bucket()
+                log_filename = f"log_login/{timestamp}"
+                blob = bucket.blob(log_filename)
+                blob.upload_from_filename(temp_file_path)
+                os.unlink(temp_file_path)
+                st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
+            except Exception as e:
+                st.error(f"로그 파일 업로드 중 오류 발생: {str(e)}")
+                st.success(f"환영합니다, {user_data.get('name', email)}님! ({user_data.get('position', '직책 미지정')})")
             st.session_state['logged_in'] = True
             st.session_state['user_email'] = email
             st.session_state['name'] = name
