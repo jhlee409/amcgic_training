@@ -132,12 +132,9 @@ for letter, videos in grouped_videos.items():
                     st.session_state.video_states[video_name] = False
 
                 # 버튼 생성 및 클릭 처리
-                if st.button(f"{video_name}", key=f"btn_{video_name}"):
+                if st.button(f"{video_name}"):
                     # 현재 비디오의 상태만 토글하고, 다른 비디오는 그대로 유지
                     st.session_state.video_states[video_name] = not st.session_state.video_states.get(video_name, False)
-                    
-                    # 디버깅을 위한 정보 출력
-                    st.write(f"버튼 {video_name} 클릭됨. 상태: {st.session_state.video_states[video_name]}")
                     
                     # 비디오 이름에서 숫자 추출
                     video_number = ''.join(filter(str.isdigit, video_name))
@@ -159,26 +156,19 @@ for letter, videos in grouped_videos.items():
 
                 # 동영상 재생 창
                 if st.session_state.video_states.get(video_name, False):
-                    st.write(f"🎬 **{video_name}** 비디오 재생 중...")
-                    try:
-                        blob = bucket.blob(video_file)
-                        video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
-                        st.markdown(
-                            f"""
-                            <div style="display: flex; justify-content: center; align-items: center; margin: 10px 0;">
-                                <video controls style="width: 100%; max-width: 800px; height: auto;">
-                                    <source src="{video_url}" type="video/mp4">
-                                    Your browser does not support the video tag.
-                                </video>
-                            </div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                        st.success(f"✅ {video_name} 비디오가 성공적으로 로드되었습니다!")
-                    except Exception as e:
-                        st.error(f"❌ 비디오를 불러오는 중 오류가 발생했습니다: {str(e)}")
-                        st.info(f"📁 파일 경로: {video_file}")
-                        st.info(f"🔍 Firebase Storage에서 파일을 찾을 수 없습니다. 파일명을 확인해주세요.")
+                    blob = bucket.blob(video_file)
+                    video_url = blob.generate_signed_url(expiration=timedelta(seconds=300), method='GET')
+                    st.markdown(
+                        f"""
+                        <div style="display: flex; justify-content: center; align-items: center;">
+                            <video controls style="width: 700%; height: auto;">
+                                <source src="{video_url}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        </div>
+                        """,
+                        unsafe_allow_html=True
+                    )
 
 
 if st.sidebar.button("Logout"):
