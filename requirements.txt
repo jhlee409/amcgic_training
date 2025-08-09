@@ -5,3 +5,5 @@ python-dotenv
 pillow
 firebase-admin
 pandas
+uuid
+datetime

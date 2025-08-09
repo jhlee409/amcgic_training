@@ -4,10 +4,12 @@ import docx
 import io
 from io import BytesIO
 import base64
+import os
 import firebase_admin
 from firebase_admin import credentials, storage
 from datetime import datetime, timezone, timedelta
 import requests
+import os
 import tempfile
 
 # Set page to wide mode

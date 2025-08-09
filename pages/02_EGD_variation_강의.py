@@ -7,6 +7,8 @@ import io
 from openai import OpenAI
 import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
+import requests
+import os
 import tempfile
 
 # Set page to wide mode
