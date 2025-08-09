@@ -90,23 +90,23 @@ links_data = [
     ],
     # 두 번째 컬럼 (7개)
     [
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"}
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"}
     ],
     # 세 번째 컬럼 (7개)
     [
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"}
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"}
     ]
 ]
 
