@@ -6,8 +6,6 @@ from firebase_admin import credentials, db, auth, storage
 from datetime import datetime, timezone
 import os
 import tempfile
-import uuid
-import socket
 
 # Firebase 초기화 (아직 초기화되지 않은 경우에만)
 if not firebase_admin._apps:
@@ -78,10 +76,12 @@ if st.button("입력 확인"):  # 버튼 이름을 변경하여 ID 충돌 방지
 
 # 세션 관리를 위한 유틸리티 함수들
 def generate_session_id():
+    import uuid
     return str(uuid.uuid4())
 
 def get_client_ip():
     try:
+        import socket
         hostname = socket.gethostname()
         ip_address = socket.gethostbyname(hostname)
         return ip_address

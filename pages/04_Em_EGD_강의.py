@@ -1,5 +1,4 @@
 import streamlit as st
-import os
 from PIL import Image
 import docx
 import io
@@ -8,7 +7,6 @@ from firebase_admin import credentials, storage
 from datetime import datetime, timedelta, timezone
 import requests
 import json
-import os
 import tempfile
 
 # Set page to wide mode
