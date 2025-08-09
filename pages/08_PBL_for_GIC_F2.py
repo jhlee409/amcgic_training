@@ -49,7 +49,7 @@ st.markdown("""
     border: 2px solid #FFA500;
     border-radius: 10px;
     padding: 12px;
-    margin: 8px 0;
+    margin: 16px 0;
     text-align: center;
     text-decoration: none;
     color: #333;
@@ -58,6 +58,9 @@ st.markdown("""
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     font-size: 0.9em;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .link-button:hover {
