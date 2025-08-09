@@ -80,13 +80,13 @@ st.markdown("""
 links_data = [
     # 첫 번째 컬럼 (7개)
     [
-        {"url": "https://pbl-amc-gic-f2-01.vercel.app/", "text": "stage IV AGC", "description": "stage IV AGC 환자의 치료"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"},
-        {"url": "#", "text": "PBL", "description": "준비중"}
+        {"url": "https://pbl-amc-gic-f2-01.vercel.app/", "text": "stage IV AGC", "description": "stage IV AGC 환자의 검사와 치료"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"},
+        # {"url": "#", "text": "PBL", "description": "준비중"}
     ],
     # 두 번째 컬럼 (7개)
     [
