@@ -147,7 +147,7 @@ with col2:
 
             # Firebase Storage에 로그 파일 업로드
             bucket = storage.bucket('amcgi-bulletin.appspot.com')
-            log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{position}*{name}*{file_name_without_extension}')
+            log_blob = bucket.blob(f'log_AI_patient_Hx_taking/{position}*{name}*"CPX"*{file_name_without_extension}')
             log_blob.upload_from_string(log_entry, content_type='text/plain')
 
         # Include the directory in the path when reading the file
