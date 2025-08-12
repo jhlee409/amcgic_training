@@ -167,7 +167,7 @@ if st.sidebar.button("본강의 시청"):
         log_entry = f"Position: {position}, Name: {name}, Access Date: {access_date}, EUS강의: {selected_lecture}\n"
 
         log_blob = bucket.blob(
-            f'log_EUS/{position}*{name}*{selected_lecture}'
+            f'log/{position}*{name}*{selected_lecture}'
         )
         log_blob.upload_from_string(log_entry, content_type='text/plain')
     

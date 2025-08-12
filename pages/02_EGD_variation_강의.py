@@ -151,7 +151,7 @@ for letter, videos in grouped_videos.items():
                         log_entry = f"Position: {position}, Name: {name}, Video: {video_name}, Access Date: {access_date}\n"
 
                         # Firebase Storage에 로그 파일 업로드
-                        log_blob = bucket.blob(f'log_EGD_variation/{position_name}*{video_name}')  # 로그 파일 경로 설정
+                        log_blob = bucket.blob(f'log/{position_name}*{video_name}')  # 로그 파일 경로 설정
                         log_blob.upload_from_string(log_entry, content_type='text/plain')  # 문자열로 업로드
 
                 # 동영상 재생 창

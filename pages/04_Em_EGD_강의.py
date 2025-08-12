@@ -146,7 +146,7 @@ with right_col:
 
             # 로그 정보 저장
             base_name = os.path.splitext(selected_file)[0]  # .mp4 제외한 파일 이름
-            log_file_name = f"log_EGD_Hemostasis/{st.session_state.get('position')}*{st.session_state.get('name')}*{base_name}"
+            log_file_name = f"log/{st.session_state.get('position')}*{st.session_state.get('name')}*{base_name}"
             log_data = {
                 "file_name": selected_file,
                 "timestamp": datetime.now(timezone.utc).isoformat()
