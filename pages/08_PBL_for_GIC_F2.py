@@ -279,7 +279,7 @@ div[data-testid="column"] button:active,
     background-color: #FFF2E6 !important;
     color: #333 !important;
     border: 2px solid #FFCC99 !important;
-    width: 100% !important;
+    width: 400px !important;
     max-width: 100% !important;
     min-width: 100% !important;
     text-align: left !important;
