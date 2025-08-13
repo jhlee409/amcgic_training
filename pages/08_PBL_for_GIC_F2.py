@@ -111,16 +111,16 @@ if st.sidebar.button("Logout"):
     st.session_state.clear()
     st.success("로그아웃 되었습니다.")
 
-# CSS 스타일 정의 (연한 주황색 버튼)
-# st.markdown("""
-# <style>
-# /* 버튼 컨테이너를 전체 너비로 고정 */
-# .stButton,
-# div[data-testid="stButton"] {
-#     width: 100% !important;
-#     margin: 0 !important;
-#     padding: 0 !important;
-# }
+CSS 스타일 정의 (연한 주황색 버튼)
+st.markdown("""
+<style>
+/* 버튼 컨테이너를 전체 너비로 고정 */
+.stButton,
+div[data-testid="stButton"] {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
 
 # /* 모든 가능한 버튼 선택자를 포함한 포괄적인 스타일링 */
 # .stButton > button,
@@ -273,20 +273,20 @@ if st.sidebar.button("Logout"):
 #     transform: translateY(0) !important;
 # }
 
-# /* 전체 버튼에 대한 강제 스타일 적용 (사이드바 제외) */
-# .main button,
-# [data-testid="main"] button {
-#     background-color: #FFF2E6 !important;
-#     color: #333 !important;
-#     border: 2px solid #FFCC99 !important;
-#     width: 400px !important;
-#     max-width: 100% !important;
-#     min-width: 100% !important;
-#     text-align: left !important;
-#     box-sizing: border-box !important;
-# }
-# </style>
-# """, unsafe_allow_html=True)
+/* 전체 버튼에 대한 강제 스타일 적용 (사이드바 제외) */
+.main button,
+[data-testid="main"] button {
+    background-color: #FFF2E6 !important;
+    color: #333 !important;
+    border: 2px solid #FFCC99 !important;
+    width: 400px !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    text-align: left !important;
+    box-sizing: border-box !important;
+}
+</style>
+""", unsafe_allow_html=True)
 
 # 링크 데이터 정의
 links_data = [
