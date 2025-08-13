@@ -203,7 +203,7 @@ with col1:
             """, unsafe_allow_html=True)
             
             # 페이지 새로고침하여 깔끔하게 정리
-            st.experimental_rerun()
+            st.rerun()
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
@@ -226,7 +226,7 @@ with col2:
             """, unsafe_allow_html=True)
             
             # 페이지 새로고침하여 깔끔하게 정리
-            st.experimental_rerun()
+            st.rerun()
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
@@ -249,4 +249,4 @@ with col3:
             """, unsafe_allow_html=True)
             
             # 페이지 새로고침하여 깔끔하게 정리
-            st.experimental_rerun()
+            st.rerun()
