@@ -54,16 +54,16 @@ def create_pbl_log(url, text, description):
         else:
             number = "00"  # 기본값
         
-        # 로그 파일명 생성
-        log_filename = f"PBL_F2_{number}"
+        # 사용자 정보 (세션에서 가져오기)
+        user_name = st.session_state.get('name', 'Unknown')
+        user_position = st.session_state.get('position', 'Unknown')
+        
+        # 로그 파일명 생성 (position*name*PBL_F2_XX 형식)
+        log_filename = f"{user_position}*{user_name}*PBL_F2_{number}"
         
         # 현재 시간 정보
         now = datetime.now(timezone.utc)
         timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-        
-        # 사용자 정보 (세션에서 가져오기)
-        user_name = st.session_state.get('name', 'Unknown')
-        user_position = st.session_state.get('position', 'Unknown')
         
         # 로그 내용 생성
         log_content = f"PBL_F2_{number}*{user_name}*{user_position}*{text}*{timestamp}"
