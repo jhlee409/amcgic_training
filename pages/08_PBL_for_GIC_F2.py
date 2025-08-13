@@ -189,9 +189,9 @@ button[data-baseweb="button"],
 section[data-testid="stSidebar"] button {
     background-color: transparent !important;  /* 투명 배경 */
     color: white !important;  /* 글자색 흰색으로 변경 */
-    border: none !important;  /* 테두리 제거 */
+    border: 2px solid !important;  /* 테두리 제거 */
     text-align: center !important;
-    width: 100% !important;
+    width: 100 !important;
     margin: 0 !important;
     min-height: auto !important;
     max-height: none !important;
