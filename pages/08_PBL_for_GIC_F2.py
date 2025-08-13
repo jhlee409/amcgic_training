@@ -154,10 +154,11 @@ button[data-baseweb="button"],
     box-sizing: border-box !important;
 }
 
-/* 메인 컨텐츠 영역의 버튼만 스타일링 */
+/* 메인 컨텐츠 영역의 버튼만 스타일링 - 더 강력한 고정 길이 */
 div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
 .main .stButton > button,
-[data-testid="main"] button {
+[data-testid="main"] button,
+.main button {
     text-align: left !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
@@ -178,20 +179,51 @@ div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
     display: flex !important;
     flex-direction: column !important;
     width: 100% !important;  /* 가로 길이 최대로 고정 */
+    max-width: 100% !important;  /* 최대 너비도 100%로 고정 */
+    min-width: 100% !important;  /* 최소 너비도 100%로 고정 */
     margin: 0 !important;
     box-sizing: border-box !important;
 }
 
-/* 사이드바 버튼은 제외 */
+/* 사이드바 버튼은 투명 배경으로 */
 section[data-testid="stSidebar"] button {
-    background-color: #f0f2f6 !important;
+    background-color: transparent !important;  /* 투명 배경 */
     color: #262730 !important;
-    border: 1px solid #d0d3d9 !important;
+    border: none !important;  /* 테두리 제거 */
     text-align: center !important;
     width: 100% !important;
     margin: 0 !important;
     min-height: auto !important;
     max-height: none !important;
+    box-shadow: none !important;  /* 그림자 제거 */
+}
+
+/* 사이드바 버튼 호버 효과 */
+section[data-testid="stSidebar"] button:hover {
+    background-color: rgba(0,0,0,0.05) !important;  /* 약간의 호버 효과 */
+}
+
+/* 상단 우측 메뉴 바 배경색 제거 */
+[data-testid="stHeader"] {
+    background-color: transparent !important;
+}
+
+/* 메뉴 버튼들 (상단 우측) 투명 배경 */
+[data-testid="stHeader"] button,
+header button,
+.stApp > header button,
+button[kind="header"],
+button[aria-label*="menu"] {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 메뉴 버튼 호버 효과 */
+[data-testid="stHeader"] button:hover,
+header button:hover,
+.stApp > header button:hover {
+    background-color: rgba(0,0,0,0.05) !important;
 }
 
 /* 버튼 내부 텍스트 컨테이너 정렬 */
@@ -224,7 +256,8 @@ button[data-testid="baseButton-secondary"] span {
 /* 버튼 호버 효과 (사이드바 제외) */
 div[data-testid="column"] button:hover,
 .main .stButton > button:hover,
-[data-testid="main"] button:hover {
+[data-testid="main"] button:hover,
+.main button:hover {
     background-color: #FFE4B5 !important;  /* 호버 시 조금 더 진한 연한 주황색 */
     color: #333 !important;
     transform: translateY(-2px) !important;
@@ -234,26 +267,22 @@ div[data-testid="column"] button:hover,
 /* 버튼 활성화 효과 */
 div[data-testid="column"] button:active,
 .main .stButton > button:active,
-[data-testid="main"] button:active {
+[data-testid="main"] button:active,
+.main button:active {
     transform: translateY(0) !important;
 }
 
-/* 전체 버튼에 대한 강제 스타일 적용 */
-button {
+/* 전체 버튼에 대한 강제 스타일 적용 (사이드바 제외) */
+.main button,
+[data-testid="main"] button {
     background-color: #FFF2E6 !important;
     color: #333 !important;
     border: 2px solid #FFCC99 !important;
     width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
     text-align: left !important;
     box-sizing: border-box !important;
-}
-
-/* 사이드바 버튼 예외 처리 */
-section[data-testid="stSidebar"] button {
-    background-color: #f0f2f6 !important;
-    color: #262730 !important;
-    border: 1px solid #d0d3d9 !important;
-    text-align: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
