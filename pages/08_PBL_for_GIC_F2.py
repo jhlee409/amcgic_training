@@ -41,24 +41,8 @@ if not firebase_admin._apps:
 # Firebase Storage에서 MP4 파일의 URL을 검색합니다.
 bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
-# GI-training-program 프로젝트용 Firebase 앱 초기화
-if 'gi_training_app' not in [app.name for app in firebase_admin._apps.values()]:
-    gi_cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": st.secrets["gi_training_project_id"],
-        "private_key_id": st.secrets["gi_training_private_key_id"],
-        "private_key": st.secrets["gi_training_private_key"].replace('\\n', '\n'),
-        "client_email": st.secrets["gi_training_client_email"],
-        "client_id": st.secrets["gi_training_client_id"],
-        "auth_uri": st.secrets["gi_training_auth_uri"],
-        "token_uri": st.secrets["gi_training_token_uri"],
-        "auth_provider_x509_cert_url": st.secrets["gi_training_auth_provider_x509_cert_url"],
-        "client_x509_cert_url": st.secrets["gi_training_client_x509_cert_url"],
-        "universe_domain": st.secrets["gi_training_universe_domain"]
-    })
-    firebase_admin.initialize_app(gi_cred, name='gi_training_app')
-
-gi_training_bucket = storage.bucket('gi-training-program.appspot.com', app=firebase_admin.get_app('gi_training_app'))
+# 로그 생성을 위한 별도 버킷 (기존 프로젝트 사용)
+log_bucket = storage.bucket('amcgi-bulletin.appspot.com')
 
 def create_pbl_log(url, text, description):
     """PBL 버튼 클릭 시 로그 파일을 생성하고 Firebase Storage에 업로드"""
@@ -90,7 +74,7 @@ def create_pbl_log(url, text, description):
             temp_file_path = temp_file.name
         
         # Firebase Storage에 업로드 (log 폴더에)
-        blob = gi_training_bucket.blob(f"log/{log_filename}")
+        blob = log_bucket.blob(f"log/{log_filename}")
         blob.upload_from_filename(temp_file_path)
         
         # 임시 파일 삭제
