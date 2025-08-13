@@ -178,7 +178,7 @@ div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 100% !important;  /* 가로 길이 최대로 고정 */
+    width: 400px !important;  /* 가로 길이 최대로 고정 */
     max-width: 100% !important;  /* 최대 너비도 100%로 고정 */
     min-width: 100% !important;  /* 최소 너비도 100%로 고정 */
     margin: 0 !important;
