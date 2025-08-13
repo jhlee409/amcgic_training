@@ -128,10 +128,13 @@ st.markdown("""
     transition: all 0.3s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     font-size: 0.9em;
-    width: 80%;
+    width: 95%;
     margin-left: auto;
     margin-right: auto;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .link-button:hover {
