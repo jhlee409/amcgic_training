@@ -18,7 +18,7 @@ st.set_page_config(page_title="PBL for GIC F2", layout="wide")
 # 로그인 상태 확인
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
     st.warning('로그인이 필요합니다.')
-    st.stop()   
+    st.stop()    
 
 # Check if Firebase app has already been initialized
 if not firebase_admin._apps:
@@ -85,7 +85,8 @@ def create_pbl_log(url, text, description):
         
     except Exception as e:
         print(f"PBL 로그 파일 생성 중 오류 발생: {str(e)}")
-        st.error(f"로그 파일 생성 중 오류가 발생했습니다: {str(e)}")
+        # 사용자에게 에러 메시지를 표시하지 않으려면 st.error를 제거합니다.
+        # st.error(f"로그 파일 생성 중 오류가 발생했습니다: {str(e)}")
 
 
 st.header("PBL for GIC F2")
@@ -185,35 +186,56 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
-                create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+        # 단일 버튼으로 통합: 로그 생성 + 링크 열기
+        # 버튼의 레이블에 text와 description을 함께 표시합니다.
+        button_label = f"**{link['text']}**\n{link['description']}"
+        if st.button(button_label, key=f"pbl_button_{link['text']}"):
+            # 1. 로그 파일을 생성합니다.
+            create_pbl_log(link['url'], link['text'], link['description'])
+            # 2. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
+            # st.markdown를 사용해 HTML과 JavaScript를 삽입합니다.
+            st.markdown(f'<a href="{link["url"]}" target="_blank"></a>', unsafe_allow_html=True)
+            st.markdown(
+                f"""
+                <script>
+                    window.open("{link['url']}", "_blank");
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+            # st.success("로그 생성 완료 및 페이지 이동!")
+            # 사용자에게 알림 메시지를 표시하지 않아도 되므로 주석 처리했습니다.
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
-                create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+        # 단일 버튼으로 통합: 로그 생성 + 링크 열기
+        button_label = f"**{link['text']}**\n{link['description']}"
+        if st.button(button_label, key=f"pbl_button_{link['text']}"):
+            create_pbl_log(link['url'], link['text'], link['description'])
+            st.markdown(
+                f"""
+                <script>
+                    window.open("{link['url']}", "_blank");
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+            # st.success("로그 생성 완료 및 페이지 이동!")
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
-                create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+        # 단일 버튼으로 통합: 로그 생성 + 링크 열기
+        button_label = f"**{link['text']}**\n{link['description']}"
+        if st.button(button_label, key=f"pbl_button_{link['text']}"):
+            create_pbl_log(link['url'], link['text'], link['description'])
+            st.markdown(
+                f"""
+                <script>
+                    window.open("{link['url']}", "_blank");
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+            # st.success("로그 생성 완료 및 페이지 이동!")
