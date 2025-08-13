@@ -114,12 +114,17 @@ if st.sidebar.button("Logout"):
 # CSS 스타일 정의 (Streamlit 버튼 텍스트 좌측 정렬)
 st.markdown("""
 <style>
-/* Streamlit 버튼 내 텍스트 좌측 정렬 */
-.stButton > button {
+/* Streamlit 버튼 내 텍스트 좌측 정렬 - 더 강력한 선택자 사용 */
+.stButton > button,
+button[data-testid="baseButton-secondary"],
+div[data-testid="stButton"] > button {
     text-align: left !important;
     justify-content: flex-start !important;
+    align-items: flex-start !important;
     padding-left: 20px !important;
     padding-right: 20px !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
     white-space: pre-wrap !important;
     height: auto !important;
     min-height: 60px !important;
@@ -129,10 +134,23 @@ st.markdown("""
     border: 2px solid #FFA500 !important;
     border-radius: 10px !important;
     font-weight: bold !important;
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+/* 버튼 내부 텍스트 컨테이너 정렬 */
+.stButton > button > div,
+button[data-testid="baseButton-secondary"] > div,
+div[data-testid="stButton"] > button > div {
+    text-align: left !important;
+    align-self: flex-start !important;
+    width: 100% !important;
 }
 
 /* 버튼 호버 효과 */
-.stButton > button:hover {
+.stButton > button:hover,
+button[data-testid="baseButton-secondary"]:hover,
+div[data-testid="stButton"] > button:hover {
     background-color: #FF8C00 !important;
     color: white !important;
     transform: translateY(-2px) !important;
@@ -140,7 +158,9 @@ st.markdown("""
 }
 
 /* 버튼 활성화 효과 */
-.stButton > button:active {
+.stButton > button:active,
+button[data-testid="baseButton-secondary"]:active,
+div[data-testid="stButton"] > button:active {
     transform: translateY(0) !important;
 }
 </style>
