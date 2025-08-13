@@ -185,35 +185,41 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
+        # 로그 생성을 위한 상태 변수
+        if f"log_created_{link['text']}" not in st.session_state:
+            st.session_state[f"log_created_{link['text']}"] = False
+        
+        # 링크 버튼 클릭 시 로그 생성
+        if st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'], key=f"link_{link['text']}"):
+            if not st.session_state[f"log_created_{link['text']}"]:
                 create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+                st.session_state[f"log_created_{link['text']}"] = True
+                st.success(f"{link['text']} 로그 생성 완료!")
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
+        # 로그 생성을 위한 상태 변수
+        if f"log_created_{link['text']}" not in st.session_state:
+            st.session_state[f"log_created_{link['text']}"] = False
+        
+        # 링크 버튼 클릭 시 로그 생성
+        if st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'], key=f"link_{link['text']}"):
+            if not st.session_state[f"log_created_{link['text']}"]:
                 create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+                st.session_state[f"log_created_{link['text']}"] = True
+                st.success(f"{link['text']} 로그 생성 완료!")
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
+        # 로그 생성을 위한 상태 변수
+        if f"log_created_{link['text']}" not in st.session_state:
+            st.session_state[f"log_created_{link['text']}"] = False
+        
+        # 링크 버튼 클릭 시 로그 생성
+        if st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'], key=f"link_{link['text']}"):
+            if not st.session_state[f"log_created_{link['text']}"]:
                 create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+                st.session_state[f"log_created_{link['text']}"] = True
+                st.success(f"{link['text']} 로그 생성 완료!")
