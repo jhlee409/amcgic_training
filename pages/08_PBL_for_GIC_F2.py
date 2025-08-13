@@ -111,57 +111,34 @@ if st.sidebar.button("Logout"):
     st.session_state.clear()
     st.success("로그아웃 되었습니다.")
 
-# CSS 스타일과 JavaScript 함수 정의
+# CSS 스타일 정의 (Streamlit 버튼 텍스트 좌측 정렬)
 st.markdown("""
 <style>
-.link-button {
-    background-color: #FFE4B5;
-    border: 2px solid #FFA500;
-    border-radius: 10px;
-    padding: 12px;
-    margin: 16px 0;
-    text-align: left;
-    text-decoration: none;
-    color: #333;
-    font-weight: bold;
-    display: block;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    font-size: 1.0em;
-    width: 95%;
-    margin-left: auto;
-    margin-right: auto;
-    cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+/* Streamlit 버튼 내 텍스트 좌측 정렬 */
+.stButton > button {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    white-space: pre-wrap !important;
+    height: auto !important;
+    min-height: 60px !important;
+    line-height: 1.4 !important;
 }
 
-.link-button:hover {
-    background-color: #FF8C00;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+/* 버튼 호버 효과 */
+.stButton > button:hover {
+    background-color: #FF8C00 !important;
+    color: white !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
 }
 
-.link-button:active {
-    transform: translateY(0);
+/* 버튼 활성화 효과 */
+.stButton > button:active {
+    transform: translateY(0) !important;
 }
 </style>
-
-<script>
-function handleButtonClick(url, text, description) {
-    // 로그 생성을 위한 AJAX 요청 (간단한 구현)
-    console.log('Button clicked:', url, text, description);
-    
-    // 새 탭에서 URL 열기
-    window.open(url, '_blank');
-    
-    // 성공 메시지 표시 (Streamlit에서 처리)
-    // 여기서는 간단하게 alert로 표시
-    alert('로그 생성 완료! 페이지가 새 탭으로 열립니다.');
-}
-</script>
 """, unsafe_allow_html=True)
 
 # 링크 데이터 정의
@@ -204,39 +181,69 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        button_html = f"""
-        <button class="link-button" onclick="handleButtonClick('{link['url']}', '{link['text']}', '{link['description']}')">
-            <div style="text-align: left;">
-                <strong>{link['text']}</strong><br>
-                {link['description']}
-            </div>
-        </button>
-        """
-        st.markdown(button_html, unsafe_allow_html=True)
+        button_label = f"**{link['text']}**\n{link['description']}"
+        if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
+            # 1. 로그 파일을 생성합니다.
+            create_pbl_log(link['url'], link['text'], link['description'])
+            
+            # 2. 팝업 차단에 대비하여 성공 메시지 및 링크를 표시합니다.
+            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
+            
+            # 3. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
+            st.markdown(
+                f"""
+                <script>
+                    window.open("{link['url']}", "_blank");
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+            # 4. 팝업이 차단되었을 경우를 대비한 대체 링크입니다.
+            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
 
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        button_html = f"""
-        <button class="link-button" onclick="handleButtonClick('{link['url']}', '{link['text']}', '{link['description']}')">
-            <div style="text-align: left;">
-                <strong>{link['text']}</strong><br>
-                {link['description']}
-            </div>
-        </button>
-        """
-        st.markdown(button_html, unsafe_allow_html=True)
+        button_label = f"**{link['text']}**\n{link['description']}"
+        if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
+            # 1. 로그 파일을 생성합니다.
+            create_pbl_log(link['url'], link['text'], link['description'])
+            
+            # 2. 팝업 차단에 대비하여 성공 메시지 및 링크를 표시합니다.
+            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
+            
+            # 3. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
+            st.markdown(
+                f"""
+                <script>
+                    window.open("{link['url']}", "_blank");
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+            # 4. 팝업이 차단되었을 경우를 대비한 대체 링크입니다.
+            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        button_html = f"""
-        <button class="link-button" onclick="handleButtonClick('{link['url']}', '{link['text']}', '{link['description']}')">
-            <div style="text-align: left;">
-                <strong>{link['text']}</strong><br>
-                {link['description']}
-            </div>
-        </button>
-        """
-        st.markdown(button_html, unsafe_allow_html=True)
+        button_label = f"**{link['text']}**\n{link['description']}"
+        if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
+            # 1. 로그 파일을 생성합니다.
+            create_pbl_log(link['url'], link['text'], link['description'])
+            
+            # 2. 팝업 차단에 대비하여 성공 메시지 및 링크를 표시합니다.
+            st.success("로그 생성 완료! 페이지가 새 탭에서 페이지가 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
+            
+            # 3. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
+            st.markdown(
+                f"""
+                <script>
+                    window.open("{link['url']}", "_blank");
+                </script>
+                """,
+                unsafe_allow_html=True
+            )
+            # 4. 팝업이 차단되었을 경우를 대비한 대체 링크입니다.
+            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
