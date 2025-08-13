@@ -191,7 +191,7 @@ section[data-testid="stSidebar"] button {
     color: white !important;  /* 글자색 흰색으로 변경 */
     border: 2px solid !important;  /* 테두리 제거 */
     text-align: center !important;
-    width: 90px !important;
+    width: 95px !important;
     margin: 0 !important;
     min-height: auto !important;
     max-height: none !important;
