@@ -186,15 +186,16 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        # 단일 버튼으로 통합: 로그 생성 + 링크 열기
-        # 버튼의 레이블에 text와 description을 함께 표시합니다.
         button_label = f"**{link['text']}**\n{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
-            # 2. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
+            
+            # 2. 팝업 차단에 대비하여 성공 메시지 및 링크를 표시합니다.
+            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
+            
+            # 3. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
             # st.markdown를 사용해 HTML과 JavaScript를 삽입합니다.
-            st.markdown(f'<a href="{link["url"]}" target="_blank"></a>', unsafe_allow_html=True)
             st.markdown(
                 f"""
                 <script>
@@ -203,16 +204,17 @@ with col1:
                 """,
                 unsafe_allow_html=True
             )
-            # st.success("로그 생성 완료 및 페이지 이동!")
-            # 사용자에게 알림 메시지를 표시하지 않아도 되므로 주석 처리했습니다.
+            # 4. 팝업이 차단되었을 경우를 대비한 대체 링크입니다.
+            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
+
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        # 단일 버튼으로 통합: 로그 생성 + 링크 열기
         button_label = f"**{link['text']}**\n{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}"):
             create_pbl_log(link['url'], link['text'], link['description'])
+            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
             st.markdown(
                 f"""
                 <script>
@@ -221,15 +223,15 @@ with col2:
                 """,
                 unsafe_allow_html=True
             )
-            # st.success("로그 생성 완료 및 페이지 이동!")
+            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        # 단일 버튼으로 통합: 로그 생성 + 링크 열기
         button_label = f"**{link['text']}**\n{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}"):
             create_pbl_log(link['url'], link['text'], link['description'])
+            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
             st.markdown(
                 f"""
                 <script>
@@ -238,4 +240,4 @@ with col3:
                 """,
                 unsafe_allow_html=True
             )
-            # st.success("로그 생성 완료 및 페이지 이동!")
+            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
