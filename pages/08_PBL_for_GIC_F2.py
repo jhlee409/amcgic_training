@@ -160,7 +160,7 @@ links_data = [
     ],
     # 두 번째 컬럼 (7개)
     [
-        # {"url": "https://pbl-amc-gic-f2-08.vercel.app/", "text": "08 Esophageal SET:", "description": "large esophageal SET 환자의 management"},
+        {"url": "https://pbl-amc-gic-f2-08.vercel.app/", "text": "08 Esophageal SET:", "description": "large esophageal SET 환자의 management"},
         {"url": "https://pbl-amc-gic-f2-09.vercel.app/", "text": "09 AGC B4:", "description": "AGC B4의 진단"},
         {"url": "https://pbl-amc-gic-f2-10.vercel.app/", "text": "10 Gastric MALT lymphoma:", "description": "stage IE1 erosive type gastric MALT lymphoma의 long-term FU"},
         {"url": "https://pbl-amc-gic-f2-11.vercel.app/", "text": "11 Bayes theorem:", "description": "Bayes theorem의 임상적 응용"},
