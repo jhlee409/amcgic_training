@@ -120,7 +120,7 @@ st.markdown("""
     border-radius: 10px;
     padding: 12px;
     margin: 16px 0;
-    text-align: center;
+    text-align: left;
     text-decoration: none;
     color: #333;
     font-weight: bold;
