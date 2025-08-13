@@ -10,7 +10,6 @@ from firebase_admin import credentials, initialize_app, storage
 import requests
 import os
 import tempfile
-import re
 
 # Set page to wide mode
 st.set_page_config(page_title="PBL for GIC F2", layout="wide")
@@ -19,90 +18,6 @@ st.set_page_config(page_title="PBL for GIC F2", layout="wide")
 if "logged_in" not in st.session_state or not st.session_state['logged_in']:
     st.warning('로그인이 필요합니다.')
     st.stop()   
-
-# Check if Firebase app has already been initialized
-if not firebase_admin._apps:
-    # Streamlit Secrets에서 Firebase 설정 정보 로드
-    cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": st.secrets["project_id"],
-        "private_key_id": st.secrets["private_key_id"],
-        "private_key": st.secrets["private_key"].replace('\\n', '\n'),
-        "client_email": st.secrets["client_email"],
-        "client_id": st.secrets["client_id"],
-        "auth_uri": st.secrets["auth_uri"],
-        "token_uri": st.secrets["token_uri"],
-        "auth_provider_x509_cert_url": st.secrets["auth_provider_x509_cert_url"],
-        "client_x509_cert_url": st.secrets["client_x509_cert_url"],
-        "universe_domain": st.secrets["universe_domain"]
-    })
-    firebase_admin.initialize_app(cred)
-
-# Firebase Storage에서 MP4 파일의 URL을 검색합니다.
-bucket = storage.bucket('amcgi-bulletin.appspot.com')
-
-# GI-training-program 프로젝트용 Firebase 앱 초기화
-if 'gi_training_app' not in [app.name for app in firebase_admin._apps.values()]:
-    gi_cred = credentials.Certificate({
-        "type": "service_account",
-        "project_id": st.secrets["gi_training_project_id"],
-        "private_key_id": st.secrets["gi_training_private_key_id"],
-        "private_key": st.secrets["gi_training_private_key"].replace('\\n', '\n'),
-        "client_email": st.secrets["gi_training_client_email"],
-        "client_id": st.secrets["gi_training_client_id"],
-        "auth_uri": st.secrets["gi_training_auth_uri"],
-        "token_uri": st.secrets["gi_training_token_uri"],
-        "auth_provider_x509_cert_url": st.secrets["gi_training_auth_provider_x509_cert_url"],
-        "client_x509_cert_url": st.secrets["gi_training_client_x509_cert_url"],
-        "universe_domain": st.secrets["gi_training_universe_domain"]
-    })
-    firebase_admin.initialize_app(gi_cred, name='gi_training_app')
-
-gi_training_bucket = storage.bucket('gi-training-program.appspot.com', app=firebase_admin.get_app('gi_training_app'))
-
-def create_pbl_log(url, text, description):
-    """PBL 버튼 클릭 시 로그 파일을 생성하고 Firebase Storage에 업로드"""
-    try:
-        # URL에서 숫자 두 자리 추출
-        match = re.search(r'pbl-amc-gic-f2-(\d{2})', url)
-        if match:
-            number = match.group(1)
-        else:
-            number = "00"  # 기본값
-        
-        # 로그 파일명 생성
-        log_filename = f"PBL_F2_{number}"
-        
-        # 현재 시간 정보
-        now = datetime.now(timezone.utc)
-        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-        
-        # 사용자 정보 (세션에서 가져오기)
-        user_name = st.session_state.get('name', 'Unknown')
-        user_position = st.session_state.get('position', 'Unknown')
-        
-        # 로그 내용 생성
-        log_content = f"PBL_F2_{number}*{user_name}*{user_position}*{text}*{timestamp}"
-        
-        # 임시 파일 생성
-        with tempfile.NamedTemporaryFile(delete=False, mode='w', suffix='.txt', encoding='utf-8') as temp_file:
-            temp_file.write(log_content)
-            temp_file_path = temp_file.name
-        
-        # Firebase Storage에 업로드 (log 폴더에)
-        blob = gi_training_bucket.blob(f"log/{log_filename}")
-        blob.upload_from_filename(temp_file_path)
-        
-        # 임시 파일 삭제
-        os.unlink(temp_file_path)
-        
-        # 성공 메시지 (사용자에게는 표시하지 않음)
-        print(f"PBL 로그 파일 생성 완료: {log_filename}")
-        
-    except Exception as e:
-        print(f"PBL 로그 파일 생성 중 오류 발생: {str(e)}")
-        st.error(f"로그 파일 생성 중 오류가 발생했습니다: {str(e)}")
-
 
 st.header("PBL for GIC F2")
 
@@ -201,35 +116,29 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
-                create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+        st.markdown(f"""
+        <a href="{link['url']}" target="_blank" class="link-button">
+            <strong>{link['text']}</strong><br>
+            <small>{link['description']}</small>
+        </a>
+        """, unsafe_allow_html=True)
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
-                create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+        st.markdown(f"""
+        <a href="{link['url']}" target="_blank" class="link-button">
+            <strong>{link['text']}</strong><br>
+            <small>{link['description']}</small>
+        </a>
+        """, unsafe_allow_html=True)
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        # 로그 생성을 위한 버튼과 링크를 분리
-        col_btn, col_link = st.columns([1, 3])
-        with col_btn:
-            if st.button("📝", key=f"log_{link['text']}", help="로그 생성"):
-                create_pbl_log(link['url'], link['text'], link['description'])
-                st.success("로그 생성 완료!")
-        with col_link:
-            st.link_button(f"**{link['text']}**\n{link['description']}", url=link['url'])
+        st.markdown(f"""
+        <a href="{link['url']}" target="_blank" class="link-button">
+            <strong>{link['text']}</strong><br>
+            <small>{link['description']}</small>
+        </a>
+        """, unsafe_allow_html=True)
