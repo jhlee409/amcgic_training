@@ -295,10 +295,10 @@ links_data = [
         {"url": "https://pbl-amc-gic-f2-01.vercel.app/", "text": "01 stage IV AGC:", "description": "stage IV AGC 환자의 검사와 치료"},
         {"url": "https://pbl-amc-gic-f2-02.vercel.app/", "text": "02 refractory GERD:", "description": "refractory GERD 환자의 진단과 치료"},
         {"url": "https://pbl-amc-gic-f2-03.vercel.app/", "text": "03 GI bleeding:", "description": "GI bleeding의 진단과 치료"},
-        {"url": "https://pbl-amc-gic-f2-04.vercel.app/", "text": "04 non curative ESD:", "description": "non-curative ESD 정의와 후속 과정정"},
-        {"url": "https://pbl-amc-gic-f2-05.vercel.app/", "text": "05 refractory FD:", "description": "refractory FD 환자에서의 약물 치료료"},
+        {"url": "https://pbl-amc-gic-f2-04.vercel.app/", "text": "04 non curative ESD:", "description": "non-curative ESD의의 정의와 후속 과정"},
+        {"url": "https://pbl-amc-gic-f2-05.vercel.app/", "text": "05 refractory FD:", "description": "refractory FD 환자에서의 약물 치료"},
         {"url": "https://pbl-amc-gic-f2-06.vercel.app/", "text": "06 H.pylori 제균치료:", "description": "TPL 환자에서의 H. pylori 제균치료"},
-        {"url": "https://pbl-amc-gic-f2-07.vercel.app/", "text": "07 Duodenal NET:", "description": "duodenal NET의 진단과 치료료"}
+        {"url": "https://pbl-amc-gic-f2-07.vercel.app/", "text": "07 Duodenal NET:", "description": "duodenal NET의 진단과 치료"}
     ],
     # 두 번째 컬럼 (7개)
     [
