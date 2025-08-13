@@ -136,6 +136,9 @@ div[data-testid="stButton"] > button {
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
+    width: 80% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
 }
 
 /* 버튼 내부 텍스트 컨테이너 정렬 */
