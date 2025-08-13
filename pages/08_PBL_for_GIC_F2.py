@@ -112,181 +112,181 @@ if st.sidebar.button("Logout"):
     st.success("로그아웃 되었습니다.")
 
 # CSS 스타일 정의 (연한 주황색 버튼)
-st.markdown("""
-<style>
-/* 버튼 컨테이너를 전체 너비로 고정 */
-.stButton,
-div[data-testid="stButton"] {
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
+# st.markdown("""
+# <style>
+# /* 버튼 컨테이너를 전체 너비로 고정 */
+# .stButton,
+# div[data-testid="stButton"] {
+#     width: 100% !important;
+#     margin: 0 !important;
+#     padding: 0 !important;
+# }
 
-/* 모든 가능한 버튼 선택자를 포함한 포괄적인 스타일링 */
-.stButton > button,
-button[data-testid="baseButton-secondary"],
-div[data-testid="stButton"] > button,
-button[kind="secondary"],
-button[data-baseweb="button"],
-.st-emotion-cache-1x8cf1d button,
-.element-container button {
-    text-align: left !important;
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
-    white-space: pre-wrap !important;
-    height: auto !important;
-    min-height: 80px !important;
-    max-height: 120px !important;
-    line-height: 1.4 !important;
-    background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
-    color: #333 !important;
-    border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
-    border-radius: 10px !important;
-    font-weight: bold !important;
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;  /* 가로 길이 최대로 고정 */
-    margin: 0 !important;
-    box-sizing: border-box !important;
-}
+# /* 모든 가능한 버튼 선택자를 포함한 포괄적인 스타일링 */
+# .stButton > button,
+# button[data-testid="baseButton-secondary"],
+# div[data-testid="stButton"] > button,
+# button[kind="secondary"],
+# button[data-baseweb="button"],
+# .st-emotion-cache-1x8cf1d button,
+# .element-container button {
+#     text-align: left !important;
+#     justify-content: flex-start !important;
+#     align-items: flex-start !important;
+#     padding-left: 20px !important;
+#     padding-right: 20px !important;
+#     padding-top: 15px !important;
+#     padding-bottom: 15px !important;
+#     white-space: pre-wrap !important;
+#     height: auto !important;
+#     min-height: 80px !important;
+#     max-height: 120px !important;
+#     line-height: 1.4 !important;
+#     background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
+#     color: #333 !important;
+#     border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
+#     border-radius: 10px !important;
+#     font-weight: bold !important;
+#     display: flex !important;
+#     flex-direction: column !important;
+#     width: 100% !important;  /* 가로 길이 최대로 고정 */
+#     margin: 0 !important;
+#     box-sizing: border-box !important;
+# }
 
-/* 메인 컨텐츠 영역의 버튼만 스타일링 - 더 강력한 고정 길이 */
-div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
-.main .stButton > button,
-[data-testid="main"] button,
-.main button {
-    text-align: left !important;
-    justify-content: flex-start !important;
-    align-items: flex-start !important;
-    padding-left: 20px !important;
-    padding-right: 20px !important;
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
-    white-space: pre-wrap !important;
-    height: auto !important;
-    min-height: 80px !important;
-    max-height: 120px !important;
-    line-height: 1.4 !important;
-    background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
-    color: #333 !important;
-    border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
-    border-radius: 10px !important;
-    font-weight: bold !important;
-    display: flex !important;
-    flex-direction: column !important;
-    width: 400px !important;  /* 가로 길이 최대로 고정 */
-    max-width: 100% !important;  /* 최대 너비도 100%로 고정 */
-    min-width: 100% !important;  /* 최소 너비도 100%로 고정 */
-    margin: 0 !important;
-    box-sizing: border-box !important;
-}
+# /* 메인 컨텐츠 영역의 버튼만 스타일링 - 더 강력한 고정 길이 */
+# div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
+# .main .stButton > button,
+# [data-testid="main"] button,
+# .main button {
+#     text-align: left !important;
+#     justify-content: flex-start !important;
+#     align-items: flex-start !important;
+#     padding-left: 20px !important;
+#     padding-right: 20px !important;
+#     padding-top: 15px !important;
+#     padding-bottom: 15px !important;
+#     white-space: pre-wrap !important;
+#     height: auto !important;
+#     min-height: 80px !important;
+#     max-height: 120px !important;
+#     line-height: 1.4 !important;
+#     background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
+#     color: #333 !important;
+#     border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
+#     border-radius: 10px !important;
+#     font-weight: bold !important;
+#     display: flex !important;
+#     flex-direction: column !important;
+#     width: 400px !important;  /* 가로 길이 최대로 고정 */
+#     max-width: 100% !important;  /* 최대 너비도 100%로 고정 */
+#     min-width: 100% !important;  /* 최소 너비도 100%로 고정 */
+#     margin: 0 !important;
+#     box-sizing: border-box !important;
+# }
 
-/* 사이드바 버튼은 투명 배경으로 */
-section[data-testid="stSidebar"] button {
-    background-color: transparent !important;  /* 투명 배경 */
-    color: white !important;  /* 글자색 흰색으로 변경 */
-    border: none !important;  /* 테두리 제거 */
-    text-align: center !important;
-    width: 100% !important;
-    margin: 0 !important;
-    min-height: auto !important;
-    max-height: none !important;
-    box-shadow: none !important;  /* 그림자 제거 */
-}
+# /* 사이드바 버튼은 투명 배경으로 */
+# section[data-testid="stSidebar"] button {
+#     background-color: transparent !important;  /* 투명 배경 */
+#     color: white !important;  /* 글자색 흰색으로 변경 */
+#     border: none !important;  /* 테두리 제거 */
+#     text-align: center !important;
+#     width: 100% !important;
+#     margin: 0 !important;
+#     min-height: auto !important;
+#     max-height: none !important;
+#     box-shadow: none !important;  /* 그림자 제거 */
+# }
 
-/* 사이드바 버튼 호버 효과 */
-section[data-testid="stSidebar"] button:hover {
-    background-color: rgba(255,255,255,0.1) !important;  /* 호버 시 흰색 투명 배경 */
-    color: white !important;  /* 호버 시에도 흰색 글자 유지 */
-}
+# /* 사이드바 버튼 호버 효과 */
+# section[data-testid="stSidebar"] button:hover {
+#     background-color: rgba(255,255,255,0.1) !important;  /* 호버 시 흰색 투명 배경 */
+#     color: white !important;  /* 호버 시에도 흰색 글자 유지 */
+# }
 
-/* 상단 우측 메뉴 바 배경색 제거 */
-[data-testid="stHeader"] {
-    background-color: transparent !important;
-}
+# /* 상단 우측 메뉴 바 배경색 제거 */
+# [data-testid="stHeader"] {
+#     background-color: transparent !important;
+# }
 
-/* 메뉴 버튼들 (상단 우측) 투명 배경 */
-[data-testid="stHeader"] button,
-header button,
-.stApp > header button,
-button[kind="header"],
-button[aria-label*="menu"] {
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-}
+# /* 메뉴 버튼들 (상단 우측) 투명 배경 */
+# [data-testid="stHeader"] button,
+# header button,
+# .stApp > header button,
+# button[kind="header"],
+# button[aria-label*="menu"] {
+#     background-color: transparent !important;
+#     border: none !important;
+#     box-shadow: none !important;
+# }
 
-/* 메뉴 버튼 호버 효과 */
-[data-testid="stHeader"] button:hover,
-header button:hover,
-.stApp > header button:hover {
-    background-color: rgba(0,0,0,0.05) !important;
-}
+# /* 메뉴 버튼 호버 효과 */
+# [data-testid="stHeader"] button:hover,
+# header button:hover,
+# .stApp > header button:hover {
+#     background-color: rgba(0,0,0,0.05) !important;
+# }
 
-/* 버튼 내부 텍스트 컨테이너 정렬 */
-.stButton > button > div,
-button[data-testid="baseButton-secondary"] > div,
-div[data-testid="stButton"] > button > div,
-div[data-testid="column"] button > div {
-    text-align: left !important;
-    align-self: flex-start !important;
-    width: 100% !important;
-    justify-content: flex-start !important;
-    line-height: 1.3 !important;
-}
+# /* 버튼 내부 텍스트 컨테이너 정렬 */
+# .stButton > button > div,
+# button[data-testid="baseButton-secondary"] > div,
+# div[data-testid="stButton"] > button > div,
+# div[data-testid="column"] button > div {
+#     text-align: left !important;
+#     align-self: flex-start !important;
+#     width: 100% !important;
+#     justify-content: flex-start !important;
+#     line-height: 1.3 !important;
+# }
 
-/* 버튼 텍스트 자체를 좌측 정렬하고 빈 줄 제거 */
-.stButton > button > div > p,
-.stButton > button > div span,
-div[data-testid="stButton"] > button > div > p,
-div[data-testid="stButton"] > button span,
-button[data-testid="baseButton-secondary"] span {
-    text-align: left !important;
-    justify-content: flex-start !important;
-    width: 100% !important;
-    display: block !important;
-    line-height: 1.3 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
+# /* 버튼 텍스트 자체를 좌측 정렬하고 빈 줄 제거 */
+# .stButton > button > div > p,
+# .stButton > button > div span,
+# div[data-testid="stButton"] > button > div > p,
+# div[data-testid="stButton"] > button span,
+# button[data-testid="baseButton-secondary"] span {
+#     text-align: left !important;
+#     justify-content: flex-start !important;
+#     width: 100% !important;
+#     display: block !important;
+#     line-height: 1.3 !important;
+#     margin: 0 !important;
+#     padding: 0 !important;
+# }
 
-/* 버튼 호버 효과 (사이드바 제외) */
-div[data-testid="column"] button:hover,
-.main .stButton > button:hover,
-[data-testid="main"] button:hover,
-.main button:hover {
-    background-color: #FFE4B5 !important;  /* 호버 시 조금 더 진한 연한 주황색 */
-    color: #333 !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3) !important;  /* 주황색 그림자 */
-}
+# /* 버튼 호버 효과 (사이드바 제외) */
+# div[data-testid="column"] button:hover,
+# .main .stButton > button:hover,
+# [data-testid="main"] button:hover,
+# .main button:hover {
+#     background-color: #FFE4B5 !important;  /* 호버 시 조금 더 진한 연한 주황색 */
+#     color: #333 !important;
+#     transform: translateY(-2px) !important;
+#     box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3) !important;  /* 주황색 그림자 */
+# }
 
-/* 버튼 활성화 효과 */
-div[data-testid="column"] button:active,
-.main .stButton > button:active,
-[data-testid="main"] button:active,
-.main button:active {
-    transform: translateY(0) !important;
-}
+# /* 버튼 활성화 효과 */
+# div[data-testid="column"] button:active,
+# .main .stButton > button:active,
+# [data-testid="main"] button:active,
+# .main button:active {
+#     transform: translateY(0) !important;
+# }
 
-/* 전체 버튼에 대한 강제 스타일 적용 (사이드바 제외) */
-.main button,
-[data-testid="main"] button {
-    background-color: #FFF2E6 !important;
-    color: #333 !important;
-    border: 2px solid #FFCC99 !important;
-    width: 400px !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    text-align: left !important;
-    box-sizing: border-box !important;
-}
-</style>
-""", unsafe_allow_html=True)
+# /* 전체 버튼에 대한 강제 스타일 적용 (사이드바 제외) */
+# .main button,
+# [data-testid="main"] button {
+#     background-color: #FFF2E6 !important;
+#     color: #333 !important;
+#     border: 2px solid #FFCC99 !important;
+#     width: 400px !important;
+#     max-width: 100% !important;
+#     min-width: 100% !important;
+#     text-align: left !important;
+#     box-sizing: border-box !important;
+# }
+# </style>
+# """, unsafe_allow_html=True)
 
 # 링크 데이터 정의
 links_data = [
