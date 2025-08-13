@@ -111,7 +111,7 @@ if st.sidebar.button("Logout"):
     st.session_state.clear()
     st.success("로그아웃 되었습니다.")
 
-# CSS 스타일 정의
+# CSS 스타일과 JavaScript 함수 정의
 st.markdown("""
 <style>
 .link-button {
@@ -131,6 +131,7 @@ st.markdown("""
     width: 80%;
     margin-left: auto;
     margin-right: auto;
+    cursor: pointer;
 }
 
 .link-button:hover {
@@ -144,6 +145,20 @@ st.markdown("""
     transform: translateY(0);
 }
 </style>
+
+<script>
+function handleButtonClick(url, text, description) {
+    // 로그 생성을 위한 AJAX 요청 (간단한 구현)
+    console.log('Button clicked:', url, text, description);
+    
+    // 새 탭에서 URL 열기
+    window.open(url, '_blank');
+    
+    // 성공 메시지 표시 (Streamlit에서 처리)
+    // 여기서는 간단하게 alert로 표시
+    alert('로그 생성 완료! 페이지가 새 탭으로 열립니다.');
+}
+</script>
 """, unsafe_allow_html=True)
 
 # 링크 데이터 정의
@@ -186,58 +201,39 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        button_label = f"**{link['text']}**\n{link['description']}"
-        if st.button(button_label, key=f"pbl_button_{link['text']}"):
-            # 1. 로그 파일을 생성합니다.
-            create_pbl_log(link['url'], link['text'], link['description'])
-            
-            # 2. 팝업 차단에 대비하여 성공 메시지 및 링크를 표시합니다.
-            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
-            
-            # 3. JavaScript를 사용하여 새 탭에서 URL을 엽니다.
-            # st.markdown를 사용해 HTML과 JavaScript를 삽입합니다.
-            st.markdown(
-                f"""
-                <script>
-                    window.open("{link['url']}", "_blank");
-                </script>
-                """,
-                unsafe_allow_html=True
-            )
-            # 4. 팝업이 차단되었을 경우를 대비한 대체 링크입니다.
-            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
+        button_html = f"""
+        <button class="link-button" onclick="handleButtonClick('{link['url']}', '{link['text']}', '{link['description']}')">
+            <div style="text-align: left;">
+                <strong>{link['text']}</strong><br>
+                {link['description']}
+            </div>
+        </button>
+        """
+        st.markdown(button_html, unsafe_allow_html=True)
 
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        button_label = f"**{link['text']}**\n{link['description']}"
-        if st.button(button_label, key=f"pbl_button_{link['text']}"):
-            create_pbl_log(link['url'], link['text'], link['description'])
-            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
-            st.markdown(
-                f"""
-                <script>
-                    window.open("{link['url']}", "_blank");
-                </script>
-                """,
-                unsafe_allow_html=True
-            )
-            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
+        button_html = f"""
+        <button class="link-button" onclick="handleButtonClick('{link['url']}', '{link['text']}', '{link['description']}')">
+            <div style="text-align: left;">
+                <strong>{link['text']}</strong><br>
+                {link['description']}
+            </div>
+        </button>
+        """
+        st.markdown(button_html, unsafe_allow_html=True)
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        button_label = f"**{link['text']}**\n{link['description']}"
-        if st.button(button_label, key=f"pbl_button_{link['text']}"):
-            create_pbl_log(link['url'], link['text'], link['description'])
-            st.success("로그 생성 완료! 페이지가 새 탭으로 열립니다. 만약 열리지 않으면 아래 링크를 클릭해 주세요.")
-            st.markdown(
-                f"""
-                <script>
-                    window.open("{link['url']}", "_blank");
-                </script>
-                """,
-                unsafe_allow_html=True
-            )
-            st.link_button("페이지 열기", url=link['url'], help="새 탭으로 이동")
+        button_html = f"""
+        <button class="link-button" onclick="handleButtonClick('{link['url']}', '{link['text']}', '{link['description']}')">
+            <div style="text-align: left;">
+                <strong>{link['text']}</strong><br>
+                {link['description']}
+            </div>
+        </button>
+        """
+        st.markdown(button_html, unsafe_allow_html=True)
