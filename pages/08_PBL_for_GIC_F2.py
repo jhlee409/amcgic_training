@@ -123,36 +123,36 @@ div[data-testid="stButton"] {
 }
 
 /* 모든 가능한 버튼 선택자를 포함한 포괄적인 스타일링 */
-# .stButton > button,
-# button[data-testid="baseButton-secondary"],
-# div[data-testid="stButton"] > button,
-# button[kind="secondary"],
-# button[data-baseweb="button"],
-# .st-emotion-cache-1x8cf1d button,
-# .element-container button {
-#     text-align: left !important;
-#     justify-content: flex-start !important;
-#     align-items: flex-start !important;
-#     padding-left: 20px !important;
-#     padding-right: 20px !important;
-#     padding-top: 15px !important;
-#     padding-bottom: 15px !important;
-#     white-space: pre-wrap !important;
-#     height: auto !important;
-#     min-height: 80px !important;
-#     max-height: 120px !important;
-#     line-height: 1.4 !important;
-#     background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
-#     color: #333 !important;
-#     border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
-#     border-radius: 10px !important;
-#     font-weight: bold !important;
-#     display: flex !important;
-#     flex-direction: column !important;
-#     width: 100% !important;  /* 가로 길이 최대로 고정 */
-#     margin: 0 !important;
-#     box-sizing: border-box !important;
-# }
+.stButton > button,
+button[data-testid="baseButton-secondary"],
+div[data-testid="stButton"] > button,
+button[kind="secondary"],
+button[data-baseweb="button"],
+.st-emotion-cache-1x8cf1d button,
+.element-container button {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    white-space: pre-wrap !important;
+    height: auto !important;
+    min-height: 80px !important;
+    max-height: 120px !important;
+    line-height: 1.4 !important;
+    background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
+    color: #333 !important;
+    border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;  /* 가로 길이 최대로 고정 */
+    margin: 0 !important;
+    box-sizing: border-box !important;
+}
 
 # /* 메인 컨텐츠 영역의 버튼만 스타일링 - 더 강력한 고정 길이 */
 # div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
