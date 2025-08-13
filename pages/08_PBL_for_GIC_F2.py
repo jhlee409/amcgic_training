@@ -186,7 +186,9 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        button_label = f"**{link['text']}**\n{link['description']}"
+        # 콜론을 찾아서 줄바꿈으로 교체
+        text_with_break = link['text'].replace(':', ':\n')
+        button_label = f"**{text_with_break}**\n{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
@@ -210,7 +212,9 @@ with col1:
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        button_label = f"**{link['text']}**\n{link['description']}"
+        # 콜론을 찾아서 줄바꿈으로 교체
+        text_with_break = link['text'].replace(':', ':\n')
+        button_label = f"**{text_with_break}**\n{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
@@ -233,7 +237,9 @@ with col2:
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        button_label = f"**{link['text']}**\n{link['description']}"
+        # 콜론을 찾아서 줄바꿈으로 교체
+        text_with_break = link['text'].replace(':', ':\n')
+        button_label = f"**{text_with_break}**\n{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
