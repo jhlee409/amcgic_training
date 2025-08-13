@@ -141,9 +141,8 @@ section[data-testid="stSidebar"] button {
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 80% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100% !important;  /* 가로 길이 최대로 */
+    margin: 0 !important;  /* 가운데 정렬 제거 */
 }
 
 /* 사이드바 버튼은 제외 */
@@ -179,9 +178,14 @@ div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 80% !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
+    width: 100% !important;  /* 가로 길이 최대로 */
+    margin: 0 !important;  /* 가운데 정렬 제거 */
+}
+
+/* 버튼 컨테이너도 전체 너비로 */
+.stButton,
+div[data-testid="stButton"] {
+    width: 100% !important;
 }
 
 /* 버튼 내부 텍스트 컨테이너 정렬 */
@@ -192,6 +196,19 @@ div[data-testid="column"] button > div {
     text-align: left !important;
     align-self: flex-start !important;
     width: 100% !important;
+    justify-content: flex-start !important;
+}
+
+/* 버튼 텍스트 자체를 좌측 정렬 */
+.stButton > button > div > p,
+.stButton > button > div span,
+div[data-testid="stButton"] > button > div > p,
+div[data-testid="stButton"] > button span,
+button[data-testid="baseButton-secondary"] span {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    display: block !important;
 }
 
 /* 버튼 호버 효과 (사이드바 제외) */
@@ -216,6 +233,8 @@ button {
     background-color: #FFF2E6 !important;
     color: #333 !important;
     border: 2px solid #FFCC99 !important;
+    width: 100% !important;
+    text-align: left !important;
 }
 
 /* 사이드바 버튼 예외 처리 */
@@ -223,6 +242,7 @@ section[data-testid="stSidebar"] button {
     background-color: #f0f2f6 !important;
     color: #262730 !important;
     border: 1px solid #d0d3d9 !important;
+    text-align: center !important;
 }
 </style>
 """, unsafe_allow_html=True)
