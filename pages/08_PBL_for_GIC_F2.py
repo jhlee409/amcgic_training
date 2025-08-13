@@ -111,13 +111,18 @@ if st.sidebar.button("Logout"):
     st.session_state.clear()
     st.success("로그아웃 되었습니다.")
 
-# CSS 스타일 정의 (Streamlit 버튼 텍스트 좌측 정렬)
+# CSS 스타일 정의 (연한 주황색 버튼)
 st.markdown("""
 <style>
-/* Streamlit 버튼 내 텍스트 좌측 정렬 - 더 강력한 선택자 사용 */
+/* 모든 가능한 버튼 선택자를 포함한 포괄적인 스타일링 */
 .stButton > button,
 button[data-testid="baseButton-secondary"],
-div[data-testid="stButton"] > button {
+div[data-testid="stButton"] > button,
+button[kind="secondary"],
+button[data-baseweb="button"],
+.st-emotion-cache-1x8cf1d button,
+.element-container button,
+section[data-testid="stSidebar"] button {
     text-align: left !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
@@ -129,9 +134,47 @@ div[data-testid="stButton"] > button {
     height: auto !important;
     min-height: 60px !important;
     line-height: 1.4 !important;
-    background-color: #FFE4B5 !important;
+    background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
     color: #333 !important;
-    border: 2px solid #FFA500 !important;
+    border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
+    border-radius: 10px !important;
+    font-weight: bold !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 80% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* 사이드바 버튼은 제외 */
+section[data-testid="stSidebar"] button {
+    background-color: #f0f2f6 !important;
+    color: #262730 !important;
+    border: 1px solid #d0d3d9 !important;
+    text-align: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: auto !important;
+}
+
+/* 메인 컨텐츠 영역의 버튼만 스타일링 */
+div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
+.main .stButton > button,
+[data-testid="main"] button {
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: flex-start !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    white-space: pre-wrap !important;
+    height: auto !important;
+    min-height: 60px !important;
+    line-height: 1.4 !important;
+    background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
+    color: #333 !important;
+    border: 2px solid #FFCC99 !important;  /* 테두리도 연한 주황색 */
     border-radius: 10px !important;
     font-weight: bold !important;
     display: flex !important;
@@ -144,27 +187,42 @@ div[data-testid="stButton"] > button {
 /* 버튼 내부 텍스트 컨테이너 정렬 */
 .stButton > button > div,
 button[data-testid="baseButton-secondary"] > div,
-div[data-testid="stButton"] > button > div {
+div[data-testid="stButton"] > button > div,
+div[data-testid="column"] button > div {
     text-align: left !important;
     align-self: flex-start !important;
     width: 100% !important;
 }
 
-/* 버튼 호버 효과 */
-.stButton > button:hover,
-button[data-testid="baseButton-secondary"]:hover,
-div[data-testid="stButton"] > button:hover {
-    background-color: #FF8C00 !important;
-    color: white !important;
+/* 버튼 호버 효과 (사이드바 제외) */
+div[data-testid="column"] button:hover,
+.main .stButton > button:hover,
+[data-testid="main"] button:hover {
+    background-color: #FFE4B5 !important;  /* 호버 시 조금 더 진한 연한 주황색 */
+    color: #333 !important;
     transform: translateY(-2px) !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 4px 8px rgba(255, 165, 0, 0.3) !important;  /* 주황색 그림자 */
 }
 
 /* 버튼 활성화 효과 */
-.stButton > button:active,
-button[data-testid="baseButton-secondary"]:active,
-div[data-testid="stButton"] > button:active {
+div[data-testid="column"] button:active,
+.main .stButton > button:active,
+[data-testid="main"] button:active {
     transform: translateY(0) !important;
+}
+
+/* 전체 버튼에 대한 강제 스타일 적용 */
+button {
+    background-color: #FFF2E6 !important;
+    color: #333 !important;
+    border: 2px solid #FFCC99 !important;
+}
+
+/* 사이드바 버튼 예외 처리 */
+section[data-testid="stSidebar"] button {
+    background-color: #f0f2f6 !important;
+    color: #262730 !important;
+    border: 1px solid #d0d3d9 !important;
 }
 </style>
 """, unsafe_allow_html=True)
