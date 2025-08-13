@@ -188,7 +188,7 @@ div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
 /* 사이드바 버튼은 투명 배경으로 */
 section[data-testid="stSidebar"] button {
     background-color: transparent !important;  /* 투명 배경 */
-    color: #262730 !important;
+    color: white !important;  /* 글자색 흰색으로 변경 */
     border: none !important;  /* 테두리 제거 */
     text-align: center !important;
     width: 100% !important;
@@ -200,7 +200,8 @@ section[data-testid="stSidebar"] button {
 
 /* 사이드바 버튼 호버 효과 */
 section[data-testid="stSidebar"] button:hover {
-    background-color: rgba(0,0,0,0.05) !important;  /* 약간의 호버 효과 */
+    background-color: rgba(255,255,255,0.1) !important;  /* 호버 시 흰색 투명 배경 */
+    color: white !important;  /* 호버 시에도 흰색 글자 유지 */
 }
 
 /* 상단 우측 메뉴 바 배경색 제거 */
