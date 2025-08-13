@@ -150,22 +150,22 @@ links_data = [
     # 첫 번째 컬럼 (7개)
     [
         {"url": "https://pbl-amc-gic-f2-01.vercel.app/", "text": "01 stage IV AGC", "description": "stage IV AGC 환자의 검사와 치료"},
-        # {"url": "https://pbl-amc-gic-f2-02.vercel.app/", "text": "02 refractory GERD", "description": "refractory GERD 환자의 진단과 치료"},
-        # {"url": "https://pbl-amc-gic-f2-03.vercel.app/", "text": "03 GI bleeding", "description": "GI bleeding의 진단과 치료"},
-        # {"url": "https://pbl-amc-gic-f2-04.vercel.app/", "text": "04 non curative ESD", "description": "non-curative ESD 정의와 후속 과정정"},
-        # {"url": "https://pbl-amc-gic-f2-05.vercel.app/", "text": "05 refractory FD", "description": "refractory FD 환자에서의 약물 치료료"},
-        # {"url": "https://pbl-amc-gic-f2-06.vercel.app/", "text": "06 H.pylori 제균치료", "description": "TPL 환자에서의 H. pylori 제균치료"},
-        # {"url": "https://pbl-amc-gic-f2-07.vercel.app/", "text": "07 Duodenal NET", "description": "duodenal NET의 진단과 치료료"}
+        {"url": "https://pbl-amc-gic-f2-02.vercel.app/", "text": "02 refractory GERD", "description": "refractory GERD 환자의 진단과 치료"},
+        {"url": "https://pbl-amc-gic-f2-03.vercel.app/", "text": "03 GI bleeding", "description": "GI bleeding의 진단과 치료"},
+        {"url": "https://pbl-amc-gic-f2-04.vercel.app/", "text": "04 non curative ESD", "description": "non-curative ESD 정의와 후속 과정정"},
+        {"url": "https://pbl-amc-gic-f2-05.vercel.app/", "text": "05 refractory FD", "description": "refractory FD 환자에서의 약물 치료료"},
+        {"url": "https://pbl-amc-gic-f2-06.vercel.app/", "text": "06 H.pylori 제균치료", "description": "TPL 환자에서의 H. pylori 제균치료"},
+        {"url": "https://pbl-amc-gic-f2-07.vercel.app/", "text": "07 Duodenal NET", "description": "duodenal NET의 진단과 치료료"}
     ],
     # 두 번째 컬럼 (7개)
     [
-        # {"url": "https://pbl-amc-gic-f2-08.vercel.app/", "text": "08 Esophageal SET", "description": "large esophageal SET 환자의 management"},
-        # {"url": "https://pbl-amc-gic-f2-09.vercel.app/", "text": "09AGC B4", "description": "AGC B4의 진단"},
-        # {"url": "https://pbl-amc-gic-f2-10.vercel.app/", "text": "10 Gastric MALT lymphoma", "description": "stage IE1 erosive type gastric MALT lymphoma의 long-term FU"},
-        # {"url": "https://pbl-amc-gic-f2-11.vercel.app/", "text": "11 Bayes theorem", "description": "Bayes theorem의 임상적 응용"},
-        # {"url": "https://pbl-amc-gic-f2-12.vercel.app/", "text": "12 Gastric polyposis", "description": "Gastric polyposis의 감별진단"},
-        # {"url": "https://pbl-amc-gic-f2-13.vercel.app/", "text": "13 Esohageal cancer staging", "description": "Esophageal cancer staging에서 LN metastasis 진단의 중요성"},
-        # {"url": "https://pbl-amc-gic-f2-14.vercel.app/", "text": "post gastrectomy dumping syndrome", "description": "post gastrectomy dumping syndrome의 진단과 management"}
+        {"url": "https://pbl-amc-gic-f2-08.vercel.app/", "text": "08 Esophageal SET", "description": "large esophageal SET 환자의 management"},
+        {"url": "https://pbl-amc-gic-f2-09.vercel.app/", "text": "09AGC B4", "description": "AGC B4의 진단"},
+        {"url": "https://pbl-amc-gic-f2-10.vercel.app/", "text": "10 Gastric MALT lymphoma", "description": "stage IE1 erosive type gastric MALT lymphoma의 long-term FU"},
+        {"url": "https://pbl-amc-gic-f2-11.vercel.app/", "text": "11 Bayes theorem", "description": "Bayes theorem의 임상적 응용"},
+        {"url": "https://pbl-amc-gic-f2-12.vercel.app/", "text": "12 Gastric polyposis", "description": "Gastric polyposis의 감별진단"},
+        {"url": "https://pbl-amc-gic-f2-13.vercel.app/", "text": "13 Esohageal cancer staging", "description": "Esophageal cancer staging에서 LN metastasis 진단의 중요성"},
+        {"url": "https://pbl-amc-gic-f2-14.vercel.app/", "text": "post gastrectomy dumping syndrome", "description": "post gastrectomy dumping syndrome의 진단과 management"}
     ],
     # 세 번째 컬럼 (7개)
     [
@@ -189,15 +189,21 @@ with col1:
         if f"log_created_{link['text']}" not in st.session_state:
             st.session_state[f"log_created_{link['text']}"] = False
         
-        # 버튼 클릭 시 로그 생성과 링크 열기
+        # 버튼 클릭 시 로그 생성과 자동 링크 열기
         if st.button(f"**{link['text']}**\n{link['description']}", key=f"btn_{link['text']}"):
             if not st.session_state[f"log_created_{link['text']}"]:
                 create_pbl_log(link['url'], link['text'], link['description'])
                 st.session_state[f"log_created_{link['text']}"] = True
-                st.success(f"{link['text']} 로그 생성 완료!")
             
-            # 링크를 새 창에서 열기
-            st.markdown(f'<a href="{link["url"]}" target="_blank">🔗 {link["text"]} 링크 열기</a>', unsafe_allow_html=True)
+            # 자동으로 링크 열기
+            st.markdown(f"""
+            <script>
+                window.open('{link["url"]}', '_blank');
+            </script>
+            """, unsafe_allow_html=True)
+            
+            # 페이지 새로고침하여 깔끔하게 정리
+            st.experimental_rerun()
 
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
@@ -206,15 +212,21 @@ with col2:
         if f"log_created_{link['text']}" not in st.session_state:
             st.session_state[f"log_created_{link['text']}"] = False
         
-        # 버튼 클릭 시 로그 생성과 링크 열기
+        # 버튼 클릭 시 로그 생성과 자동 링크 열기
         if st.button(f"**{link['text']}**\n{link['description']}", key=f"btn_{link['text']}"):
             if not st.session_state[f"log_created_{link['text']}"]:
                 create_pbl_log(link['url'], link['text'], link['description'])
                 st.session_state[f"log_created_{link['text']}"] = True
-                st.success(f"{link['text']} 로그 생성 완료!")
             
-            # 링크를 새 창에서 열기
-            st.markdown(f'<a href="{link["url"]}" target="_blank">🔗 {link["text"]} 링크 열기</a>', unsafe_allow_html=True)
+            # 자동으로 링크 열기
+            st.markdown(f"""
+            <script>
+                window.open('{link["url"]}', '_blank');
+            </script>
+            """, unsafe_allow_html=True)
+            
+            # 페이지 새로고침하여 깔끔하게 정리
+            st.experimental_rerun()
 
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
@@ -223,12 +235,18 @@ with col3:
         if f"log_created_{link['text']}" not in st.session_state:
             st.session_state[f"log_created_{link['text']}"] = False
         
-        # 버튼 클릭 시 로그 생성과 링크 열기
+        # 버튼 클릭 시 로그 생성과 자동 링크 열기
         if st.button(f"**{link['text']}**\n{link['description']}", key=f"btn_{link['text']}"):
             if not st.session_state[f"log_created_{link['text']}"]:
                 create_pbl_log(link['url'], link['text'], link['description'])
                 st.session_state[f"log_created_{link['text']}"] = True
-                st.success(f"{link['text']} 로그 생성 완료!")
             
-            # 링크를 새 창에서 열기
-            st.markdown(f'<a href="{link["url"]}" target="_blank">🔗 {link["text"]} 링크 열기</a>', unsafe_allow_html=True)
+            # 자동으로 링크 열기
+            st.markdown(f"""
+            <script>
+                window.open('{link["url"]}', '_blank');
+            </script>
+            """, unsafe_allow_html=True)
+            
+            # 페이지 새로고침하여 깔끔하게 정리
+            st.experimental_rerun()
