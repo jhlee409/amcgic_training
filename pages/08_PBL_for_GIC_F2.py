@@ -124,6 +124,11 @@ st.markdown("""
     height: auto !important;
     min-height: 60px !important;
     line-height: 1.4 !important;
+    background-color: #FFE4B5 !important;
+    color: #333 !important;
+    border: 2px solid #FFA500 !important;
+    border-radius: 10px !important;
+    font-weight: bold !important;
 }
 
 /* 버튼 호버 효과 */
