@@ -149,7 +149,7 @@ button[data-baseweb="button"],
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 600px !important;  /* 가로 길이 최대로 고정 */
+    width: 550px !important;  /* 가로 길이 최대로 고정 */
     margin: 0 !important;
     box-sizing: border-box !important;
 }
@@ -185,18 +185,18 @@ button[data-baseweb="button"],
 #     box-sizing: border-box !important;
 # }
 
-# /* 사이드바 버튼은 투명 배경으로 */
-# section[data-testid="stSidebar"] button {
-#     background-color: transparent !important;  /* 투명 배경 */
-#     color: white !important;  /* 글자색 흰색으로 변경 */
-#     border: none !important;  /* 테두리 제거 */
-#     text-align: center !important;
-#     width: 100% !important;
-#     margin: 0 !important;
-#     min-height: auto !important;
-#     max-height: none !important;
-#     box-shadow: none !important;  /* 그림자 제거 */
-# }
+/* 사이드바 버튼은 투명 배경으로 */
+section[data-testid="stSidebar"] button {
+    background-color: transparent !important;  /* 투명 배경 */
+    color: white !important;  /* 글자색 흰색으로 변경 */
+    border: none !important;  /* 테두리 제거 */
+    text-align: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    max-height: none !important;
+    box-shadow: none !important;  /* 그림자 제거 */
+}
 
 # /* 사이드바 버튼 호버 효과 */
 # section[data-testid="stSidebar"] button:hover {
