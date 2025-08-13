@@ -114,6 +114,14 @@ if st.sidebar.button("Logout"):
 # CSS 스타일 정의 (연한 주황색 버튼)
 st.markdown("""
 <style>
+/* 버튼 컨테이너를 전체 너비로 고정 */
+.stButton,
+div[data-testid="stButton"] {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
 /* 모든 가능한 버튼 선택자를 포함한 포괄적인 스타일링 */
 .stButton > button,
 button[data-testid="baseButton-secondary"],
@@ -121,8 +129,7 @@ div[data-testid="stButton"] > button,
 button[kind="secondary"],
 button[data-baseweb="button"],
 .st-emotion-cache-1x8cf1d button,
-.element-container button,
-section[data-testid="stSidebar"] button {
+.element-container button {
     text-align: left !important;
     justify-content: flex-start !important;
     align-items: flex-start !important;
@@ -132,7 +139,8 @@ section[data-testid="stSidebar"] button {
     padding-bottom: 15px !important;
     white-space: pre-wrap !important;
     height: auto !important;
-    min-height: 60px !important;
+    min-height: 80px !important;
+    max-height: 120px !important;
     line-height: 1.4 !important;
     background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
     color: #333 !important;
@@ -141,19 +149,9 @@ section[data-testid="stSidebar"] button {
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 100% !important;  /* 가로 길이 최대로 */
-    margin: 0 !important;  /* 가운데 정렬 제거 */
-}
-
-/* 사이드바 버튼은 제외 */
-section[data-testid="stSidebar"] button {
-    background-color: #f0f2f6 !important;
-    color: #262730 !important;
-    border: 1px solid #d0d3d9 !important;
-    text-align: center !important;
-    width: 100% !important;
+    width: 100% !important;  /* 가로 길이 최대로 고정 */
     margin: 0 !important;
-    min-height: auto !important;
+    box-sizing: border-box !important;
 }
 
 /* 메인 컨텐츠 영역의 버튼만 스타일링 */
@@ -169,7 +167,8 @@ div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
     padding-bottom: 15px !important;
     white-space: pre-wrap !important;
     height: auto !important;
-    min-height: 60px !important;
+    min-height: 80px !important;
+    max-height: 120px !important;
     line-height: 1.4 !important;
     background-color: #FFF2E6 !important;  /* 더 연한 주황색 */
     color: #333 !important;
@@ -178,14 +177,21 @@ div[data-testid="column"] button:not(section[data-testid="stSidebar"] button),
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 100% !important;  /* 가로 길이 최대로 */
-    margin: 0 !important;  /* 가운데 정렬 제거 */
+    width: 100% !important;  /* 가로 길이 최대로 고정 */
+    margin: 0 !important;
+    box-sizing: border-box !important;
 }
 
-/* 버튼 컨테이너도 전체 너비로 */
-.stButton,
-div[data-testid="stButton"] {
+/* 사이드바 버튼은 제외 */
+section[data-testid="stSidebar"] button {
+    background-color: #f0f2f6 !important;
+    color: #262730 !important;
+    border: 1px solid #d0d3d9 !important;
+    text-align: center !important;
     width: 100% !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    max-height: none !important;
 }
 
 /* 버튼 내부 텍스트 컨테이너 정렬 */
@@ -197,9 +203,10 @@ div[data-testid="column"] button > div {
     align-self: flex-start !important;
     width: 100% !important;
     justify-content: flex-start !important;
+    line-height: 1.3 !important;
 }
 
-/* 버튼 텍스트 자체를 좌측 정렬 */
+/* 버튼 텍스트 자체를 좌측 정렬하고 빈 줄 제거 */
 .stButton > button > div > p,
 .stButton > button > div span,
 div[data-testid="stButton"] > button > div > p,
@@ -209,6 +216,9 @@ button[data-testid="baseButton-secondary"] span {
     justify-content: flex-start !important;
     width: 100% !important;
     display: block !important;
+    line-height: 1.3 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 /* 버튼 호버 효과 (사이드바 제외) */
@@ -235,6 +245,7 @@ button {
     border: 2px solid #FFCC99 !important;
     width: 100% !important;
     text-align: left !important;
+    box-sizing: border-box !important;
 }
 
 /* 사이드바 버튼 예외 처리 */
@@ -287,9 +298,9 @@ col1, col2, col3 = st.columns(3)
 # 첫 번째 컬럼에 링크 버튼들 추가
 with col1:
     for link in links_data[0]:
-        # 콜론을 찾아서 줄바꿈으로 교체
+        # 콜론을 찾아서 줄바꿈으로 교체하고 빈 줄 제거
         text_with_break = link['text'].replace(':', ':\n')
-        button_label = f"{text_with_break}\n{link['description']}"
+        button_label = f"{text_with_break}{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
@@ -313,9 +324,9 @@ with col1:
 # 두 번째 컬럼에 링크 버튼들 추가
 with col2:
     for link in links_data[1]:
-        # 콜론을 찾아서 줄바꿈으로 교체
+        # 콜론을 찾아서 줄바꿈으로 교체하고 빈 줄 제거
         text_with_break = link['text'].replace(':', ':\n')
-        button_label = f"{text_with_break}\n{link['description']}"
+        button_label = f"{text_with_break}{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
@@ -338,9 +349,9 @@ with col2:
 # 세 번째 컬럼에 링크 버튼들 추가
 with col3:
     for link in links_data[2]:
-        # 콜론을 찾아서 줄바꿈으로 교체
+        # 콜론을 찾아서 줄바꿈으로 교체하고 빈 줄 제거
         text_with_break = link['text'].replace(':', ':\n')
-        button_label = f"{text_with_break}\n{link['description']}"
+        button_label = f"{text_with_break}{link['description']}"
         if st.button(button_label, key=f"pbl_button_{link['text']}", help="클릭하면 로그가 생성되고 새 탭에서 페이지가 열립니다"):
             # 1. 로그 파일을 생성합니다.
             create_pbl_log(link['url'], link['text'], link['description'])
