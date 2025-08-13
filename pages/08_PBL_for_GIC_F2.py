@@ -149,7 +149,7 @@ button[data-baseweb="button"],
     font-weight: bold !important;
     display: flex !important;
     flex-direction: column !important;
-    width: 100% !important;  /* 가로 길이 최대로 고정 */
+    width: 400px !important;  /* 가로 길이 최대로 고정 */
     margin: 0 !important;
     box-sizing: border-box !important;
 }
