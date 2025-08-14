@@ -154,6 +154,20 @@ with col2:
         case_full_path = case_directory + selected_case_file
         prompt = read_docx_file('amcgi-bulletin.appspot.com', case_full_path)
         st.session_state['prompt'] = prompt
+        
+        # 파일 선택 후 안내 메시지 표시
+        if selected_case_file == "00.docx":
+            st.session_state.message_box += f"📋 **증례 파일 '{selected_case_file}'이 선택되었습니다.**\n\n"
+            st.session_state.message_box += "**증례 내용:**\n"
+            st.session_state.message_box += f"{prompt}\n\n"
+            st.session_state.message_box += "**이제 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.**\n\n"
+        else:
+            st.session_state.message_box += f"📋 **증례 파일 '{selected_case_file}'이 선택되었습니다.**\n\n"
+            st.session_state.message_box += "**증례 내용:**\n"
+            st.session_state.message_box += f"{prompt}\n\n"
+            st.session_state.message_box += "**이제 '어디가 불편해서 오셨나요?'로 문진을 시작하세요.**\n\n"
+        
+        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
         # Find the corresponding Excel file in the reference directory
         reference_directory = "AI_patient_Hx_taking/reference/"
@@ -196,38 +210,46 @@ with input_container:
 # 사용자 입력이 있을 경우, prompt를 user_input으로 설정
 if user_input:
     prompt = user_input
+    # 사용자 입력이 있을 때만 AI에게 메시지 전송
+    message = client.beta.threads.messages.create(
+        thread_id=thread_id,
+        role="user",
+        content=prompt
+    )
+    
+    #RUN을 돌리는 과정
+    run = client.beta.threads.runs.create(
+        thread_id=thread_id,
+        assistant_id=assistant_id,
+    )
 
-message = client.beta.threads.messages.create(
-    thread_id=thread_id,
-    role="user",
-    content=prompt
-)
-#RUN을 돌리는 과정
-run = client.beta.threads.runs.create(
-    thread_id=thread_id,
-    assistant_id=assistant_id,
-)
+    with st.spinner('열일 중...'):
+        #RUN이 completed 되었나 1초마다 체크
+        while run.status != "completed":
+            time.sleep(1)
+            run = client.beta.threads.runs.retrieve(
+                thread_id=thread_id,
+                run_id=run.id
+            )
 
-with st.spinner('열일 중...'):
-    #RUN이 completed 되었나 1초마다 체크
-    while run.status != "completed":
-        time.sleep(1)
-        run = client.beta.threads.runs.retrieve(
-            thread_id=thread_id,
-            run_id=run.id
-        )
+    #while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
+    messages = client.beta.threads.messages.list(
+        thread_id=thread_id
+    )
 
-#while문을 빠져나왔다는 것은 완료됐다는 것이니 메세지 불러오기
-messages = client.beta.threads.messages.list(
-    thread_id=thread_id
-)
+    #메세지 모두 불러오기
+    thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
 
-#메세지 모두 불러오기
-thread_messages = client.beta.threads.messages.list(thread_id, order="asc")
+    # assistant 메시지를 메시지 창에 추가
+    if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
+        if messages.data[0].role == "assistant":
+            st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
+        else:
+            st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
+        message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
 st.sidebar.divider()
 
-# Clear button in the sidebar
 if st.sidebar.button('이전 대화기록 삭제 버튼'):
     # Reset the prompt, create a new thread, and clear the docx_file and messages
     prompt = []
@@ -239,14 +261,6 @@ if st.sidebar.button('이전 대화기록 삭제 버튼'):
     # Clear the message box in col2
     st.session_state.message_box = ""
     message_container.markdown("", unsafe_allow_html=True)
-
-# assistant 메시지를 메시지 창에 추가
-if message.content and message.content[0].text.value and '전체 지시 사항' not in message.content[0].text.value:
-    if messages.data[0].role == "assistant":
-        st.session_state.message_box += f"🤖: {messages.data[0].content[0].text.value}\n\n"
-    else:
-        st.session_state.message_box += f"**{messages.data[0].role}:** {messages.data[0].content[0].text.value}\n\n"
-    message_container.markdown(st.session_state.message_box, unsafe_allow_html=True)
 
 st.sidebar.divider()
 
