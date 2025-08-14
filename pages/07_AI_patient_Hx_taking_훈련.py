@@ -256,11 +256,12 @@ if st.sidebar.button('이전 대화기록 삭제 버튼'):
     thread = client.beta.threads.create()
     st.session_state.thread_id = thread.id
     st.session_state['messages'] = []
-    for msg in thread_messages.data:
-        msg.content[0].text.value=""
-    # Clear the message box in col2
+    
+    # Clear the message box
     st.session_state.message_box = ""
     message_container.markdown("", unsafe_allow_html=True)
+    
+    st.success("대화기록이 삭제되었습니다. 새로운 증례를 선택하세요.")
 
 st.sidebar.divider()
 
