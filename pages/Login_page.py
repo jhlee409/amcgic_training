@@ -234,6 +234,8 @@ def handle_login(email, password, name, position):
             st.session_state['position'] = position
             st.session_state['user_id'] = user_id
             st.session_state['login_time'] = datetime.now(timezone.utc)
+            # 로그인 성공 후 자동 새로고침하여 navigation 메뉴 업데이트
+            st.rerun()
         else:
             st.error(response_data["error"]["message"])
     except Exception as e:
