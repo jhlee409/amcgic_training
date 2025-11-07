@@ -14,13 +14,29 @@ page_6 = st.Page("pages/06_other_lecture.py", title="06_other_lecture", icon=":m
 page_7 = st.Page("pages/07_AI_patient_Hx_taking_훈련.py", title="07_AI_patient_Hx_taking_훈련", icon=":material/domain:")
 page_8 = st.Page("pages/08_PBL_for_GIC_F2.py", title="08_PBL_for_GIC_F2", icon=":material/domain:")
 
+# 로그인 상태 및 사용자 position 확인
+is_logged_in = st.session_state.get('logged_in', False)
+user_position = st.session_state.get('position', '')
+
+# 허용된 position 목록 (대소문자 구분 없이 비교)
+allowed_positions = ['staff', 'F2', 'F1', 'R3', 'student']
+is_authorized = user_position and user_position.lower() in [pos.lower() for pos in allowed_positions]
+
+# 로그인 상태와 권한에 따라 페이지 목록 구성
+endoscopy_pages = [page_2, page_3, page_4, page_6]  # 항상 보이는 페이지들
+clinical_pages = [page_7]  # 항상 보이는 페이지들
+
+# 로그인했고 권한이 있는 경우에만 특정 페이지 추가
+if is_logged_in and is_authorized:
+    endoscopy_pages = [page_1, page_2, page_3, page_4, page_5, page_6]
+    clinical_pages = [page_7, page_8]
 
 # Set up navigation with sections
 pg = st.navigation(
     {
         "로그인 페이지": [login_page],
-        "Endoscopy": [page_1, page_2, page_3, page_4, page_5, page_6], 
-        "Clinical":  [page_7, page_8]
+        "Endoscopy": endoscopy_pages, 
+        "Clinical": clinical_pages
     }
 )
 
