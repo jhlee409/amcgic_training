@@ -19,17 +19,31 @@ is_logged_in = st.session_state.get('logged_in', False)
 user_position = st.session_state.get('position', '')
 
 # 허용된 position 목록 (대소문자 구분 없이 비교)
-allowed_positions = ['staff', 'F2', 'F1', 'R3', 'student']
-is_authorized = user_position and user_position.lower() in [pos.lower() for pos in allowed_positions]
+# Login_page.py에서 "Staff", "F1", "F2", "R3", "Student"로 저장됨
+allowed_positions = ['Staff', 'F2', 'F1', 'R3', 'Student', 'staff', 'student']  # 대소문자 모두 포함
+is_authorized = False
+if user_position:
+    # 대소문자 구분 없이 비교
+    user_pos_lower = user_position.lower().strip()
+    allowed_positions_lower = [pos.lower().strip() for pos in allowed_positions]
+    is_authorized = user_pos_lower in allowed_positions_lower
 
 # 로그인 상태와 권한에 따라 페이지 목록 구성
-endoscopy_pages = [page_2, page_3, page_4, page_6]  # 항상 보이는 페이지들
-clinical_pages = [page_7]  # 항상 보이는 페이지들
+# 기본적으로 보이는 페이지들
+endoscopy_pages = [page_2, page_3, page_4, page_6]
+clinical_pages = [page_7]
 
 # 로그인했고 권한이 있는 경우에만 특정 페이지 추가
 if is_logged_in and is_authorized:
     endoscopy_pages = [page_1, page_2, page_3, page_4, page_5, page_6]
     clinical_pages = [page_7, page_8]
+
+# 디버깅용 - 실제 값 확인 (필요시 주석 해제)
+# st.sidebar.write(f"Debug - logged_in: {is_logged_in}")
+# st.sidebar.write(f"Debug - position: {user_position}")
+# st.sidebar.write(f"Debug - is_authorized: {is_authorized}")
+# st.sidebar.write(f"Debug - endoscopy_pages count: {len(endoscopy_pages)}")
+# st.sidebar.write(f"Debug - clinical_pages count: {len(clinical_pages)}")
 
 # Set up navigation with sections
 pg = st.navigation(
