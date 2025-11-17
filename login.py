@@ -14,37 +14,9 @@ page_6 = st.Page("pages/06_other_lecture.py", title="06_other_lecture", icon=":m
 page_7 = st.Page("pages/07_AI_patient_Hx_taking_훈련.py", title="07_AI_patient_Hx_taking_훈련", icon=":material/domain:")
 page_8 = st.Page("pages/08_PBL_for_GIC_F2.py", title="08_PBL_for_GIC_F2", icon=":material/domain:")
 
-# 로그인 상태 및 사용자 position 확인
-is_logged_in = st.session_state.get('logged_in', False)
-user_position = st.session_state.get('position', '')
-
-# 허용된 position 목록 (대소문자 구분 없이 비교)
-# Login_page.py에서 "Staff", "F1", "F2", "R3", "Student"로 저장됨
-allowed_positions = ['Staff', 'F2', 'F1', 'R3', 'Student', 'staff', 'student']  # 대소문자 모두 포함
-is_authorized = False
-if user_position:
-    # 대소문자 구분 없이 비교
-    user_pos_lower = user_position.lower().strip()
-    allowed_positions_lower = [pos.lower().strip() for pos in allowed_positions]
-    is_authorized = user_pos_lower in allowed_positions_lower
-
-# 로그인 상태와 권한에 따라 페이지 목록 구성
-# 기본적으로 모든 페이지를 보여줌
+# 페이지 목록 구성 - 로그인한 사용자에게 모든 페이지 표시
 endoscopy_pages = [page_1, page_2, page_3, page_4, page_5, page_6]
 clinical_pages = [page_7, page_8]
-
-# 로그인했지만 허용된 position이 아닌 경우 특정 페이지 숨김
-if is_logged_in and not is_authorized:
-    # 허용되지 않은 position의 로그인 사용자에게는 page_1, page_5, page_8 숨김
-    endoscopy_pages = [page_2, page_3, page_4, page_6]
-    clinical_pages = [page_7]
-
-# 디버깅용 - 실제 값 확인 (필요시 주석 해제)
-# st.sidebar.write(f"Debug - logged_in: {is_logged_in}")
-# st.sidebar.write(f"Debug - position: {user_position}")
-# st.sidebar.write(f"Debug - is_authorized: {is_authorized}")
-# st.sidebar.write(f"Debug - endoscopy_pages count: {len(endoscopy_pages)}")
-# st.sidebar.write(f"Debug - clinical_pages count: {len(clinical_pages)}")
 
 # Set up navigation with sections
 pg = st.navigation(
