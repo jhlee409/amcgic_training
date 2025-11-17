@@ -293,22 +293,22 @@ links_data = [
     # 첫 번째 컬럼 (7개)
     [
         {"url": "https://pbl-amc-gic-f2-01.vercel.app/", "text": "01 stage IV AGC:", "description": "stage IV AGC 환자의 검사와 치료"},
-        # {"url": "https://pbl-amc-gic-f2-02.vercel.app/", "text": "02 refractory GERD:", "description": "refractory GERD 환자의 진단과 치료"},
-        # {"url": "https://pbl-amc-gic-f2-03.vercel.app/", "text": "03 GI bleeding:", "description": "GI bleeding의 진단과 치료"},
-        # {"url": "https://pbl-amc-gic-f2-04.vercel.app/", "text": "04 non curative ESD:", "description": "non-curative ESD의의 정의와 후속 과정"},
-        # {"url": "https://pbl-amc-gic-f2-05.vercel.app/", "text": "05 refractory FD:", "description": "refractory FD 환자에서의 약물 치료"},
-        # {"url": "https://pbl-amc-gic-f2-06.vercel.app/", "text": "06 H.pylori 제균치료:", "description": "TPL 환자에서의 H. pylori 제균치료"},
-        # {"url": "https://pbl-amc-gic-f2-07.vercel.app/", "text": "07 Duodenal NET:", "description": "duodenal NET의 진단과 치료"}
+        {"url": "https://pbl-amc-gic-f2-02.vercel.app/", "text": "02 refractory GERD:", "description": "refractory GERD 환자의 진단과 치료"},
+        {"url": "https://pbl-amc-gic-f2-03.vercel.app/", "text": "03 GI bleeding:", "description": "GI bleeding의 진단과 치료"},
+        {"url": "https://pbl-amc-gic-f2-04.vercel.app/", "text": "04 non curative ESD:", "description": "non-curative ESD의의 정의와 후속 과정"},
+        {"url": "https://pbl-amc-gic-f2-05.vercel.app/", "text": "05 refractory FD:", "description": "refractory FD 환자에서의 약물 치료"},
+        {"url": "https://pbl-amc-gic-f2-06.vercel.app/", "text": "06 H.pylori 제균치료:", "description": "TPL 환자에서의 H. pylori 제균치료"},
+        {"url": "https://pbl-amc-gic-f2-07.vercel.app/", "text": "07 Duodenal NET:", "description": "duodenal NET의 진단과 치료"}
     ],
     # 두 번째 컬럼 (7개)
     [
-        # {"url": "https://pbl-amc-gic-f2-08.vercel.app/", "text": "08 Esophageal SET:", "description": "large esophageal SET 환자의 management"},
-        # {"url": "https://pbl-amc-gic-f2-09.vercel.app/", "text": "09 AGC B4:", "description": "AGC B4의 진단"},
-        # {"url": "https://pbl-amc-gic-f2-10.vercel.app/", "text": "10 Gastric MALT lymphoma:", "description": "stage IE1 erosive type gastric MALT lymphoma의 long-term FU"},
-        # {"url": "https://pbl-amc-gic-f2-11.vercel.app/", "text": "11 Bayes theorem:", "description": "Bayes theorem의 임상적 응용"},
-        # {"url": "https://pbl-amc-gic-f2-12.vercel.app/", "text": "12 Gastric polyposis:", "description": "Gastric polyposis의 감별진단"},
-        # {"url": "https://pbl-amc-gic-f2-13.vercel.app/", "text": "13 Esohageal cancer staging:", "description": "Esophageal cancer staging에서 LN metastasis 진단의 중요성"},
-        # {"url": "https://pbl-amc-gic-f2-14.vercel.app/", "text": "14 post gastrectomy dumping syndrome:", "description": "post gastrectomy dumping syndrome의 진단과 management"}
+        {"url": "https://pbl-amc-gic-f2-08.vercel.app/", "text": "08 Esophageal SET:", "description": "large esophageal SET 환자의 management"},
+        {"url": "https://pbl-amc-gic-f2-09.vercel.app/", "text": "09 AGC B4:", "description": "AGC B4의 진단"},
+        {"url": "https://pbl-amc-gic-f2-10.vercel.app/", "text": "10 Gastric MALT lymphoma:", "description": "stage IE1 erosive type gastric MALT lymphoma의 long-term FU"},
+        {"url": "https://pbl-amc-gic-f2-11.vercel.app/", "text": "11 Bayes theorem:", "description": "Bayes theorem의 임상적 응용"},
+        {"url": "https://pbl-amc-gic-f2-12.vercel.app/", "text": "12 Gastric polyposis:", "description": "Gastric polyposis의 감별진단"},
+        {"url": "https://pbl-amc-gic-f2-13.vercel.app/", "text": "13 Esohageal cancer staging:", "description": "Esophageal cancer staging에서 LN metastasis 진단의 중요성"},
+        {"url": "https://pbl-amc-gic-f2-14.vercel.app/", "text": "14 post gastrectomy dumping syndrome:", "description": "post gastrectomy dumping syndrome의 진단과 management"}
     ],
     # 세 번째 컬럼 (7개)
     [
